@@ -1,0 +1,8 @@
+commands.wdcs.caller.usage=/wdcs <operation> <arguments...> * Use "/wdcs help", "/wdcs" or "/wdcs ?" for more information. 
+commands.wdcs.caller.help=This is the helping text of the World Consciousness Mod.
+commands.wdcs.caller.exception.arguments=Wrong arguments for operation "%s!" (%s)
+commands.wdcs.caller.exception.operation=No Opeartion called "%s"!
+operations.base.desc=Base Operation
+operations.base.usage=/wdcs base
+operations.regenchunk.desc=Regenerate the chunk the player presently at.
+operations.regenchunl.usage=/wdcs regenchunk
