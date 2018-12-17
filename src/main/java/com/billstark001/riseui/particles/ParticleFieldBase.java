@@ -23,7 +23,7 @@ public abstract class ParticleFieldBase implements ITag{
 	public abstract void affect(ParticleGroup group);
 
 	@Override
-	public final void reactOn(BaseObject object) {
+	public final void callOnHandle(BaseObject object) {
 		affect((ParticleGroup) object);
 	}
 

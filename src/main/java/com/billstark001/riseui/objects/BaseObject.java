@@ -199,7 +199,7 @@ public class BaseObject{
 
 	public void handleTags() {
 		if (this == ROOT_OBJECT) return; 
-		for (int i = 0; i < tags.size(); ++i) tags.get(i).reactOn(this);
+		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnHandle(this);
 	}
 	
 	public static void printTree(BaseObject obj) {

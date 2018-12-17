@@ -18,7 +18,7 @@ public abstract class ParticleGeneratorBase implements ITag{
 	public abstract void generate(ParticleGroup group);
 
 	@Override
-	public final void reactOn(BaseObject object) {
+	public final void callOnHandle(BaseObject object) {
 		generate((ParticleGroup) object);
 	}
 

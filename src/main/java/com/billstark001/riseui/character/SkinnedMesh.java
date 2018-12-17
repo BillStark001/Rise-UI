@@ -1,6 +1,7 @@
 package com.billstark001.riseui.character;
 
 import com.billstark001.riseui.objects.BaseObject;
+import com.billstark001.riseui.objects.IRenderable;
 import com.billstark001.riseui.tags.ITag;
 
 public class SkinnedMesh implements ITag {
@@ -16,9 +17,15 @@ public class SkinnedMesh implements ITag {
 	}
 
 	@Override
-	public void reactOn(BaseObject object) {
+	public void callOnHandle(BaseObject object) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void callOnRender(IRenderable object) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

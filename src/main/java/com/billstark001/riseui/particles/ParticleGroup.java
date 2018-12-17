@@ -48,9 +48,9 @@ public class ParticleGroup extends BaseObject implements IRenderable {
 	public boolean removeForceField(ParticleFieldBase field) {return removeTag(field);}
 	
 	public void handleTags() {
-		for (int i = 0; i < gens.size(); ++i) gens.get(i).reactOn(this);
-		for (int i = 0; i < fields.size(); ++i) fields.get(i).reactOn(this);
-		for (int i = 0; i < tags.size(); ++i) tags.get(i).reactOn(this);
+		for (int i = 0; i < gens.size(); ++i) gens.get(i).callOnHandle(this);
+		for (int i = 0; i < fields.size(); ++i) fields.get(i).callOnHandle(this);
+		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnHandle(this);
 	}
 	
 	//Particles' operation for Tags

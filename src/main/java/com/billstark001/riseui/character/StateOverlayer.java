@@ -6,6 +6,7 @@ import java.util.List;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 import com.billstark001.riseui.objects.BaseObject;
+import com.billstark001.riseui.objects.IRenderable;
 import com.billstark001.riseui.tags.ITag;
 
 public class StateOverlayer implements ITag{
@@ -20,7 +21,12 @@ public class StateOverlayer implements ITag{
 		return false;
 	}
 	@Override
-	public void reactOn(BaseObject object) {
+	public void callOnHandle(BaseObject object) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void callOnRender(IRenderable object) {
 		// TODO Auto-generated method stub
 		
 	}
