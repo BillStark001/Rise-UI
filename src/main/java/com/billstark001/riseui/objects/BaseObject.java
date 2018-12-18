@@ -54,12 +54,12 @@ public class BaseObject{
 	
 	public BaseObject getParent() {return parent;}
 	public BaseObject getChild(int index) {return children.get(index);}
-	public BaseObject[] getChildren() {return (BaseObject[]) children.toArray();}
+	public BaseObject[] getChildren() {return children.toArray(new BaseObject[0]);}
 	
 	@Override
 	public String toString() {
-		String ans = "%s@%x: POS%s, ROT%s, SCALE%s";
-		ans = String.format(ans, this.getClass().getSimpleName(), this.hashCode(), pos.toString(), rot.toString(), scale.toString());
+		String ans = "%s@%x: LOCAL: POS%s, ROT%s, SCALE%s; GLOBAL: POS%s, ROT%s, SCALE%s";
+		ans = String.format(ans, this.getClass().getSimpleName(), this.hashCode(), pos.toString(), rot.toString(), scale.toString(), getGlobalPos().toString(), getGlobalRot().toString(), getGlobalScale().toString());
 		return ans;
 	}
 	
@@ -124,57 +124,167 @@ public class BaseObject{
 	}
 	
 	// Information Maintaining
+	
+	//Local Info. Getter & Setter
 
-	public Vector getPos() {return pos;}
+	public Vector getPos() {
+		//updateLocalInfo();
+		return pos;
+	}
+
+	public Quaternion getRot() {
+		//updateLocalInfo();
+		return rot;
+	}
+
+	public Vector getScale() {
+		//updateLocalInfo();
+		return scale;
+	}
+	
 	public void setPos(Vector pos) {
 		if (this == ROOT_OBJECT) return; 
 		this.pos = pos;
 		wpd = true;
+		updateGlobalInfo();
+		downgradeGlobalMark(0);
 	}
 
-	public Quaternion getRot() {return rot;}
 	public void setRot(Quaternion rot) {
 		if (this == ROOT_OBJECT)return;
 		this.rot = rot;
 		wrd = true;
+		updateGlobalInfo();
+		downgradeGlobalMark(1);
 	}
 
 	public void setRot(Vector rot) {
 		if (this == ROOT_OBJECT)return;
 		this.rot = Quaternion.eulerToQuat(rot);
 		wrd = true;
+		updateGlobalInfo();
+		downgradeGlobalMark(1);
 	}
-
-	public Vector getScale() {return scale;}
+	
 	public void setScale(Vector scale) {
 		if (this == ROOT_OBJECT)return;
 		this.scale = scale;
 		wsd = true;
+		updateGlobalInfo();
+		downgradeGlobalMark(2);
 	}
 
 	public void setScale(double scale) {
 		if (this == ROOT_OBJECT)return;
 		this.scale = new Vector(scale, scale, scale);
 		wsd = true;
+		updateGlobalInfo();
+		downgradeGlobalMark(2);
+	}
+	
+	// Global Info. Getter & Setter
+
+	public Vector getGlobalPos() {
+		updateGlobalInfo();
+		return wpos;
 	}
 
-	public Vector getGlobalPos() {return wpos;}
-	public Quaternion getGlobalRot() {return wrot;}
-	public Vector getGlobalScale() {return wscale;}
+	public Quaternion getGlobalRot() {
+		updateGlobalInfo();
+		return wrot;
+	}
+
+	public Vector getGlobalScale() {
+		updateGlobalInfo();
+		return wscale;
+	}
 	
+	public void setGlobalPos(Vector wpos) {
+		if (this == ROOT_OBJECT)return;
+		this.wpos = wpos;
+		pd = true;
+		updateLocalInfo();
+		downgradeGlobalMark(0);
+	}
+
+	public void setGlobalRot(Quaternion wrot) {
+		if (this == ROOT_OBJECT)return;
+		this.wrot = wrot;
+		rd = true;
+		updateLocalInfo();
+		downgradeGlobalMark(1);
+	}
+	
+	public void setGlobalRot(Vector wrot) {
+		if (this == ROOT_OBJECT)return;
+		this.wrot = Quaternion.eulerToQuat(wrot);
+		rd = true;
+		updateLocalInfo();
+		downgradeGlobalMark(1);
+	}
+
+	public void setGlobalScale(Vector wscale) {
+		if (this == ROOT_OBJECT)return;
+		this.wscale = wscale;
+		sd = true;
+		updateLocalInfo();
+		downgradeGlobalMark(2);
+	}
+	
+	public void setGlobalScale(double wscale) {
+		if (this == ROOT_OBJECT)return;
+		this.wscale = new Vector(wscale, wscale, wscale);
+		sd = true;
+		updateLocalInfo();
+		downgradeGlobalMark(2);
+	}
+	
+	public void offset(Vector v) {setPos(Utils.compOffset(pos, v));}
+	public void rotate(Quaternion q) {setRot(Utils.compRotate(rot, q));}
+	public void rotate(Vector v) {setRot(Utils.compRotate(rot, Quaternion.eulerToQuat(v)));}
+	public void zoom(Vector v) {setScale(Utils.compZoom(scale, v));}
+	public void zoom(double d) {setScale(Utils.compZoom(scale, new Vector(d, d, d)));}
+
 	protected void updateLocalInfo() {
-		scale = Utils.splitZoom(wscale, parent.wscale);
-		rot = Utils.splitRotate(wrot, parent.wrot);
-		pos = Utils.splitOffset(wpos, parent.wpos);
-		pos = pos.div(scale);
+		if (sd) scale = Utils.splitZoom(wscale, parent.wscale);
+		if (rd) rot = Utils.splitRotate(wrot, parent.wrot);
+		if (pd) {
+			pos = Utils.splitOffset(wpos, parent.wpos);
+			pos = pos.div(parent.scale);
+		}
 		pd = sd = rd = false;
 	}
 	
 	protected void updateGlobalInfo() {
-		if (wpd) wpos = Utils.compOffset(parent.wpos, pos.mult(scale));
-		if (wsd) wscale = Utils.compZoom(parent.wscale, scale);
-		if (wrd) wrot = Utils.compRotate(parent.wrot, rot);
+		if (wpd) wpos = Utils.compOffset(parent.getGlobalPos(), pos.mult(parent.getScale()));
+		if (wsd) wscale = Utils.compZoom(parent.getGlobalScale(), scale);
+		if (wrd) wrot = Utils.compRotate(parent.getGlobalRot(), rot);
 		wpd = wsd = wrd = false;
+	}
+	
+	private final int MARK_DIRTY_POS = 0;
+	private final int MARK_DIRTY_ROT = 1;
+	private final int MARK_DIRTY_SCALE = 2;
+	protected void downgradeGlobalMark(int type) {
+		switch (type) {
+		case 1:
+			for (BaseObject obj: children) {
+				obj.wpd = true;
+				obj.downgradeGlobalMark(1);
+			}
+			break;
+		case 2:
+			for (BaseObject obj: children) {
+				obj.wpd = true;
+				obj.downgradeGlobalMark(2);
+			}
+			break;
+		default:
+			for (BaseObject obj: children) {
+				obj.wpd = true;
+				obj.downgradeGlobalMark(0);
+			}
+		}
 	}
 	
 	// Handle Tags

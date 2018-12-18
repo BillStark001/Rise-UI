@@ -20,7 +20,7 @@ public class TowardsTarget implements ITag {
 	@Override
 	public void callOnHandle(BaseObject object) {
 		if (object instanceof ParticleGroup) {
-			for (Particle p: ((ParticleGroup) object).getParticles()) callOnHandle(p);
+			//for (Particle p: ((ParticleGroup) object).getParticles()) callOnHandle(p);
 			return;
 		}
 		// TODO Auto-generated method stub

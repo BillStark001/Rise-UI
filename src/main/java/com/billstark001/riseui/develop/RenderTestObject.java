@@ -2,6 +2,8 @@ package com.billstark001.riseui.develop;
 
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.objects.BaseObject;
+import com.billstark001.riseui.objects.PolygonGrid;
 import com.billstark001.riseui.objects.PolygonMesh;
 import com.billstark001.riseui.objects.Presets;
 import com.billstark001.riseui.resources.MtlFile;
@@ -18,7 +20,7 @@ public class RenderTestObject{
 	
 	private static long tstart = System.currentTimeMillis();
 	private static long tend;
-	private static final int DEFAULT_COLOR = 0x00FFFF;
+	
 	
 	private static ResourceLoader res = ResourceLoader.getInstance();
 	private static GlRenderHelper render = GlRenderHelper.getInstance();
@@ -28,6 +30,7 @@ public class RenderTestObject{
 	private static ObjFile t_obj;
 	private static MtlFile t_mtl;
 	private static PolygonMesh horse, cube, terrain;
+	private static PolygonGrid cube_;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
 	private static final ResourceLocation lmtl = new ResourceLocation("riseui:models/skh.mtl");
@@ -42,24 +45,35 @@ public class RenderTestObject{
 		horse = t_obj.genMesh("skh");
 		horse.setScale(0.01);
 		horse.setPos(new Vector(0, 0.5, 0));
-		horse.rasterize();
+		//horse.rasterize();
 		horse.compileList();
+		System.out.println(horse);
 		
 		render.assignMtlFile(null);
-		cube = Presets.getMesh("cube");
+		cube = Presets.getMesh("sphere_low_lod");
 		cube.setScale(0.5);
 		cube.setPos(new Vector(0, 2.5, 0));
-		cube.rasterize();
+		//cube.rasterize();
 		cube.compileList();
+		System.out.println(cube);
+		
+		cube_ = Presets.getGrid("sphere_low_lod");
+		cube_.setScale(0.5);
+		cube_.setPos(new Vector(0, 2.5, 0));
+		//cube_.rasterize();
+		cube_.compileList();
 		
 		terrain = Presets.getMesh("terrain_high_lod");
-		terrain.setScale(new Vector(5, 1, 5));
+		terrain.setScale(new Vector(3, 1, 3));
 		terrain.setPos(new Vector(0, 0.5, 0));
-		terrain.rasterize();
+		//terrain.rasterize();
 		terrain.compileList();
+		System.out.println(terrain);
 		
+		//cube_.setParent(horse);
 		cube.setParent(horse);
 		horse.setParent(terrain);
+		BaseObject.printTree(terrain);
 		
 	}
 	
@@ -69,10 +83,18 @@ public class RenderTestObject{
 		
 		tend = System.currentTimeMillis() - tstart;
 		
-		render.renderObject(terrain);
+		if (DevelopProxy.mark1)
+			render.renderObject(terrain);
+		else {
+			render.renderCompiled(terrain);
+			render.renderCompiled(horse);
+			render.renderCompiled(cube);
+		}
 		
 		GlStateManager.popMatrix();
 		
+	}	
+	
 		/*
 		//Something done first
 		GL11.glPushMatrix();
@@ -134,7 +156,7 @@ public class RenderTestObject{
 		GL11.glPopMatrix();
 		*/
 
-	}
+	
 	/*
 	private static void drawTest() {
 		me.assignTex(b1, m1);

@@ -29,7 +29,17 @@ public final class Utils {
 	}
 	
 	public static Quaternion compRotate(Quaternion rot1, Quaternion rot2) {
-		return rot1.mult(rot2);
+		Quaternion ans;
+		if (rot1.isAxisAndAngle()) {
+			if (!rot2.isAxisAndAngle()) rot2 = Quaternion.reverseAxisRotate(rot2);
+			Vector it;
+			it = rot1.getImaginary().normalize().mult(rot1.getReal()).mult(rot2.getImaginary().normalize().mult(rot2.getReal()));
+			ans = Quaternion.AxisAndAngle(it, it.getLength());
+		} else {
+			if (rot2.isAxisAndAngle()) rot2 = Quaternion.axisRotate(rot2.getImaginary(), rot2.getReal());
+			ans = rot1.mult(rot2);
+		}
+		return ans;
 	}
 	
 	public static Quaternion splitRotate(Quaternion rot1, Quaternion rot2) {

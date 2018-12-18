@@ -32,13 +32,13 @@ public class ClientProxy extends CommonProxy {
 		super.init(event);
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(DevelopProxy.getInstance());
-		DevelopProxy.getInstance().CallInit(event);
-	}
+	}	
 
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
-		Presets.loadPresets();
 		super.postInit(event);
+		Presets.loadPresets();
+		DevelopProxy.getInstance().CallInit(event);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

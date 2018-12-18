@@ -12,6 +12,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
@@ -25,6 +26,7 @@ public class DevelopProxy {
 	public static final KeyBinding TEST = new KeyBinding("Test", Keyboard.KEY_J, "Rise UI");
 	
 	public static boolean isStarted=false;
+	public static boolean mark1 = false;
 	public static boolean renderGrid=true;
 	public static boolean renderMob=true;
 	public static boolean renderOre=true;
@@ -34,7 +36,7 @@ public class DevelopProxy {
 	private static final DevelopProxy INSTANCE = new DevelopProxy();
 	public static DevelopProxy getInstance() {return INSTANCE;}
 	
-	public void CallInit(FMLInitializationEvent event) {
+	public void CallInit(FMLPostInitializationEvent event) {
 		ClientRegistry.registerKeyBinding(TOGGLE_RENDER);
     	ClientRegistry.registerKeyBinding(TOGGLE_GRID);
     	ClientRegistry.registerKeyBinding(TOGGLE_MOB);
@@ -82,6 +84,7 @@ public class DevelopProxy {
    		EntityPlayer player = Minecraft.getMinecraft().player;
    		World world=Minecraft.getMinecraft().world;
    		if(TEST.isPressed()){
+   			mark1 = !mark1;
    			speakToPlayer(player, Integer.toString(player.getHeldItem(EnumHand.MAIN_HAND).getRepairCost()));
    		}
    	}

@@ -30,6 +30,8 @@ public class GlRenderHelper {
 	private final Tessellator T;
 	private final BufferBuilder R;
 	private final TextureManager M;
+	
+	public static final int DEFAULT_COLOR = 0x00FFFF;
 
 	private MtlFile mtl;
 	private int r, g, b, a;
@@ -40,7 +42,8 @@ public class GlRenderHelper {
 		this.T = T;
 		this.R = R;
 		this.M = M;
-		r = g = b = a = 255;
+		setColor(DEFAULT_COLOR);
+		setAlpha(0.6);
 		mtl = MtlFile.getDefault();
 	}
 	public static GlRenderHelper getInstance() {return INSTANCE;}
@@ -147,12 +150,17 @@ public class GlRenderHelper {
 		q = Quaternion.reverseAxisRotate(obj.getRot());
 		r = q.getImaginary();
 		s = obj.getScale();
+		
 		GL11.glPushMatrix();
+		
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
 		GL11.glRotated(q.getReal(), r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
-		for (BaseObject o: obj.getChildren()) renderObject(o);
-		GL11.glPopMatrix();
+		
 		if (obj instanceof IRenderable) ((IRenderable) obj).render();
+		for (BaseObject o: obj.getChildren()) renderObject(o);
+		
+		GL11.glPopMatrix();
+		
 	}
 }

@@ -4,7 +4,11 @@ public final class Quaternion {
 	
 	private final double real;
 	private final Vector imaginary;
+	private boolean axis = false;
 	
+	public boolean isAxisAndAngle() {return axis;}
+	private void setAxis(boolean axis) {this.axis = axis;}
+
 	public Quaternion () {
 		real = 0;
 		imaginary = new Vector(0, 0, 0);
@@ -134,6 +138,13 @@ public final class Quaternion {
 		return eulerToRotate(v);
 	}
 	
+	public static Quaternion AxisAndAngle(Vector axis, double angle) {
+		axis = axis.normalize();
+		Quaternion ans = new Quaternion(angle, axis);
+		ans.setAxis(true);
+		return ans;
+	}
+	
 	public static Quaternion axisRotate(Vector axis, double angle) {
 		axis = axis.normalize();
 		return new Quaternion(Math.cos(angle), axis.mult(Math.sin(angle)));
@@ -142,7 +153,8 @@ public final class Quaternion {
 	public static Quaternion reverseAxisRotate(Quaternion q) {
 		double angle = Math.asin(q.getImaginary().getLength());
 		if (q.getReal() < 0) angle = Math.PI - angle;
-		return new Quaternion(angle, q.getImaginary().normalize());
+		Quaternion ans =  Quaternion.AxisAndAngle(q.getImaginary().normalize(), angle);
+		return ans;
 	}
 	
 }

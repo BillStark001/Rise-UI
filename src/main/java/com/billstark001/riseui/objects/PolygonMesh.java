@@ -108,15 +108,20 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public void setRot(Quaternion v) {super.setRot(v); this.markRecompile();}
 	public void setScale(Vector v) {super.setScale(v); this.markRecompile();}
 	public void setScale(double v) {super.setScale(v); this.markRecompile();}
-
-	public void offset(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
+	public void offset(Vector v) {super.offset(v); this.markRecompile();}
+	public void rotate(Quaternion q) {super.rotate(q); this.markRecompile();}
+	public void rotate(Vector v) {super.rotate(v); this.markRecompile();}
+	public void zoom(Vector v) {super.zoom(v); this.markRecompile();}
+	public void zoom(double d) {super.zoom(d); this.markRecompile();}
 	
-	public void zoom(Vector v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
-	public void zoom(double v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
+	private void offsetMesh(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
 	
-	public void rotate(Quaternion q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	public void rotate(Vector q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	public void rotate(Matrix q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void zoomMesh(Vector v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
+	private void zoomMesh(double v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
+	
+	private void rotateMesh(Quaternion q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void rotateMesh(Vector q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void rotateMesh(Matrix q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
 
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
@@ -148,12 +153,13 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public int getDisplayList() {return this.displayList;}
 	
 	public void rasterize() {
-		rotate(rot);
-		zoom(scale);
-		offset(pos);
-		this.pos = new Vector(0, 0, 0);
-		this.rot = Quaternion.UNIT;
-		this.scale = new Vector(1, 1, 1);
+		rotateMesh(rot);
+		zoomMesh(scale);
+		offsetMesh(pos);
+		setPos(new Vector(0, 0, 0));
+		setRot(Quaternion.UNIT);
+		setScale(new Vector(1, 1, 1));
+		//updateGlobalInfo();
 		calcRender();
 	}
 	

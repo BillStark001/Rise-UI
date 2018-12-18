@@ -72,15 +72,20 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public void setRot(Quaternion v) {super.setRot(v); this.markRecompile();}
 	public void setScale(Vector v) {super.setScale(v); this.markRecompile();}
 	public void setScale(double v) {super.setScale(v); this.markRecompile();}
+	public void offset(Vector v) {super.offset(v); this.markRecompile();}
+	public void rotate(Quaternion q) {super.rotate(q); this.markRecompile();}
+	public void rotate(Vector v) {super.rotate(v); this.markRecompile();}
+	public void zoom(Vector v) {super.zoom(v); this.markRecompile();}
+	public void zoom(double d) {super.zoom(d); this.markRecompile();}
 	
-	public void offset(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
+	private void offsetGrid(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
 	
-	public void zoom(Vector v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
-	public void zoom(double v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
+	private void zoomGrid(Vector v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
+	private void zoomGrid(double v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
 	
-	public void rotate(Quaternion q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
-	public void rotate(Vector q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
-	public void rotate(Matrix q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
+	private void rotateGrid(Quaternion q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
+	private void rotateGrid(Vector q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
+	private void rotateGrid(Matrix q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
 
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
@@ -107,12 +112,12 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public int getDisplayList() {return this.displayList;}
 	
 	public void rasterize() {
-		rotate(rot);
-		zoom(scale);
-		offset(pos);
-		this.pos = new Vector(0, 0, 0);
-		this.rot = Quaternion.UNIT;
-		this.scale = new Vector(1, 1, 1);
+		rotateGrid(rot);
+		zoomGrid(scale);
+		offsetGrid(pos);
+		setPos(new Vector(0, 0, 0));
+		setRot(Quaternion.UNIT);
+		setScale(new Vector(1, 1, 1));
 		calcRender();
 	}
 	

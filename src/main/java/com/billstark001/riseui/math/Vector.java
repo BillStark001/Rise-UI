@@ -35,6 +35,14 @@ public final class Vector {
 		this.length = calcLength(elements);
 	}
 	
+	public Vector(double d, int dim, boolean demix) {
+		this.dim = dim;
+		double[] d_ = new double[dim];
+		for (int i = 0; i < dim; ++i) d_[i] = d;
+		elements = d_;
+		this.length = calcLength(elements);
+	}
+	
 	public Vector(Vector v) {
 		this(v.elements);
 	}
