@@ -26,7 +26,7 @@ public class DevelopProxy {
 	public static final KeyBinding TEST = new KeyBinding("Test", Keyboard.KEY_J, "Rise UI");
 	
 	public static boolean isStarted=false;
-	public static boolean mark1 = false;
+	public static int mark1 = 0;
 	public static boolean renderGrid=true;
 	public static boolean renderMob=true;
 	public static boolean renderOre=true;
@@ -84,7 +84,8 @@ public class DevelopProxy {
    		EntityPlayer player = Minecraft.getMinecraft().player;
    		World world=Minecraft.getMinecraft().world;
    		if(TEST.isPressed()){
-   			mark1 = !mark1;
+   			mark1 += 1;
+   			mark1 %= 3;
    			speakToPlayer(player, Integer.toString(player.getHeldItem(EnumHand.MAIN_HAND).getRepairCost()));
    		}
    	}

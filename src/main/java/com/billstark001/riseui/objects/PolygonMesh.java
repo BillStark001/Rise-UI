@@ -126,14 +126,15 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
 	
-	public void calcRender() {		
+	public void calcRender() {	
+		
+		vr = Utils.zoom(vertex, scale);
+		nr = Utils.zoom(normal, scale);
+		
 		vr = Utils.rotate(vr, rot);
-		nr = Utils.rotate(normal, rot);
+		nr = Utils.rotate(nr, rot);
 		
-		vr = Utils.zoom(vr, scale);
-		nr = Utils.zoom(nr, scale);
-		
-		vr = Utils.offset(vertex, pos);
+		vr = Utils.offset(vr, pos);
 		
 		this.markRecompile();
 	}
@@ -153,8 +154,8 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public int getDisplayList() {return this.displayList;}
 	
 	public void rasterize() {
-		rotateMesh(rot);
 		zoomMesh(scale);
+		rotateMesh(rot);
 		offsetMesh(pos);
 		setPos(new Vector(0, 0, 0));
 		setRot(Quaternion.UNIT);

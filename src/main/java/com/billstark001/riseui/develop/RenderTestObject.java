@@ -1,6 +1,7 @@
 package com.billstark001.riseui.develop;
 
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 import com.billstark001.riseui.objects.BaseObject;
 import com.billstark001.riseui.objects.PolygonGrid;
@@ -29,7 +30,7 @@ public class RenderTestObject{
 	
 	private static ObjFile t_obj;
 	private static MtlFile t_mtl;
-	private static PolygonMesh horse, cube, terrain;
+	private static PolygonMesh horse, sphere, cube;
 	private static PolygonGrid cube_;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
@@ -44,18 +45,20 @@ public class RenderTestObject{
 		render.assignMtlFile(t_mtl);
 		horse = t_obj.genMesh("skh");
 		horse.setScale(0.01);
+		horse.rasterize();
 		horse.setPos(new Vector(0, 0.5, 0));
 		//horse.rasterize();
 		horse.compileList();
-		System.out.println(horse);
+		//System.out.println(horse);
 		
 		render.assignMtlFile(null);
-		cube = Presets.getMesh("sphere_low_lod");
-		cube.setScale(0.5);
-		cube.setPos(new Vector(0, 2.5, 0));
+		sphere = Presets.getMesh("sphere_low_lod");
+		sphere.setScale(0.5);
+		sphere.rasterize();
+		sphere.setPos(new Vector(0, 2.5, 0));
 		//cube.rasterize();
-		cube.compileList();
-		System.out.println(cube);
+		sphere.compileList();
+		//System.out.println(cube);
 		
 		cube_ = Presets.getGrid("sphere_low_lod");
 		cube_.setScale(0.5);
@@ -63,17 +66,19 @@ public class RenderTestObject{
 		//cube_.rasterize();
 		cube_.compileList();
 		
-		terrain = Presets.getMesh("terrain_high_lod");
-		terrain.setScale(new Vector(3, 1, 3));
-		terrain.setPos(new Vector(0, 0.5, 0));
+		cube = Presets.getMesh("sphere_high_lod");
+		cube.setScale(new Vector(3, 1, 3));
+		cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();
-		terrain.compileList();
-		System.out.println(terrain);
+		//cube.setPos(new Vector(0, 0.5, 0));
+		//terrain.rasterize();
+		cube.compileList();
+		//System.out.println(terrain);
 		
 		//cube_.setParent(horse);
-		cube.setParent(horse);
-		horse.setParent(terrain);
-		BaseObject.printTree(terrain);
+		sphere.setParent(horse);
+		horse.setParent(cube);
+		BaseObject.printTree(cube);
 		
 	}
 	
@@ -82,14 +87,17 @@ public class RenderTestObject{
 		GlStateManager.pushMatrix();
 		
 		tend = System.currentTimeMillis() - tstart;
+		cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
 		
-		if (DevelopProxy.mark1)
-			render.renderObject(terrain);
-		else {
-			render.renderCompiled(terrain);
-			render.renderCompiled(horse);
+		if (DevelopProxy.mark1 == 1)
+			render.renderObject(cube);
+		else if (DevelopProxy.mark1 == 2) 
 			render.renderCompiled(cube);
-		}
+		else
+			render.renderMesh(cube);
+			//render.renderCompiled(horse);
+			//render.renderCompiled(cube);
+
 		
 		GlStateManager.popMatrix();
 		
