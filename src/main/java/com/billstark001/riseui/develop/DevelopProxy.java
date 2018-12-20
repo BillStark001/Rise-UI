@@ -86,7 +86,7 @@ public class DevelopProxy {
    		if(TEST.isPressed()){
    			mark1 += 1;
    			mark1 %= 3;
-   			speakToPlayer(player, Integer.toString(player.getHeldItem(EnumHand.MAIN_HAND).getRepairCost()));
+   			speakToPlayer(player, Integer.toString(this.mark1));
    		}
    	}
 	

@@ -53,6 +53,12 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public PolygonGrid(PolygonGrid m) {
 		this(m.vertex, m.segindex, m.looped);
 	}
+	
+	@Override
+	public boolean setParent(BaseObject obj) {
+		this.markRecompile();
+		return super.setParent(obj);
+	}
 
 	public int getSegmentCount () {return segindex.length;}
 	
@@ -91,9 +97,9 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public void markRecompile() {this.compiled = false;}
 	
 	public void calcRender() {
-		vr = Utils.offset(vertex, pos);
+		vr = Utils.zoom(vertex, scale);
 		vr = Utils.rotate(vr, rot);
-		vr = Utils.zoom(vr, scale);
+		vr = Utils.offset(vr, pos);
 		this.markRecompile();
 	}
 	
@@ -112,8 +118,8 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public int getDisplayList() {return this.displayList;}
 	
 	public void rasterize() {
-		rotateGrid(rot);
 		zoomGrid(scale);
+		rotateGrid(rot);
 		offsetGrid(pos);
 		setPos(new Vector(0, 0, 0));
 		setRot(Quaternion.UNIT);

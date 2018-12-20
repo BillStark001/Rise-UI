@@ -154,7 +154,7 @@ public class GlRenderHelper {
 		GL11.glPushMatrix();
 		if (obj instanceof IRenderable) ((IRenderable) obj).render();
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
-		GL11.glRotated(q.getReal(), r.get(0), r.get(1), r.get(2));
+		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
 		for (BaseObject o: obj.getChildren()) renderObject(o);
 		GL11.glPopMatrix();

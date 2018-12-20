@@ -1,23 +1,15 @@
 package com.billstark001.riseui.objects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.client.GlRenderHelper;
-import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 
 public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, IRenderable{
 	
@@ -61,6 +53,12 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	}
 	
 	public int getFaceCount () {return findex.length;}
+	
+	@Override
+	public boolean setParent(BaseObject obj) {
+		this.markRecompile();
+		return super.setParent(obj);
+	}
 	
 	private int[] face (int index) {
 		int[] ans = {0, findex.length};
@@ -169,6 +167,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	}
 
 	public void render() {
+		//GlRenderHelper.getInstance().renderMesh(this);
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	

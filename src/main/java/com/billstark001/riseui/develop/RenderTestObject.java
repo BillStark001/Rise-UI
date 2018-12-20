@@ -89,15 +89,17 @@ public class RenderTestObject{
 		tend = System.currentTimeMillis() - tstart;
 		cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
 		
+		render.renderObject(cube);
+		/*
 		if (DevelopProxy.mark1 == 1)
-			render.renderObject(cube);
+			
 		else if (DevelopProxy.mark1 == 2) 
 			render.renderCompiled(cube);
 		else
 			render.renderMesh(cube);
 			//render.renderCompiled(horse);
 			//render.renderCompiled(cube);
-
+		*/
 		
 		GlStateManager.popMatrix();
 		
