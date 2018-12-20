@@ -1,5 +1,7 @@
 package com.billstark001.riseui.develop;
 
+import org.lwjgl.opengl.GL11;
+
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
@@ -60,9 +62,9 @@ public class RenderTestObject{
 		sphere.compileList();
 		//System.out.println(cube);
 		
-		cube_ = Presets.getGrid("sphere_low_lod");
-		cube_.setScale(0.5);
-		cube_.setPos(new Vector(0, 2.5, 0));
+		cube_ = t_obj.genGrid("skh");
+		cube_.setScale(0.005);
+		cube_.setPos(new Vector(0, 5, 0));
 		//cube_.rasterize();
 		cube_.compileList();
 		
@@ -88,8 +90,10 @@ public class RenderTestObject{
 		
 		//tend = System.currentTimeMillis() - tstart;
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
-		
+		//render.renderGrid(cube_);
 		render.renderObject(cube);
+		//GL11.glTranslated(0, 5, 0);
+		//render.renderGrid(cube_);
 		//render.renderObject(sphere);
 		/*
 		if (DevelopProxy.mark1 == 1)

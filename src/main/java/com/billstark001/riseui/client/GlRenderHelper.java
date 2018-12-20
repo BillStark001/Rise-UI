@@ -43,7 +43,7 @@ public class GlRenderHelper {
 		this.R = R;
 		this.M = M;
 		setColor(DEFAULT_COLOR);
-		setAlpha(0.6);
+		setAlpha(0.5);
 		mtl = MtlFile.getDefault();
 	}
 	public static GlRenderHelper getInstance() {return INSTANCE;}
@@ -72,12 +72,14 @@ public class GlRenderHelper {
 	public void setColor(int c) {this.r = c >> 16 & 255; this.g = c >> 8 & 255; this.b = c & 255;}	
 
 	public void setAlpha(int a) {this.a = a;}
-	public void setAlpha(double a) {this.a =(int) a * 255;}
-	public void setAlpha(float a) {this.a =(int) a * 255;}
+	public void setAlpha(double a) {this.a = (int) (a * 255);}
+	public void setAlpha(float a) {this.a = (int) (a * 255F);}
 
 	public void setColor(int color, int alpha) {setColor(color); setAlpha(alpha);}
 	public void setColor(int color, double alpha) {setColor(color); setAlpha(alpha);}
 	public void setColor(int color, float alpha) {setColor(color); setAlpha(alpha);}
+	
+	public void setLineWidth(double width) {GL11.glLineWidth((float) width);}
 	
 	//State Management
 	
@@ -87,6 +89,7 @@ public class GlRenderHelper {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        setLineWidth(1.5);
 	}
 	
 	public void disableGridState() {
@@ -125,15 +128,17 @@ public class GlRenderHelper {
 		}
 	}
 
-	public void renderGrid(IGridable mesh) {
-		for (int i = 0; i < mesh.getSegmentCount(); ++i){
-			Matrix v_ = mesh.getSegmentByIndex(i);
-			startDrawingGrid(mesh.getSegmentLooped(i));
+	public void renderGrid(IGridable grid) {
+		enableGridState();
+		for (int i = 0; i < grid.getSegmentCount(); ++i){
+			Matrix v_ = grid.getSegmentByIndex(i);
+			startDrawingGrid(grid.getSegmentLooped(i));
 			for (Vector v: v_.toVecArray()) {
 				addVertex(InteractUtils.transVec(v));
 			}
 			endDrawing();
 		}
+		disableGridState();
 	}
 
 	public void renderCompiled(ICompilable obj) {
