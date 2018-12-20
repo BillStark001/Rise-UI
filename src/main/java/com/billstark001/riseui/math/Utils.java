@@ -111,8 +111,7 @@ public final class Utils {
 	public static Matrix rotate(Matrix m, Quaternion q) {
 		if (m == null)
 			return null;
-		Vector v = Quaternion.quatToEuler(q);
-		Matrix r = Quaternion.eulerToRotate(v);
+		Matrix r = Quaternion.quatToRotate(q);
 		return m.mult(r);
 	}
 
