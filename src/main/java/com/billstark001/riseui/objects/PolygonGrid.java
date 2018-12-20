@@ -78,6 +78,11 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public void setRot(Quaternion v) {super.setRot(v); this.markRecompile();}
 	public void setScale(Vector v) {super.setScale(v); this.markRecompile();}
 	public void setScale(double v) {super.setScale(v); this.markRecompile();}
+	public void setGlobalPos(Vector v) {super.setGlobalPos(v); this.markRecompile();}
+	public void setGlobalRot(Vector v) {super.setGlobalRot(v); this.markRecompile();}
+	public void setGlobalRot(Quaternion v) {super.setGlobalRot(v); this.markRecompile();}
+	public void setGlobalScale(Vector v) {super.setGlobalScale(v); this.markRecompile();}
+	public void setGlobalScale(double v) {super.setGlobalScale(v); this.markRecompile();}
 	public void offset(Vector v) {super.offset(v); this.markRecompile();}
 	public void rotate(Quaternion q) {super.rotate(q); this.markRecompile();}
 	public void rotate(Vector v) {super.rotate(v); this.markRecompile();}

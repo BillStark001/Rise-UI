@@ -68,15 +68,15 @@ public class RenderTestObject{
 		
 		cube = Presets.getMesh("sphere_high_lod");
 		cube.setScale(new Vector(3, 1, 3));
-		cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
+		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();
 		//cube.setPos(new Vector(0, 0.5, 0));
 		//terrain.rasterize();
 		cube.compileList();
 		//System.out.println(terrain);
 		
-		//cube_.setParent(horse);
-		sphere.setParent(horse);
+		cube_.setParent(horse);
+		sphere.setParent(cube);
 		horse.setParent(cube);
 		BaseObject.printTree(cube);
 		
@@ -86,10 +86,11 @@ public class RenderTestObject{
 		
 		GlStateManager.pushMatrix();
 		
-		tend = System.currentTimeMillis() - tstart;
-		cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
+		//tend = System.currentTimeMillis() - tstart;
+		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
 		
 		render.renderObject(cube);
+		//render.renderObject(sphere);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			
