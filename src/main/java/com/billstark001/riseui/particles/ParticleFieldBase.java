@@ -1,6 +1,7 @@
 package com.billstark001.riseui.particles;
 
 import com.billstark001.riseui.objects.BaseObject;
+import com.billstark001.riseui.objects.ITickable;
 import com.billstark001.riseui.tags.ITag;
 
 public abstract class ParticleFieldBase implements ITag{
@@ -23,7 +24,7 @@ public abstract class ParticleFieldBase implements ITag{
 	public abstract void affect(ParticleGroup group);
 
 	@Override
-	public final void callOnHandle(BaseObject object) {
+	public final void callOnTick(ITickable object) {
 		affect((ParticleGroup) object);
 	}
 

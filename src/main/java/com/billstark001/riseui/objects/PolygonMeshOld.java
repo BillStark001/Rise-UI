@@ -1,48 +1,42 @@
 package com.billstark001.riseui.objects;
 
-import java.util.Arrays;
-
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.client.GlRenderHelper;
-import com.billstark001.riseui.material.BaseMaterial;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, IRenderable{
+public class PolygonMeshOld extends BaseObject implements ICompilable, IRenderable{
 	
-	private Triad[] vertices;
-	private BaseMaterial[] mindex;
+	private String[] mindex;
 	private int[] findex;
 	
-	private Matrix vpos;
-	private Matrix texuv;
+	private Matrix vertex;
+	private Matrix uv;
 	private Matrix normal;
 	
 	private Matrix vr;
-	private Matrix tr;
+	private Matrix ur;
 	private Matrix nr;
 	
 	private boolean compiled;
 	private int displayList;
 	
-	public PolygonMesh (Matrix pos, Matrix uv, Matrix normal, Triad[] vertices, int[] endindex, BaseMaterial[] mats) {
+	public PolygonMeshOld (Matrix vertex, Matrix uv, Matrix normal, int[] endindex, String[] matindex) {
 		
 		this.compiled = false;
 		this.displayList = -1;
 		
-		this.mindex = mats;
+		this.mindex = matindex;
 		this.findex = endindex;
-		this.vertices = vertices;
-		this.vpos = pos;
-		this.texuv = uv;
-		this.tr = uv;
+		this.vertex = vertex;
+		this.uv = uv;
+		this.ur = uv;
 		this.normal = normal;
 		this.pos = new Vector(0, 0, 0);
 		this.rot = Quaternion.UNIT;
@@ -50,8 +44,12 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		calcRender();
 	}
 	
-	public PolygonMesh(PolygonMesh m) {
-		this(m.vpos, m.texuv, m.normal, m.vertices, m.findex, m.mindex);
+	public PolygonMeshOld(Matrix vertex) {
+		this(vertex, null, null, null, null);
+	}
+	
+	public PolygonMeshOld(PolygonMeshOld m) {
+		this(m.vertex, m.uv, m.normal, m.findex, m.mindex);
 	}
 	
 	public int getFaceCount () {return findex.length;}
@@ -69,16 +67,39 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		return ans;
 	}
 	
-	public Triad[] getFace(int index) {
-		int[] f = face(index);
-		Triad[] ans = new Triad[f[1] - f[0]];
-		for (int i = f[0]; i < f[1]; ++i) ans[i - f[0]] = vertices[i];
-		return ans;
-	}
+	public Matrix getFaceVertex (int index) {if (vr != null) return vr.getLines(face(index)[0], face(index)[1]); else return null;}
 	
-	public Vector getVertex(int index) {if (vpos != null) return vr.getLine(index); else return new Vector(0, 0, 0);}
-	public Vector getNormal(int index) {if (normal != null) return nr.getLine(index); else return null;}
-	public Vector getUVMap(int index) {if (texuv != null) return tr.getLine(index); else return new Vector(0, 0, 0);}
+	public Matrix getFaceUVMap(int index) {
+		if (ur != null)
+			return ur.getLines(face(index)[0], face(index)[1]);
+		else {
+			int length = face(index)[1] - face(index)[0];
+			if (length == 3) {
+				double[][] dt = {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}};
+				return new Matrix(dt);
+			} else if (length == 4) {
+				double[][] dt = {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}};
+				return new Matrix(dt);
+			} else return new Matrix(Vector.Zeros(3), length);
+		}
+			
+	}
+
+	public Matrix getFaceNormal(int index) {
+		if (nr != null)
+			return nr.getLines(face(index)[0], face(index)[1]);
+		else {
+			int length = face(index)[1] - face(index)[0];
+			Vector[] vt = new Vector[length];
+			Matrix vertex = getFaceVertex(index);
+			if (vertex == null) return null;
+			vt[0] = (vertex.getLine(length - 1).cross(vertex.getLine(0))).normalize();
+			for(int i = 1; i < length; ++i) {
+				vt[i] = (vertex.getLine(i - 1).cross(vertex.getLine(i))).normalize();
+			}
+			return new Matrix(vt);
+		}
+	}
 	
 	public void setPos(Vector v) {super.setPos(v); this.markRecompile();}
 	public void setRot(Vector v) {super.setRot(v); this.markRecompile();}
@@ -96,21 +117,21 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public void zoom(Vector v) {super.zoom(v); this.markRecompile();}
 	public void zoom(double d) {super.zoom(d); this.markRecompile();}
 	
-	private void offsetMesh(Vector v) {vpos = Utils.offset(vpos, v); this.markRecompile();}
+	private void offsetMesh(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
 	
-	private void zoomMesh(Vector v) {vpos = Utils.zoom(vpos, v); normal = Utils.zoom(normal, v); this.markRecompile();}
-	private void zoomMesh(double v) {vpos = Utils.zoom(vpos, v); normal = Utils.zoom(normal, v); this.markRecompile();}
+	private void zoomMesh(Vector v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
+	private void zoomMesh(double v) {vertex = Utils.zoom(vertex, v); normal = Utils.zoom(normal, v); this.markRecompile();}
 	
-	private void rotateMesh(Quaternion q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	private void rotateMesh(Vector q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	private void rotateMesh(Matrix q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void rotateMesh(Quaternion q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void rotateMesh(Vector q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	private void rotateMesh(Matrix q) {vertex = Utils.rotate(vertex, q); normal = Utils.rotate(normal, q); this.markRecompile();}
 
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
 	
 	public void calcRender() {	
 		
-		vr = Utils.zoom(vpos, scale);
+		vr = Utils.zoom(vertex, scale);
 		nr = Utils.zoom(normal, scale);
 		
 		vr = Utils.rotate(vr, rot);
@@ -127,7 +148,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		
 		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
         GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);
-        GlRenderHelper.getInstance().renderMesh(this);
+        //GlRenderHelper.getInstance().renderMesh(this);
         GlStateManager.glEndList();
         
         this.compiled = true;
@@ -146,7 +167,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		calcRender();
 	}
 	
-	public BaseMaterial getMaterial(int index) {
+	public String getMaterial(int index) {
 		return mindex[index];
 	}
 
@@ -156,7 +177,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	}
 	
 	public void generateGrid() {
-		PolygonGrid g = new PolygonGrid(vpos, findex, null);
+		PolygonGrid g = new PolygonGrid(vertex, findex, null);
 		g.setPos(getPos());
 		g.setRot(getRot());
 		g.setScale(getScale());

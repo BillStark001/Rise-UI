@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ResourceLoader implements IResourceManagerReloadListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String MISSING_RES = "";
+    public static final String MISSING_RES = "";
     public static final ResourceLocation RESOURCE_LOCATION_EMPTY = new ResourceLocation("");
     
     private final Map<ResourceLocation, String> mapRes = Maps.<ResourceLocation, String>newHashMap();
@@ -92,7 +92,7 @@ public class ResourceLoader implements IResourceManagerReloadListener
 
         while (iterator.hasNext())
         {
-            Entry<ResourceLocation, String> entry = (Entry)iterator.next();
+            Entry<ResourceLocation, String> entry = iterator.next();
             bar.step(entry.getKey().toString());
             String s = entry.getValue();
 

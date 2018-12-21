@@ -1,5 +1,7 @@
 package com.billstark001.riseui.math;
 
+import java.util.AbstractCollection;
+
 public final class Matrix {
 	
 	private final Pair size;
@@ -8,10 +10,9 @@ public final class Matrix {
 	//x lines y columns
 	
 	public Matrix(Pair size) {
-		if(!size.isDouble())this.size = size;
-		else this.size = new Pair((Integer)size.getX(), (Integer)size.getY());
-		this.x = (Integer) size.getX();
-		this.y = (Integer) size.getY();
+		this.size = size;
+		this.x = size.getX();
+		this.y = size.getY();
 		elements = new Vector[x];
 		for(int i = 0; i < x; ++i) {
 			elements[i] = Vector.Zeros(y);
@@ -36,7 +37,20 @@ public final class Matrix {
 		this.elements = new Vector[x];
 		for(int i = 0; i < x; ++i) {
 			if(elements[i].getDimension() != y)elements[i] = elements[i].concatenate(new double[y - elements[i].getDimension()]);
-			this.elements[i] = new Vector(elements[i]);
+			this.elements[i] = elements[i];
+		}
+	}
+	
+	public Matrix(AbstractCollection<Vector> elements) {
+		x = elements.size();
+		int y = 0; for (Vector v: elements) y = Math.max(y, v.getDimension()); this.y = y;
+		size = new Pair(x, y);
+		this.elements = new Vector[x];
+		int i = 0;
+		for (Vector v: elements){
+			if(v.getDimension() != y) v = v.concatenate(new double[y - v.getDimension()]);
+			this.elements[i] = v;
+			++i;
 		}
 	}
 	
@@ -88,7 +102,7 @@ public final class Matrix {
 	public final Matrix concatenate(Matrix M, boolean LineWise) {
 		Vector[] temp;
 		if(LineWise){
-			if(!size.getX().equals(M.size.getX()))
+			if(!(size.getX() == M.size.getX()))
 				try {
 					throw new Exception("Can't concatenate matrices of " + size + " and " + M.size + ".");
 				} catch (Exception e) {
@@ -98,7 +112,7 @@ public final class Matrix {
 			temp = new Vector[x];
 			for(int i = 0; i < x; ++i) temp[i] = elements[i].concatenate(M.getLine(i));
 		} else {
-			if(!size.getY().equals(M.size.getY()))
+			if(!(size.getY() == M.size.getY()))
 				try {
 					throw new Exception("Can't concatenate matrices of " + size + " and " + M.size + ".");
 				} catch (Exception e) {
@@ -175,7 +189,7 @@ public final class Matrix {
 	
 	public static boolean compareSize(Matrix m1, Matrix m2, boolean isMult) {
 		if(isMult) {
-			if(m1.size.getY().equals(m2.size.getX())) return true;
+			if(m1.size.getY() == m2.size.getX()) return true;
 			else
 				try {
 					throw new Exception("No declarations of multiplication on " + m1.size + " and " + m2.size + ". The dimension y of the first matrix should be the same as the dimension x of the second matrix.");

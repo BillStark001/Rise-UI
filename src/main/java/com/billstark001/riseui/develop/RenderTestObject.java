@@ -44,7 +44,7 @@ public class RenderTestObject{
 		if (t_obj == null) t_obj = new ObjFile(res.getRes(lobj));
 		if (t_mtl == null) t_mtl = new MtlFile(res.getRes(lmtl));
 		
-		render.assignMtlFile(t_mtl);
+		t_obj.linkMtlFile(t_mtl);
 		horse = t_obj.genMesh("skh");
 		horse.setScale(0.01);
 		horse.rasterize();
@@ -54,7 +54,7 @@ public class RenderTestObject{
 		//System.out.println(horse);
 		
 		render.assignMtlFile(null);
-		sphere = Presets.getMesh("sphere_low_lod");
+		sphere = Presets.getMesh("sphere_high_lod");
 		sphere.setScale(0.5);
 		sphere.rasterize();
 		sphere.setPos(new Vector(0, 2.5, 0));
@@ -68,7 +68,7 @@ public class RenderTestObject{
 		//cube_.rasterize();
 		cube_.compileList();
 		
-		cube = Presets.getMesh("sphere_high_lod");
+		cube = Presets.getMesh("sphere_medium_lod");
 		cube.setScale(new Vector(3, 1, 3));
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();

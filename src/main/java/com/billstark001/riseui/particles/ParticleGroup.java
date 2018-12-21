@@ -10,9 +10,10 @@ import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 import com.billstark001.riseui.objects.BaseObject;
 import com.billstark001.riseui.objects.IRenderable;
+import com.billstark001.riseui.objects.ITickable;
 import com.billstark001.riseui.tags.ITag;
 
-public class ParticleGroup extends BaseObject implements IRenderable {
+public class ParticleGroup extends BaseObject implements IRenderable, ITickable {
 	
 	private ArrayList<Particle> parts = new ArrayList<Particle>();
 	protected List<ParticleGeneratorBase> gens = new ArrayList<ParticleGeneratorBase>();
@@ -47,12 +48,6 @@ public class ParticleGroup extends BaseObject implements IRenderable {
 	public boolean removeGenerator(ParticleGeneratorBase gen) {return removeTag(gen);}
 	public boolean removeForceField(ParticleFieldBase field) {return removeTag(field);}
 	
-	public void handleTags() {
-		for (int i = 0; i < gens.size(); ++i) gens.get(i).callOnHandle(this);
-		for (int i = 0; i < fields.size(); ++i) fields.get(i).callOnHandle(this);
-		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnHandle(this);
-	}
-	
 	//Particles' operation for Tags
 	
 	public void generateParticle(Particle part) {
@@ -84,5 +79,21 @@ public class ParticleGroup extends BaseObject implements IRenderable {
 		GL11.glScaled(this.scale.get(0), this.scale.get(1), this.scale.get(2));
 		for (Particle p: this.parts) p.render();
 		GL11.glPopMatrix();
+	}
+	@Override
+	public void callOnTick() {
+		for (int i = 0; i < gens.size(); ++i) gens.get(i).callOnTick(this);
+		for (int i = 0; i < fields.size(); ++i) fields.get(i).callOnTick(this);
+		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnTick(this);
+	}
+	@Override
+	public void recallLastTick() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void markLastTickInfo() {
+		// TODO Auto-generated method stub
+		
 	}
 }

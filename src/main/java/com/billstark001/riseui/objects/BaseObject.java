@@ -306,12 +306,12 @@ public class BaseObject{
 		}
 		return false;
 	}
-
+	/*
 	public void handleTags() {
 		if (this == ROOT_OBJECT) return; 
-		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnHandle(this);
+		for (int i = 0; i < tags.size(); ++i) tags.get(i).callOnTick(this);
 	}
-	
+	*/
 	public static void printTree(BaseObject obj) {
 		printTree(obj, "");
 	}

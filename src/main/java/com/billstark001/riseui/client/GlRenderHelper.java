@@ -2,9 +2,11 @@ package com.billstark001.riseui.client;
 
 import org.lwjgl.opengl.GL11;
 
+import com.billstark001.riseui.material.BaseMaterial;
 import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 import com.billstark001.riseui.objects.BaseObject;
 import com.billstark001.riseui.objects.ICompilable;
@@ -116,15 +118,30 @@ public class GlRenderHelper {
 	}
 
 	public void renderMesh(IMeshable mesh) {
-		String cur_tex = ":";
+		//String cur_tex = ":";
+		BaseMaterial cur_tex = BaseMaterial.MISSING;
 		for (int i = 0; i < mesh.getFaceCount(); ++i){
-			Matrix v_ = mesh.getFaceVertex(i);
-			//Matrix n_ = obj.getFaceNormal(i);
-			Matrix u_ = mesh.getFaceUVMap(i);
+			Triad[] t_ = mesh.getFace(i);
 			cur_tex = mesh.getMaterial(i);
-
+			if (cur_tex != null) cur_tex.applyOn(M);
+			startDrawingMesh();
+			for (Triad t: t_) {
+				//System.out.println(t);
+				//System.out.println(mesh.getVertex(t.getX()));
+				//System.out.println(mesh.getUVMap(t.getY()));
+				Vector v1, v2;
+				v1 = mesh.getVertex(t.getX());
+				v2 = mesh.getUVMap(t.getY());
+				addVertex(v1, v2);
+			}
+			endDrawing();
+			/*
+			Matrix v_ = mesh.getFaceVertex(i);
+			Matrix n_ = obj.getFaceNormal(i);
+			Matrix u_ = mesh.getFaceUVMap(i);		
 			if (cur_tex != null && mtl != null) M.bindTexture(new ResourceLocation(mtl.getMat(cur_tex)));
 			renderSurface(v_, u_);
+			*/
 		}
 	}
 

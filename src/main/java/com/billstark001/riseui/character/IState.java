@@ -5,7 +5,7 @@ import com.billstark001.riseui.math.Vector;
 
 public interface IState {
 	
-	public boolean suits(StateOverlayer o);
+	public boolean suits(TagApplyState o);
 	
 	public void setTime(double time);
 	public void setInterpolationTime(double interpolation);
