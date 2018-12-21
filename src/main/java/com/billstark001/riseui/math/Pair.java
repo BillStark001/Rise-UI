@@ -45,6 +45,16 @@ public final class Pair {
 		return String.format("(%d, %d)", xi, yi);
 	}
 	
+	public final int[] toIntArray() {
+		int[] ans = {xi, yi};
+		return ans;
+	}
+	
+	public final Integer[] toIntegerArray() {
+		Integer[] ans = {xi, yi};
+		return ans;
+	}
+	
 	public final int getX() {
 		return xi;
 	}

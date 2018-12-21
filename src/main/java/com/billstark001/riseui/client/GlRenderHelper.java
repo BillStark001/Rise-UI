@@ -61,7 +61,7 @@ public class GlRenderHelper {
 	public void endDrawing() {T.draw();}
 
 	public void addVertex(Vector pos, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
-	public void addVertex(Vec3d pos){R.pos(pos.x, pos.y, pos.z).color(r, g, b, a).endVertex();}
+	public void addVertex(Vector pos){R.pos(pos.get(0), pos.get(1), pos.get(2)).color(r, g, b, a).endVertex();}
 
 	public void assignMtlFile(MtlFile mtl) {if (mtl == null)this.mtl = MtlFile.getDefault(); else this.mtl = mtl;}
 	public MtlFile getMtlFile() {return mtl;}
@@ -148,10 +148,10 @@ public class GlRenderHelper {
 	public void renderGrid(IGridable grid) {
 		enableGridState();
 		for (int i = 0; i < grid.getSegmentCount(); ++i){
-			Matrix v_ = grid.getSegmentByIndex(i);
-			startDrawingGrid(grid.getSegmentLooped(i));
-			for (Vector v: v_.toVecArray()) {
-				addVertex(InteractUtils.transVec(v));
+			int[] v_ = grid.getSegment(i);
+			startDrawingGrid(grid.getLooped());
+			for (int v: v_) {
+				addVertex(grid.getVertex(v));
 			}
 			endDrawing();
 		}

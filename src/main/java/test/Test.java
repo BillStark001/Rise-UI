@@ -45,6 +45,7 @@ public class Test {
 		MtlFile mtl = new MtlFile(s);
 		
 		PolygonMesh p = obj.genMesh("cube");
+		PolygonGrid p_ = obj.genGrid("cube");
 		
 		//PolygonMesh q = obj.genMesh("octahedron");
 		//PolygonMesh r = obj.genMesh("octahedron");

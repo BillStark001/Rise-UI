@@ -270,71 +270,134 @@ public final class ObjFile {
 	public void pr(Object o) {
 		System.out.println(o);
 	}
+	
+	private static Comparator<Pair> paircomp = new Comparator<Pair>() {
+		@Override
+		public int compare(Pair t1, Pair t2) {
+			int x_ = 0;
+			x_ = compare_(t1.getX(), t2.getX());
+			if (!(x_ == 0))
+				return x_;
+			x_ = compare_(t1.getY(), t2.getY());
+			if (!(x_ == 0))
+				return x_;
+			return x_;
+		}
+
+		private int compare_(Integer x, Integer y) {
+			return x - y;
+		}
+	};
+	
+	public static ArrayList<int[]> genGridEdges(Triad[] vertices, int[] findex) {
+		ArrayList<Pair> lv = new ArrayList<Pair>();
+		
+		for (int i = 0; i < findex.length; ++i) {
+			int fs = 0, fe = findex.length;
+			if(i > 0 && i < findex.length) fs = findex[i - 1];
+			if(i >= 0 && i < findex.length) fe = findex[i];
+			Triad[] st = new Triad[fe - fs];
+			for (int j = fs; j < fe; ++j) st[j - fs] = vertices[j];
+			
+			ArrayList<Integer> v1 = new ArrayList<Integer>();
+			for (Triad s: st) {
+				v1.add(s.getX());
+			}
+			
+			for (int i1 = 0; i1 < v1.size(); ++i1) {
+				int x1 = i1 - 1, x2 = i1;
+				if (i1 == 0)
+					x1 += v1.size();
+				x1 = v1.get(x1);
+				x2 = v1.get(x2);
+				if (x1 > x2) {
+					int x0 = x2;
+					x2 = x1;
+					x1 = x0;
+				}
+				lv.add(new Pair(x1, x2));
+			}
+		}
+		lv.sort(paircomp);
+		
+		ArrayList<int[]> ansa = new ArrayList<int[]>();
+		for (Pair p: lv) {
+			ansa.add(p.toIntArray());
+		}
+		return ansa;
+	}
 
 	public PolygonGrid genGrid(String name) {
 
-		Comparator<Pair> ct = new Comparator<Pair>() {
-			@Override
-			public int compare(Pair t1, Pair t2) {
-				int x_ = 0;
-				x_ = compare_((Integer) t1.getX(), (Integer) t2.getX());
-				if (!(x_ == 0))
-					return x_;
-				x_ = compare_((Integer) t1.getY(), (Integer) t2.getY());
-				if (!(x_ == 0))
-					return x_;
-				return x_;
-			}
-
-			private int compare_(Integer x, Integer y) {
-				return x - y;
-			}
-		};
-
 		ArrayList<String> orig = proc.get(name);
+		Map<String, Integer> mv = new LinkedHashMap<String, Integer>();
+		int vc = 0;
+
+		for (String cur : orig) {
+			if (!cur.startsWith("f")) continue;
+			String[] st = cur.split(" ");
+			
+			for (String s: st) {
+				if (s.equals("") || s.equals("f")) continue;
+				String[] ss = s.split("/");
+				if (!mv.containsKey(ss[0])) mv.put(ss[0], vc++);
+			}
+		}
+		
+		ArrayList<Vector> vtv = new ArrayList<Vector>();
+		for (Object sv: mv.keySet()) vtv.add(vertex.get(Integer.valueOf((String) sv) - 1));
+		Matrix mtv = null;
+		if (vc != 0) mtv = new Matrix(vtv);
+		
 		ArrayList<Pair> lv = new ArrayList<Pair>();
+		ArrayList[] graph = new ArrayList[mv.size()];
+		for (int i = 0; i < mv.size(); ++i) graph[i] = new ArrayList<Integer>();
 		for (String cur : orig) {
 			if (!cur.startsWith("f"))
 				continue;
-			Triad[] v_ = parseFace(cur);
-			for (int i = 0; i < v_.length; ++i) {
+			
+			String[] st = cur.split(" ");
+			ArrayList<String> v1 = new ArrayList<String>();
+			int x3 = 0;
+			for (String s: st) {
+				if (s.equals("") || s.equals("\r") || s.equals("f"))
+					continue;
+				String[] ss = s.split("/");
+				v1.add(ss[0]);
+			}
+			
+			for (int i = 0; i < v1.size(); ++i) {
 				int x1 = i - 1, x2 = i;
 				if (i == 0)
-					x1 += v_.length;
-				x1 = (int) v_[x1].getX();
-				x2 = (int) v_[x2].getX();
-				if (x1 < x2)
-					lv.add(new Pair(x1, x2));
-				else
-					lv.add(new Pair(x2, x1));
+					x1 += v1.size();
+				x1 = mv.get(v1.get(x1));
+				x2 = mv.get(v1.get(x2));
+				if (x1 > x2) {
+					int x0 = x2;
+					x2 = x1;
+					x1 = x0;
+				}
+				lv.add(new Pair(x1, x2));
+				if (!graph[x1].contains(x2)) graph[x1].add(x2);
 			}
 		}
-		lv.sort(ct);
+		lv.sort(paircomp);
+		//for (int i = 0; i < mv.size(); ++i) pr(graph[i]);
+		
 		Pair prev = null;
-		// ArrayList<Pair> lv_ = new ArrayList<Pair>();
-		ArrayList<Vector> v = new ArrayList<Vector>();
-		ArrayList<Integer> vindex = new ArrayList<Integer>();
-		int endindex = 0;
-		for (Pair p : lv) {
-			// pr(p);
-			if (prev == null || !p.equals(prev)) {
-				// lv_.add(p);
-				v.add(vertex.get((int) p.getX() - 1));
-				v.add(vertex.get((int) p.getY() - 1));
-				vindex.add(endindex);
-				endindex += 2;
-			}
+		
+		for (int i = lv.size(); i > 0; --i) {
+			Pair p = lv.get(i - 1);
+			if (prev != null && p.equals(prev)) lv.remove(i - 1);
 			prev = p;
 		}
-		Matrix v_ = new Matrix(v.toArray(new Vector[0]));
-		int[] vi = new int[vindex.size()];
-		for (int i = 0; i < vi.length; ++i)
-			vi[i] = vindex.get(i);
-		// pr(lv.size());
-		// pr(lv_.size());
-
-		// pr(v_);
-		PolygonGrid ans = new PolygonGrid(v_, vi);
+		
+		ArrayList<int[]> ansa = new ArrayList<int[]>();
+		for (Pair p: lv) {
+			ansa.add(p.toIntArray());
+		}
+		
+		PolygonGrid ans = new PolygonGrid(mtv, ansa);
 		return ans;
 	}
 

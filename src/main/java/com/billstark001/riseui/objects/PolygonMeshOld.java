@@ -176,12 +176,13 @@ public class PolygonMeshOld extends BaseObject implements ICompilable, IRenderab
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	
-	public void generateGrid() {
-		PolygonGrid g = new PolygonGrid(vertex, findex, null);
+	public PolygonGridOld generateGrid() {
+		PolygonGridOld g = new PolygonGridOld(vertex, findex, null);
 		g.setPos(getPos());
 		g.setRot(getRot());
 		g.setScale(getScale());
 		g.rasterize();
+		return g;
 	}
 	
 	// Some Preset Polygons

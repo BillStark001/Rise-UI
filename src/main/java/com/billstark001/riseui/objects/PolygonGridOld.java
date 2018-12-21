@@ -19,25 +19,25 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 
-public class PolygonGrid extends BaseObject implements IGridable, ICompilable, IRenderable{
+public class PolygonGridOld extends BaseObject implements ICompilable, IRenderable{
 	
-	private ArrayList<int[]> segments;
-	private boolean looped;
+	private int[] segindex;
+	private boolean[] looped;
 	
-	private Matrix vpos;
+	private Matrix vertex;
 	private Matrix vr;
 	
 	private boolean compiled;
 	private int displayList;
 	
-	public PolygonGrid (Matrix posv, ArrayList<int[]> segments, boolean looped) {
+	public PolygonGridOld (Matrix vertex, int[] endindex, boolean[] looped) {
 		
 		this.compiled = false;
 		this.displayList = -1;
 		
-		this.segments = segments;
+		this.segindex = endindex;
 		this.looped = looped;
-		this.vpos = posv;
+		this.vertex = vertex;
 		
 		this.pos = new Vector(0, 0, 0);
 		this.rot = Quaternion.UNIT;
@@ -46,12 +46,12 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 		calcRender();
 	}
 	
-	public PolygonGrid(Matrix posv, ArrayList<int[]> segments) {
-		this(posv, segments, false);
+	public PolygonGridOld(Matrix v_, int[] vindex_) {
+		this(v_, vindex_, null);
 	}
 	
-	public PolygonGrid(PolygonGrid m) {
-		this(m.vpos, m.segments, m.looped);
+	public PolygonGridOld(PolygonGridOld m) {
+		this(m.vertex, m.segindex, m.looped);
 	}
 	
 	@Override
@@ -60,14 +60,18 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 		return super.setParent(obj);
 	}
 
-	public int getSegmentCount () {return segments.size();}
-	public int[] getSegment (int index) {
-		return segments.get(index);
-	}
-	public Vector getVertex(int index) {if (vpos != null) return vr.getLine(index); else return new Vector(0, 0, 0);}
+	public int getSegmentCount () {return segindex.length;}
 	
-	public boolean getLooped () {return looped;}
-	public void setLooped(boolean looped) {this.looped = looped;}
+	private int[] segment (int index) {
+		int[] ans = {0, segindex.length};
+		if(index > 0 && index < segindex.length) ans[0] = segindex[index - 1];
+		if(index >= 0 && index < segindex.length) ans[1] = segindex[index];
+		return ans;
+	}
+	
+	public Matrix getSegmentByIndex (int index) {if (vr != null) return vr.getLines(segment(index)[0], segment(index)[1]); else return null;}
+	public boolean getSegmentLooped (int index) {if (looped == null) return true; else return looped[index];}
+	public boolean getSwitchStripLoop (int index) {if (looped == null || index < 1 || index >= segindex.length) return false; else return looped[index] == looped[index - 1];}
 
 	public void setPos(Vector v) {super.setPos(v); this.markRecompile();}
 	public void setRot(Vector v) {super.setRot(v); this.markRecompile();}
@@ -85,20 +89,20 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	public void zoom(Vector v) {super.zoom(v); this.markRecompile();}
 	public void zoom(double d) {super.zoom(d); this.markRecompile();}
 	
-	private void offsetGrid(Vector v) {vpos = Utils.offset(vpos, v); this.markRecompile();}
+	private void offsetGrid(Vector v) {vertex = Utils.offset(vertex, v); this.markRecompile();}
 	
-	private void zoomGrid(Vector v) {vpos = Utils.zoom(vpos, v); this.markRecompile();}
-	private void zoomGrid(double v) {vpos = Utils.zoom(vpos, v); this.markRecompile();}
+	private void zoomGrid(Vector v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
+	private void zoomGrid(double v) {vertex = Utils.zoom(vertex, v); this.markRecompile();}
 	
-	private void rotateGrid(Quaternion q) {vpos = Utils.rotate(vpos, q); this.markRecompile();}
-	private void rotateGrid(Vector q) {vpos = Utils.rotate(vpos, q); this.markRecompile();}
-	private void rotateGrid(Matrix q) {vpos = Utils.rotate(vpos, q); this.markRecompile();}
+	private void rotateGrid(Quaternion q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
+	private void rotateGrid(Vector q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
+	private void rotateGrid(Matrix q) {vertex = Utils.rotate(vertex, q); this.markRecompile();}
 
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
 	
 	public void calcRender() {
-		vr = Utils.zoom(vpos, scale);
+		vr = Utils.zoom(vertex, scale);
 		vr = Utils.rotate(vr, rot);
 		vr = Utils.offset(vr, pos);
 		this.markRecompile();
@@ -110,7 +114,7 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 		
 		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
         GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);
-        GlRenderHelper.getInstance().renderGrid(this);
+        //GlRenderHelper.getInstance().renderGrid(this);
         GlStateManager.glEndList();
         
         this.compiled = true;

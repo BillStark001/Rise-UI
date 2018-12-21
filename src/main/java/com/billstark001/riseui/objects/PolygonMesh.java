@@ -1,5 +1,6 @@
 package com.billstark001.riseui.objects;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
@@ -11,6 +12,7 @@ import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.resources.ObjFile;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -155,12 +157,14 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	
-	public void generateGrid() {
-		PolygonGrid g = new PolygonGrid(vpos, findex, null);
+	public PolygonGrid generateGrid() {
+		ArrayList<int[]> edges = ObjFile.genGridEdges(this.vertices, this.findex);
+		PolygonGrid g = new PolygonGrid(vpos, edges);
 		g.setPos(getPos());
 		g.setRot(getRot());
 		g.setScale(getScale());
 		g.rasterize();
+		return g;
 	}
 	
 	// Some Preset Polygons
