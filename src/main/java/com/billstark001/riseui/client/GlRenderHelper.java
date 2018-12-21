@@ -126,22 +126,12 @@ public class GlRenderHelper {
 			if (cur_tex != null) cur_tex.applyOn(M);
 			startDrawingMesh();
 			for (Triad t: t_) {
-				//System.out.println(t);
-				//System.out.println(mesh.getVertex(t.getX()));
-				//System.out.println(mesh.getUVMap(t.getY()));
 				Vector v1, v2;
 				v1 = mesh.getVertex(t.getX());
 				v2 = mesh.getUVMap(t.getY());
 				addVertex(v1, v2);
 			}
 			endDrawing();
-			/*
-			Matrix v_ = mesh.getFaceVertex(i);
-			Matrix n_ = obj.getFaceNormal(i);
-			Matrix u_ = mesh.getFaceUVMap(i);		
-			if (cur_tex != null && mtl != null) M.bindTexture(new ResourceLocation(mtl.getMat(cur_tex)));
-			renderSurface(v_, u_);
-			*/
 		}
 	}
 
@@ -160,7 +150,7 @@ public class GlRenderHelper {
 
 	public void renderCompiled(ICompilable obj) {
 		if (!obj.isCompiled()) obj.compileList();
-		M.bindTexture(new ResourceLocation("riseui:an_iniexistent_texture"));
+		BaseMaterial.INEXISTENT.applyOn(M);
 		GL11.glCallList(obj.getDisplayList());
 	}
 

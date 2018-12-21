@@ -24,6 +24,8 @@ public class Presets {
 		res.loadRes(high);
 		pre = new ObjFile(res.getRes(low));
 		preh = new ObjFile(res.getRes(high));
+		pre.linkMtlFile(null);
+		preh.linkMtlFile(null);
 		String[] s1, s2;
 		s1 = pre.getObjectList();
 		s2 = preh.getObjectList();

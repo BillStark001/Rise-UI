@@ -53,7 +53,6 @@ public class RenderTestObject{
 		horse.compileList();
 		//System.out.println(horse);
 		
-		render.assignMtlFile(null);
 		sphere = Presets.getMesh("sphere_high_lod");
 		sphere.setScale(0.5);
 		sphere.rasterize();
@@ -77,7 +76,7 @@ public class RenderTestObject{
 		cube.compileList();
 		//System.out.println(terrain);
 		
-		cube_.setParent(horse);
+		//cube_.setParent(horse);
 		sphere.setParent(cube);
 		horse.setParent(cube);
 		BaseObject.printTree(cube);
