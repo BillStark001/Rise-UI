@@ -1,16 +1,10 @@
 package com.billstark001.riseui.resources;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.billstark001.riseui.material.BaseMaterial;
 import com.billstark001.riseui.math.Matrix;
@@ -19,10 +13,8 @@ import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 import com.billstark001.riseui.objects.PolygonGrid;
 import com.billstark001.riseui.objects.PolygonMesh;
-import com.billstark001.riseui.objects.PolygonMeshOld;
 
 import net.minecraft.util.ResourceLocation;
-import scala.actors.threadpool.Arrays;
 
 public final class ObjFile {
 
