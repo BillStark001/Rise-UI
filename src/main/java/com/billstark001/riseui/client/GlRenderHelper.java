@@ -95,9 +95,9 @@ public class GlRenderHelper {
 	}
 	
 	public void disableGridState() {
-		GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 	
@@ -123,7 +123,10 @@ public class GlRenderHelper {
 		for (int i = 0; i < mesh.getFaceCount(); ++i){
 			Triad[] t_ = mesh.getFace(i);
 			cur_tex = mesh.getMaterial(i);
-			if (cur_tex != null) cur_tex.applyOn(M);
+			if (cur_tex != null) {
+				cur_tex.applyOn(M);
+				System.out.println(cur_tex);
+			}
 			startDrawingMesh();
 			for (Triad t: t_) {
 				Vector v1, v2;
@@ -153,8 +156,24 @@ public class GlRenderHelper {
 		BaseMaterial.INEXISTENT.applyOn(M);
 		GL11.glCallList(obj.getDisplayList());
 	}
-
+	
 	public void renderObject(BaseObject obj) {
+		Vector p, r, s;
+		Quaternion q;
+		p = obj.getParent().getGlobalPos();
+		q = Quaternion.reverseAxisRotate(obj.getParent().getGlobalRot());
+		r = q.getImaginary();
+		s = obj.getParent().getGlobalScale();
+		GL11.glPushMatrix();
+		//if (obj instanceof IRenderable) ((IRenderable) obj).render();
+		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
+		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
+		GL11.glScaled(s.get(0), s.get(1), s.get(2));
+		renderObject(obj, false);
+		GL11.glPopMatrix();
+	}
+
+	private void renderObject(BaseObject obj, boolean f) {
 		if (obj == BaseObject.ROOT_OBJECT) return;
 		Vector p, r, s;
 		Quaternion q;
@@ -168,7 +187,7 @@ public class GlRenderHelper {
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
 		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
-		for (BaseObject o: obj.getChildren()) renderObject(o);
+		for (BaseObject o: obj.getChildren()) renderObject(o, f);
 		GL11.glPopMatrix();
 		
 	}

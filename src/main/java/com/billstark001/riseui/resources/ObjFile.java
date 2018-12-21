@@ -406,7 +406,7 @@ public final class ObjFile {
 		else this.linked_mtl = mtl;
 	}
 	
-	public void linkMtlfile() {
+	public void linkMtlFile() {
 		String sm = ResourceLoader.getInstance().getRes(new ResourceLocation(mtldir));
 		if (sm == ResourceLoader.MISSING_RES) this.linked_mtl = MtlFile.getDefault();
 		else this.linked_mtl = new MtlFile(sm);

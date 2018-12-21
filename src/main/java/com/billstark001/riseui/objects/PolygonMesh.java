@@ -153,8 +153,8 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	}
 
 	public void render() {
-		//GlRenderHelper.getInstance().renderMesh(this);
-		GlRenderHelper.getInstance().renderCompiled(this);
+		GlRenderHelper.getInstance().renderMesh(this);
+		//GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	
 	public PolygonGrid generateGrid() {

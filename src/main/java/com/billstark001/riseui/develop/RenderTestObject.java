@@ -30,67 +30,79 @@ public class RenderTestObject{
 	private static EntityPlayer player = Minecraft.getMinecraft().player;
 	private static World world = Minecraft.getMinecraft().world;
 	
-	private static ObjFile t_obj;
-	private static MtlFile t_mtl;
-	private static PolygonMesh horse, sphere, cube;
-	private static PolygonGrid cube_;
+	private static ObjFile h_obj, t_obj;
+	private static MtlFile h_mtl, t_mtl;
+	private static PolygonMesh horse, table, sphere;
+	private static PolygonGrid hgrid;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
 	private static final ResourceLocation lmtl = new ResourceLocation("riseui:models/skh.mtl");
+	private static final ResourceLocation tobj = new ResourceLocation("riseui:models/table.obj");
+	private static final ResourceLocation tmtl = new ResourceLocation("riseui:models/table.mtl");
 	
 	public static void prepareRender() {
 		res.loadRes(lobj);
 		res.loadRes(lmtl);
-		if (t_obj == null) t_obj = new ObjFile(res.getRes(lobj));
-		if (t_mtl == null) t_mtl = new MtlFile(res.getRes(lmtl));
-		
+		res.loadRes(tobj);
+		res.loadRes(tmtl);
+		h_obj = new ObjFile(res.getRes(lobj));
+		h_mtl = new MtlFile(res.getRes(lmtl));
+		t_obj = new ObjFile(res.getRes(tobj));
+		t_mtl = new MtlFile(res.getRes(tmtl));
+		h_obj.linkMtlFile(h_mtl);
 		t_obj.linkMtlFile(t_mtl);
-		horse = t_obj.genMesh("skh");
+		
+		horse = h_obj.genMesh("skh");
 		horse.setScale(0.01);
 		horse.rasterize();
 		horse.setPos(new Vector(0, 0.5, 0));
 		//horse.rasterize();
-		horse.compileList();
+		//horse.compileList();
 		//System.out.println(horse);
 		
-		sphere = Presets.getMesh("sphere_high_lod");
-		sphere.setScale(0.5);
-		sphere.rasterize();
-		sphere.setPos(new Vector(0, 2.5, 0));
+		table = t_obj.genMesh("table");
+		table.setScale(0.01);
+		table.rasterize();
+		table.setPos(new Vector(0, 2.5, 0));
 		//cube.rasterize();
-		sphere.compileList();
+		//table.compileList();
 		//System.out.println(cube);
 		
-		cube_ = t_obj.genGrid("skh");
-		cube_.setScale(0.005);
-		cube_.setPos(new Vector(0, 5, 0));
+		hgrid = h_obj.genGrid("skh");
+		hgrid.setScale(0.005);
+		hgrid.rasterize();
+		hgrid.setPos(new Vector(0, 3.5, 0));
 		//cube_.rasterize();
-		cube_.compileList();
+		//hgrid.compileList();
 		
-		cube = Presets.getMesh("sphere_medium_lod");
-		cube.setScale(new Vector(3, 1, 3));
+		sphere = Presets.getMesh("sphere_high_lod");
+		sphere.setScale(new Vector(3, 1, 3));
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();
 		//cube.setPos(new Vector(0, 0.5, 0));
 		//terrain.rasterize();
-		cube.compileList();
+		sphere.compileList();
 		//System.out.println(terrain);
 		
-		//cube_.setParent(horse);
-		sphere.setParent(cube);
-		horse.setParent(cube);
-		BaseObject.printTree(cube);
+		//hgrid.setParent(horse);
+		table.setParent(sphere);
+		sphere.setParent(horse);
+		BaseObject.printTree(horse);
 		
 	}
 	
 	public static void doRender(double delta) {
 		
-		GlStateManager.pushMatrix();
+		//GlStateManager.pushMatrix();
 		
 		//tend = System.currentTimeMillis() - tstart;
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.00025 * tend));
 		//render.renderGrid(cube_);
-		render.renderObject(cube);
+		//render.disableGridState();
+		//render.renderObject(horse);
+		render.renderMesh(horse);
+		render.renderMesh(table);
+		render.renderMesh(sphere);
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
 		//render.renderObject(sphere);
@@ -105,7 +117,7 @@ public class RenderTestObject{
 			//render.renderCompiled(cube);
 		*/
 		
-		GlStateManager.popMatrix();
+		//GlStateManager.popMatrix();
 		
 	}	
 	

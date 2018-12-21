@@ -2,6 +2,6 @@
 
 newmtl default
 Kd 1 1 1
-map_Kd riseui:tex/horse_skeleton_1.png
+map_Kd riseui:tex/horse_skeleton.png
 illum 7
 

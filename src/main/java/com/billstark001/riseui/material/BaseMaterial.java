@@ -33,7 +33,7 @@ public class BaseMaterial {
 	
 	public void applyOn(TextureManager M) {
 		//if(!(this == INEXISTENT || this == MISSING))System.out.println(this);
-		//M.bindTexture(albedo_tex);
+		M.bindTexture(albedo_tex);
 	}
 	
 	@Override
