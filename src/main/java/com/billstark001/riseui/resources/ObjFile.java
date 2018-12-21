@@ -220,7 +220,7 @@ public final class ObjFile {
 		Triad[] t_ = faces.toArray(new Triad[0]);
 		return new PolygonMesh(mtv, mtt, mtn, t_, vindex, mats);
 	}
-	
+	/*
 	@Deprecated
 	public PolygonMeshOld generateMesh(String name) {
 		if (!proc.containsKey(name))
@@ -270,7 +270,7 @@ public final class ObjFile {
 	public void pr(Object o) {
 		System.out.println(o);
 	}
-	
+	*/
 	private static Comparator<Pair> paircomp = new Comparator<Pair>() {
 		@Override
 		public int compare(Pair t1, Pair t2) {
