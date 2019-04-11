@@ -3,10 +3,10 @@ package com.billstark001.riseui.client;
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.common.CommonProxy;
+import com.billstark001.riseui.core.polygon.Presets;
 import com.billstark001.riseui.develop.DevelopProxy;
 import com.billstark001.riseui.events.RenderTileOverlayEvent;
 import com.billstark001.riseui.math.InteractUtils;
-import com.billstark001.riseui.objects.Presets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

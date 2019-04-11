@@ -2,16 +2,16 @@ package com.billstark001.riseui.develop;
 
 import org.lwjgl.opengl.GL11;
 
+import com.billstark001.riseui.base.object.BaseObject;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.core.polygon.PolygonGrid;
+import com.billstark001.riseui.core.polygon.PolygonMesh;
+import com.billstark001.riseui.core.polygon.Presets;
+import com.billstark001.riseui.io.MtlFile;
+import com.billstark001.riseui.io.ObjFile;
+import com.billstark001.riseui.io.ResourceLoader;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
-import com.billstark001.riseui.objects.BaseObject;
-import com.billstark001.riseui.objects.PolygonGrid;
-import com.billstark001.riseui.objects.PolygonMesh;
-import com.billstark001.riseui.objects.Presets;
-import com.billstark001.riseui.resources.MtlFile;
-import com.billstark001.riseui.resources.ObjFile;
-import com.billstark001.riseui.resources.ResourceLoader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -100,12 +100,14 @@ public class RenderTestObject{
 		//render.renderGrid(cube_);
 		//render.disableGridState();
 		//render.renderObject(horse);
-		render.renderMesh(horse);
-		render.renderMesh(table);
-		render.renderMesh(sphere);
+		
+		//render.renderMesh(horse);
+		//render.renderMesh(table);
+		//render.renderMesh(sphere);
+		
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
-		//render.renderObject(sphere);
+		render.renderObject(horse);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			

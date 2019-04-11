@@ -2,18 +2,18 @@ package com.billstark001.riseui.client;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.material.BaseMaterial;
+import com.billstark001.riseui.base.object.BaseObject;
+import com.billstark001.riseui.base.object.ICompilable;
+import com.billstark001.riseui.base.object.IGridable;
+import com.billstark001.riseui.base.object.IMeshable;
+import com.billstark001.riseui.base.object.IRenderable;
+import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
-import com.billstark001.riseui.objects.BaseObject;
-import com.billstark001.riseui.objects.ICompilable;
-import com.billstark001.riseui.objects.IGridable;
-import com.billstark001.riseui.objects.IMeshable;
-import com.billstark001.riseui.objects.IRenderable;
-import com.billstark001.riseui.resources.MtlFile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -125,7 +125,7 @@ public class GlRenderHelper {
 			cur_tex = mesh.getMaterial(i);
 			if (cur_tex != null) {
 				cur_tex.applyOn(M);
-				System.out.println(cur_tex);
+				//System.out.println(cur_tex);
 			}
 			startDrawingMesh();
 			for (Triad t: t_) {
@@ -149,6 +149,10 @@ public class GlRenderHelper {
 			endDrawing();
 		}
 		disableGridState();
+	}
+	
+	public void renderPoints() {
+		
 	}
 
 	public void renderCompiled(ICompilable obj) {
