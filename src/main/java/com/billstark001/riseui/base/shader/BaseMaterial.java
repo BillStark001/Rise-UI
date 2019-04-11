@@ -1,5 +1,7 @@
 package com.billstark001.riseui.base.shader;
 
+import java.io.FileNotFoundException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
@@ -38,7 +40,7 @@ public class BaseMaterial {
 	}
 	
 	public void applyOn(TextureManager M) {
-		//if(!(this == INEXISTENT || this == MISSING))System.out.println(this);
+		//M.bindTexture(MISSING.albedo_tex);
 		M.bindTexture(albedo_tex);
 	}
 	

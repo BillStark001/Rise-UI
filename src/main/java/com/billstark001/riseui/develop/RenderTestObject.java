@@ -32,7 +32,7 @@ public class RenderTestObject{
 	
 	private static ObjFile h_obj, t_obj;
 	private static MtlFile h_mtl, t_mtl;
-	private static PolygonMesh horse, table, sphere;
+	public static PolygonMesh horse, table, sphere;
 	private static PolygonGrid hgrid;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
@@ -81,7 +81,7 @@ public class RenderTestObject{
 		//terrain.rasterize();
 		//cube.setPos(new Vector(0, 0.5, 0));
 		//terrain.rasterize();
-		sphere.compileList();
+		//sphere.compileList();
 		//System.out.println(terrain);
 		
 		//hgrid.setParent(horse);

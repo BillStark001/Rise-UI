@@ -125,7 +125,7 @@ public class GlRenderHelper {
 			cur_tex = mesh.getMaterial(i);
 			if (cur_tex != null) {
 				cur_tex.applyOn(M);
-				//System.out.println(cur_tex);
+				System.out.println(cur_tex.getAlbedoTexture());
 			}
 			startDrawingMesh();
 			for (Triad t: t_) {

@@ -18,6 +18,7 @@ import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -133,13 +134,19 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		
 		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
         GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);
+        BaseMaterial.INEXISTENT.applyOn(Minecraft.getMinecraft().renderEngine);
         GlRenderHelper.getInstance().renderMesh(this);
+        BaseMaterial.INEXISTENT.applyOn(Minecraft.getMinecraft().renderEngine);
         GlStateManager.glEndList();
-        
         this.compiled = true;
 	}
-	
 	public int getDisplayList() {return this.displayList;}
+	public int clearDisplayList() {
+		int ans = this.displayList;
+		this.displayList = -1;
+		this.compiled = false;
+		return ans;
+	}
 	
 	public void rasterize() {
 		zoomMesh(scale);

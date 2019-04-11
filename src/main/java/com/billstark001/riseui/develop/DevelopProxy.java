@@ -22,8 +22,9 @@ public class DevelopProxy {
 	public static final KeyBinding TOGGLE_GRID = new KeyBinding("Start/Stop Rendering Tile Grids", Keyboard.KEY_Z, "Rise UI");
 	public static final KeyBinding TOGGLE_MOB = new KeyBinding("Start/Stop Rendering Mobs", Keyboard.KEY_X, "Rise UI");
 	public static final KeyBinding TOGGLE_ORE = new KeyBinding("Start/Stop Rendering Ores", Keyboard.KEY_C, "Rise UI");
-	public static final KeyBinding TOGGLE_MAP = new KeyBinding("Start/Stop Rendering MiniMap", Keyboard.KEY_M, "Rise UI");
 	public static final KeyBinding TEST = new KeyBinding("Test", Keyboard.KEY_J, "Rise UI");
+	public static final KeyBinding RECOMPILE = new KeyBinding("Recompile List", Keyboard.KEY_K, "Rise UI");
+	public static final KeyBinding REASSIGN = new KeyBinding("Reassign List Number", Keyboard.KEY_L, "Rise UI");
 	
 	public static boolean isStarted=false;
 	public static int mark1 = 0;
@@ -41,7 +42,7 @@ public class DevelopProxy {
     	ClientRegistry.registerKeyBinding(TOGGLE_GRID);
     	ClientRegistry.registerKeyBinding(TOGGLE_MOB);
     	ClientRegistry.registerKeyBinding(TOGGLE_ORE);
-    	ClientRegistry.registerKeyBinding(TOGGLE_MAP);
+    	ClientRegistry.registerKeyBinding(REASSIGN);
     	RenderTestObject.prepareRender();
 	}
 	
@@ -73,10 +74,6 @@ public class DevelopProxy {
    			speakToPlayer(player, "Ore's Deep°·Dark°‚Fantasy.");
    			renderOre=!renderOre;
    		}
-   		if(TOGGLE_MAP.isPressed()){
-   			speakToPlayer(player, "MiniMap's Deep°·Dark°‚Fantasy.");
-   			renderMap=!renderMap;
-   		}
    	}
 	
 	@SubscribeEvent
@@ -87,6 +84,24 @@ public class DevelopProxy {
    			mark1 += 1;
    			mark1 %= 3;
    			speakToPlayer(player, Integer.toString(this.mark1));
+   		}
+   	}
+	
+	@SubscribeEvent
+   	public void recompile(PlayerTickEvent e) {
+   		EntityPlayer player = Minecraft.getMinecraft().player;
+   		World world=Minecraft.getMinecraft().world;
+   		if(RECOMPILE.isPressed()){
+   			RenderTestObject.horse.compileList();
+   			RenderTestObject.sphere.compileList();
+   			RenderTestObject.table.compileList();
+   			speakToPlayer(player, String.format("Recompiled: %d, %d, %d", RenderTestObject.horse.getDisplayList(), RenderTestObject.table.getDisplayList(), RenderTestObject.sphere.getDisplayList()));
+   		}
+   		if(REASSIGN.isPressed()){
+   			RenderTestObject.horse.clearDisplayList();
+   			RenderTestObject.sphere.clearDisplayList();
+   			RenderTestObject.table.clearDisplayList();
+   			speakToPlayer(player, "Cleared");
    		}
    	}
 	
