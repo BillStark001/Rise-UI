@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.animation.Animation;
-import com.dddviewr.collada.animation.Channel;
+import com.dddviewr.collada.content.animation.Animation;
+import com.dddviewr.collada.content.animation.Channel;
 
 public class channel extends State {
 	protected Channel theChannel;

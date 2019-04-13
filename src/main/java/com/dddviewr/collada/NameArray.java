@@ -2,13 +2,14 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class NameArray extends Base {
-	protected String id;
 	protected int count;
 	protected String[] data;
 
 	public NameArray(String id, int count) {
-		this.id = id;
+		super(id);
 		this.count = count;
 		this.data = new String[count];
 	}
@@ -29,14 +30,6 @@ public class NameArray extends Base {
 		this.data = data;
 	}
 
-	public String getId() {
-		return this.id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public void parse(StringBuilder str) {
 		String[] values = str.toString().split("\\s+");
 		int index = 0;
@@ -50,7 +43,7 @@ public class NameArray extends Base {
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.println(prefix + "NameArray (id: " + this.id + ", count: "
+		out.println(prefix + "NameArray (id: " + this.getId() + ", count: "
 				+ this.count + ")");
 		if (this.data != null) {
 			out.print(prefix);

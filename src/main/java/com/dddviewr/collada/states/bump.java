@@ -6,8 +6,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.Effect;
-import com.dddviewr.collada.effects.EffectAttribute;
+import com.dddviewr.collada.content.effects.Effect;
+import com.dddviewr.collada.content.effects.EffectAttribute;
 
 
 public class bump extends State {

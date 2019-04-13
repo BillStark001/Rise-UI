@@ -2,6 +2,8 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Unit extends Base {
 	protected float meter = 1;
 	protected String name = "meters";

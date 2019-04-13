@@ -4,9 +4,9 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.Effect;
-import com.dddviewr.collada.effects.EffectMaterial;
-import com.dddviewr.collada.effects.Lambert;
+import com.dddviewr.collada.content.effects.Effect;
+import com.dddviewr.collada.content.effects.EffectMaterial;
+import com.dddviewr.collada.content.effects.Lambert;
 
 public class lambert extends State {
 	protected Lambert theLambert;

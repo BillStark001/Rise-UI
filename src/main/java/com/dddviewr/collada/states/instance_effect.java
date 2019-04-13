@@ -4,7 +4,7 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.materials.InstanceEffect;
+import com.dddviewr.collada.content.materials.InstanceEffect;
 
 
 public class instance_effect extends State {

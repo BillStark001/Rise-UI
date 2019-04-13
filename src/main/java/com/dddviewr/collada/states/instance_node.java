@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.nodes.Node;
-import com.dddviewr.collada.visualscene.InstanceNode;
+import com.dddviewr.collada.content.nodes.Node;
+import com.dddviewr.collada.content.visualscene.InstanceNode;
 
 public class instance_node  extends State {
 	protected InstanceNode instanceNode;

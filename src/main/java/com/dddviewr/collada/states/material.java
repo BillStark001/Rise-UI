@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.materials.LibraryMaterials;
-import com.dddviewr.collada.materials.Material;
+import com.dddviewr.collada.content.materials.LibraryMaterials;
+import com.dddviewr.collada.content.materials.Material;
 
 public class material extends State {
 	protected Material theMaterial;
@@ -16,7 +16,7 @@ public class material extends State {
 		this.theMaterial = new Material(attrs.getValue("id"), attrs
 				.getValue("name"));
 		LibraryMaterials lib = ((library_materials) getParent()).getLibrary();
-		lib.addMaterial(this.theMaterial);
+		lib.addElement(this.theMaterial);
 	}
 
 	public Material getMaterial() {

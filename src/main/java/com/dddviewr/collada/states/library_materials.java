@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.materials.LibraryMaterials;
+import com.dddviewr.collada.content.materials.LibraryMaterials;
 
 public class library_materials extends State {
 	protected LibraryMaterials library = new LibraryMaterials();

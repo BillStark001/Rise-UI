@@ -2,8 +2,9 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Source extends Base {
-	protected String id;
 	protected String name;
 	protected FloatArray floatArray;
 	protected IdrefArray idrefArray;
@@ -11,16 +12,8 @@ public class Source extends Base {
 	protected Accessor accessor;
 
 	public Source(String id, String name) {
-		this.id = id;
+		super(id);
 		this.name = name;
-	}
-
-	public String getId() {
-		return this.id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -62,11 +55,14 @@ public class Source extends Base {
 	public void setAccessor(Accessor accessor) {
 		this.accessor = accessor;
 	}
+	
+	public String toString() {
+		return "Source (id: " + this.getId() + ", name: " + this.name + ")";
+	}
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.println(prefix + "Source (id: " + this.id + ", name: " + this.name
-				+ ")");
+		out.println(prefix + this);
 		if (this.floatArray != null)
 			this.floatArray.dump(out, indent + 1);
 		if (this.idrefArray != null)

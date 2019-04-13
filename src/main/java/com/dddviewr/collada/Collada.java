@@ -18,23 +18,24 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.dddviewr.collada.animation.LibraryAnimations;
-import com.dddviewr.collada.controller.Controller;
-import com.dddviewr.collada.controller.LibraryControllers;
-import com.dddviewr.collada.controller.Skin;
-import com.dddviewr.collada.effects.Effect;
-import com.dddviewr.collada.effects.LibraryEffects;
-import com.dddviewr.collada.geometry.Geometry;
-import com.dddviewr.collada.geometry.LibraryGeometries;
-import com.dddviewr.collada.geometry.Mesh;
-import com.dddviewr.collada.images.Image;
-import com.dddviewr.collada.images.LibraryImages;
-import com.dddviewr.collada.materials.LibraryMaterials;
-import com.dddviewr.collada.materials.Material;
-import com.dddviewr.collada.nodes.LibraryNodes;
-import com.dddviewr.collada.nodes.Node;
-import com.dddviewr.collada.scene.Scene;
-import com.dddviewr.collada.visualscene.LibraryVisualScenes;
+import com.dddviewr.collada.content.animation.LibraryAnimations;
+import com.dddviewr.collada.content.controller.Controller;
+import com.dddviewr.collada.content.controller.LibraryControllers;
+import com.dddviewr.collada.content.controller.Skin;
+import com.dddviewr.collada.content.effects.Effect;
+import com.dddviewr.collada.content.effects.LibraryEffects;
+import com.dddviewr.collada.content.geometry.Geometry;
+import com.dddviewr.collada.content.geometry.LibraryGeometries;
+import com.dddviewr.collada.content.geometry.Mesh;
+import com.dddviewr.collada.content.images.Image;
+import com.dddviewr.collada.content.images.LibraryImages;
+import com.dddviewr.collada.content.materials.LibraryMaterials;
+import com.dddviewr.collada.content.materials.Material;
+import com.dddviewr.collada.content.nodes.LibraryNodes;
+import com.dddviewr.collada.content.nodes.Node;
+import com.dddviewr.collada.content.scene.Scene;
+import com.dddviewr.collada.content.visualscene.LibraryVisualScenes;
+import com.dddviewr.collada.format.Base;
 import com.dddviewr.log.Log;
 
 
@@ -181,7 +182,7 @@ public class Collada extends Base {
 		if(libraryGeometries == null) {
 			return;
 		}
-		List<Geometry> geos = libraryGeometries.getGeometries();
+		List<Geometry> geos = libraryGeometries.getElements();
 		for (Geometry geo : geos) {
 			Mesh mesh = geo.getMesh();
 			if (mesh != null)
@@ -236,87 +237,33 @@ public class Collada extends Base {
 		return collada;
 	}
 	
-	public List<Skin> findSkins(String source) {
+	public List<Skin> findSkins(int source) {
 		if (this.libraryControllers == null)
 			return new ArrayList<Skin>();
 		return this.libraryControllers.findSkins(source);
 	}
 
-	public Controller findController(String id) {
-		if (this.libraryControllers == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Controller ctrl : this.libraryControllers.getControllers()) {
-			if (search.equals(ctrl.getId()))
-				return ctrl;
-		}
-		return null;
+	public Controller findController(int id) {
+		return this.libraryControllers.getElement(id);
 	}
 
-	public Effect findEffect(String id) {
-		if (this.libraryEffects == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Effect effect : this.libraryEffects.getEffects()) {
-			if (search.equals(effect.getId()))
-				return effect;
-		}
-		return null;
+	public Effect findEffect(int id) {
+		return this.libraryEffects.getElement(id);
 	}
 
-	public Image findImage(String id) {
-		if (this.libraryImages == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Image img : this.libraryImages.getImages()) {
-			if (search.equals(img.getId()))
-				return img;
-		}
-		return null;
+	public Image findImage(int id) {
+		return this.libraryImages.getElement(id);
 	}
 
-	public Material findMaterial(String id) {
-		if (this.libraryMaterials == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Material mat : this.libraryMaterials.getMaterials()) {
-			if (search.equals(mat.getId()))
-				return mat;
-		}
-		return null;
+	public Material findMaterial(int id) {
+		return this.libraryMaterials.getElement(id);
 	}
 
-	public Geometry findGeometry(String id) {
-		if (this.libraryGeometries == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Geometry geo : this.libraryGeometries.getGeometries()) {
-			if (search.equals(geo.getId()))
-				return geo;
-		}
-		return null;
+	public Geometry findGeometry(int id) {
+		return this.libraryGeometries.getElement(id);
 	}
 
-	public Node findNode(String id) {
-		if (this.libraryNodes == null)
-			return null;
-		String search = id;
-		if (id.indexOf(35) == 0)
-			search = id.substring(1);
-		for (Node n : this.libraryNodes.getNodes()) {
-			if (search.equals(n.getId()))
-				return n;
-		}
-		return null;
+	public Node findNode(int id) {
+		return this.libraryNodes.getElement(id);
 	}
 }

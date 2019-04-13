@@ -6,8 +6,8 @@ import com.dddviewr.collada.Input;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
 import com.dddviewr.collada.Vcount;
-import com.dddviewr.collada.controller.Skin;
-import com.dddviewr.collada.controller.VertexWeights;
+import com.dddviewr.collada.content.controller.Skin;
+import com.dddviewr.collada.content.controller.VertexWeights;
 
 public class vertex_weights extends State {
 	protected VertexWeights vertexWeights;

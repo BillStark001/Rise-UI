@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.controller.Controller;
-import com.dddviewr.collada.controller.LibraryControllers;
+import com.dddviewr.collada.content.controller.Controller;
+import com.dddviewr.collada.content.controller.LibraryControllers;
 
 public class controller extends State {
 	protected Controller theController;
@@ -17,7 +17,7 @@ public class controller extends State {
 
 		LibraryControllers library = ((library_controllers) getParent())
 				.getLibrary();
-		library.addController(this.theController);
+		library.addElement(this.theController);
 	}
 
 	public Controller getController() {

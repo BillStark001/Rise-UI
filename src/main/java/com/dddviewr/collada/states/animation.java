@@ -5,8 +5,8 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Source;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.animation.Animation;
-import com.dddviewr.collada.animation.LibraryAnimations;
+import com.dddviewr.collada.content.animation.Animation;
+import com.dddviewr.collada.content.animation.LibraryAnimations;
 
 public class animation extends State {
 	protected Animation theAnimation;
@@ -15,9 +15,19 @@ public class animation extends State {
 		super.init(name, attrs, mngr);
 		this.theAnimation = new Animation(attrs.getValue("id"));
 
-		LibraryAnimations library = ((library_animations) getParent())
-				.getLibrary();
-		library.addAnimation(this.theAnimation);
+		LibraryAnimations library = null;
+		State cache = this;
+		boolean flag = false;
+		while (!flag) {
+			cache = cache.getParent();
+			try {
+				library = ((library_animations) cache).getLibrary();
+				flag = true;
+			} catch (ClassCastException e) {
+				flag = false;
+			}
+		}
+		library.addElement(this.theAnimation);
 	}
 
 	public void addSource(Source src) {

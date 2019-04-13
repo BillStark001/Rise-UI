@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.EffectAttribute;
+import com.dddviewr.collada.content.effects.EffectAttribute;
 
 public class color extends State {
 	public void init(String name, Attributes attrs, StateManager mngr) {

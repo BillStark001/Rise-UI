@@ -2,6 +2,8 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Param extends Base {
 	protected String name;
 	protected String type;

@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.visualscene.InstanceMaterial;
+import com.dddviewr.collada.content.visualscene.InstanceMaterial;
 
 public class instance_material extends State {
 	protected InstanceMaterial instanceMaterial;

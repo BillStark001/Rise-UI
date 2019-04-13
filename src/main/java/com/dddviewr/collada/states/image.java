@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.images.Image;
-import com.dddviewr.collada.images.LibraryImages;
+import com.dddviewr.collada.content.images.Image;
+import com.dddviewr.collada.content.images.LibraryImages;
 
 public class image extends State {
 	protected Image theImage;
@@ -15,7 +15,7 @@ public class image extends State {
 
 		this.theImage = new Image(attrs.getValue("id"), attrs.getValue("name"));
 		LibraryImages lib = ((library_images) getParent()).getLibrary();
-		lib.addImage(this.theImage);
+		lib.addElement(this.theImage);
 	}
 
 	public Image getImage() {

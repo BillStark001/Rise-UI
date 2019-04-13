@@ -4,7 +4,7 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.visualscene.InstanceController;
+import com.dddviewr.collada.content.visualscene.InstanceController;
 
 public class skeleton extends State {
 	public void init(String name, Attributes attrs, StateManager mngr) {

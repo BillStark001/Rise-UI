@@ -2,16 +2,17 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
 import com.dddviewr.log.Log;
 
 
 public class FloatArray extends Base {
-	protected String id;
+	
 	protected int count;
 	protected float[] data;
 
 	public FloatArray(String id, int count) {
-		this.id = id;
+		super(id);
 		this.count = count;
 		this.data = new float[count];
 	}
@@ -40,14 +41,6 @@ public class FloatArray extends Base {
 		this.count = count;
 	}
 
-	public String getId() {
-		return this.id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public void parse(StringBuilder str) {
 		String[] values = str.toString().split("\\s+");
 		int index = 0;
@@ -64,11 +57,15 @@ public class FloatArray extends Base {
 			}
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return "FloatArray (id: " + this.getId() + ", count: " + count + ")";
+	}
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.println(prefix + "FloatArray (id: " + this.id + ", count: "
-				+ count + ")");
+		out.println(prefix + this.toString());
 		out.print(prefix);
 		for (float f : data)
 			out.print(" " + f);

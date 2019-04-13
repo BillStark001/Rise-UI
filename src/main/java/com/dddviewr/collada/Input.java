@@ -2,16 +2,25 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Input extends Base {
 	protected String semantic;
-	protected String source;
+	protected int source;
 	protected int offset = -1;
 
 	protected int set = -1;
 
-	public Input(String semantic, String source) {
+	public Input(String semantic, int source) {
+		super(source);
+		this.source = this.getId();
 		this.semantic = semantic;
-		this.source = source;
+	}
+	
+	public Input(String semantic, String source) {
+		super(source);
+		this.source = this.getId();
+		this.semantic = semantic;
 	}
 
 	public int getOffset() {
@@ -38,22 +47,16 @@ public class Input extends Base {
 		this.set = set;
 	}
 
-	public String getSource() {
+	public int getSource() {
 		return this.source;
 	}
 
-	public void setSource(String source) {
+	public void setSource(int source) {
 		this.source = source;
 	}
 
-	public void dump(PrintStream out, int indent) {
-		String prefix = createIndent(indent);
-		out.print(prefix + "Input (semantic: " + this.semantic + ", source: "
-				+ this.source);
-		if (this.offset >= 0)
-			out.print(", offset: " + this.offset);
-		if (this.set >= 0)
-			out.print(", set: " + this.set);
-		out.println(")");
+	public String toString() {
+		return String.format("Input (semantic: %s, source: %s, set: %d, offset: %d)",
+				this.semantic, this.source, this.set, this.offset);
 	}
 }

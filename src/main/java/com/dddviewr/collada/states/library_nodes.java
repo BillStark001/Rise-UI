@@ -5,8 +5,8 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.nodes.LibraryNodes;
-import com.dddviewr.collada.nodes.Node;
+import com.dddviewr.collada.content.nodes.LibraryNodes;
+import com.dddviewr.collada.content.nodes.Node;
 
 public class library_nodes extends State {
 	protected LibraryNodes library = new LibraryNodes();
@@ -23,6 +23,6 @@ public class library_nodes extends State {
 	}
 	
 	public void addNode(Node node) {
-		library.addNode(node);
+		library.addElement(node);
 	}
 }

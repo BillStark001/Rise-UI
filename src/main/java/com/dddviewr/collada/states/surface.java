@@ -4,7 +4,7 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.Surface;
+import com.dddviewr.collada.content.effects.Surface;
 
 
 public class surface extends State {

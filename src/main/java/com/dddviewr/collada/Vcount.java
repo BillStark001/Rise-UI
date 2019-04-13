@@ -2,6 +2,8 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Vcount extends Base {
 	protected int[] data;
 

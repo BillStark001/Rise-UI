@@ -12,9 +12,15 @@ public class accessor extends State {
 
 	public void init(String name, Attributes attrs, StateManager mngr) {
 		super.init(name, attrs, mngr);
-		this.theAccessor = new Accessor(attrs.getValue("source"), Integer
-				.parseInt(attrs.getValue("count")), Integer.parseInt(attrs
-				.getValue("stride")));
+		int stride;
+		try {
+			stride = Integer.parseInt(attrs.getValue("stride"));
+		} catch (Exception e) {
+			stride = 1;
+		}
+		this.theAccessor = new Accessor(attrs.getValue("source"), 
+				Integer.parseInt(attrs.getValue("count")), 
+				stride);
 		Source source = ((source) getParent().getParent()).getSource();
 		source.setAccessor(this.theAccessor);
 	}

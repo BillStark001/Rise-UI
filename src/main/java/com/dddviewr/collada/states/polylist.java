@@ -9,8 +9,8 @@ import com.dddviewr.collada.Input;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
 import com.dddviewr.collada.Vcount;
-import com.dddviewr.collada.geometry.Mesh;
-import com.dddviewr.collada.geometry.PolyList;
+import com.dddviewr.collada.content.geometry.Mesh;
+import com.dddviewr.collada.content.geometry.PolyList;
 
 
 

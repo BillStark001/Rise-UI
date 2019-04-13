@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dddviewr.collada.format.Base;
+
 public class Accessor extends Base {
 	protected String source;
 	protected int count;

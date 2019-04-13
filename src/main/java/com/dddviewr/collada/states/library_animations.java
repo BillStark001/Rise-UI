@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.animation.LibraryAnimations;
+import com.dddviewr.collada.content.animation.LibraryAnimations;
 
 public class library_animations extends State {
 	protected LibraryAnimations libraryAnimations;

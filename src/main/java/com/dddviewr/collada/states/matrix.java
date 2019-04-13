@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.nodes.Node;
-import com.dddviewr.collada.visualscene.Matrix;
+import com.dddviewr.collada.content.nodes.Node;
+import com.dddviewr.collada.content.visualscene.Matrix;
 
 public class matrix extends State {
 	protected Matrix theMatrix;

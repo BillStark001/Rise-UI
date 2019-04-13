@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.images.LibraryImages;
+import com.dddviewr.collada.content.images.LibraryImages;
 
 public class library_images extends State {
 	protected LibraryImages library = new LibraryImages();

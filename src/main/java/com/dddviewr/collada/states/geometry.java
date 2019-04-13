@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.geometry.Geometry;
-import com.dddviewr.collada.geometry.LibraryGeometries;
+import com.dddviewr.collada.content.geometry.Geometry;
+import com.dddviewr.collada.content.geometry.LibraryGeometries;
 
 public class geometry extends State {
 	protected Geometry geo;
@@ -17,7 +17,7 @@ public class geometry extends State {
 
 		this.geo = new Geometry(id, geoName);
 		LibraryGeometries lib = ((library_geometries) getParent()).getLibrary();
-		lib.addGeometry(this.geo);
+		lib.addElement(this.geo);
 	}
 
 	public Geometry getGeometry() {

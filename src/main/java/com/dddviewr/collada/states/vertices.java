@@ -5,8 +5,8 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.geometry.Mesh;
-import com.dddviewr.collada.geometry.Vertices;
+import com.dddviewr.collada.content.geometry.Mesh;
+import com.dddviewr.collada.content.geometry.Vertices;
 
 public class vertices extends State {
 	protected Vertices theVertices;

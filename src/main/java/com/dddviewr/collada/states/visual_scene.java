@@ -4,9 +4,9 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.nodes.Node;
-import com.dddviewr.collada.visualscene.LibraryVisualScenes;
-import com.dddviewr.collada.visualscene.VisualScene;
+import com.dddviewr.collada.content.nodes.Node;
+import com.dddviewr.collada.content.visualscene.LibraryVisualScenes;
+import com.dddviewr.collada.content.visualscene.VisualScene;
 
 public class visual_scene extends State {
 	protected VisualScene visualScene;
@@ -17,7 +17,7 @@ public class visual_scene extends State {
 				.getValue("name"));
 		LibraryVisualScenes library = ((library_visual_scenes) getParent())
 				.getLibrary();
-		library.addVisualScene(this.visualScene);
+		library.addElement(this.visualScene);
 	}
 
 	public VisualScene getVisualScene() {

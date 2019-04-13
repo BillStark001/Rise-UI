@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.controller.LibraryControllers;
+import com.dddviewr.collada.content.controller.LibraryControllers;
 
 public class library_controllers extends State {
 	protected LibraryControllers libraryControllers;

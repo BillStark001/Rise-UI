@@ -5,8 +5,8 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.animation.Animation;
-import com.dddviewr.collada.animation.Sampler;
+import com.dddviewr.collada.content.animation.Animation;
+import com.dddviewr.collada.content.animation.Sampler;
 
 public class sampler extends State {
 	protected Sampler theSampler;

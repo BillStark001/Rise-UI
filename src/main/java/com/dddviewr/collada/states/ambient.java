@@ -5,8 +5,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.EffectAttribute;
-import com.dddviewr.collada.effects.EffectMaterial;
+import com.dddviewr.collada.content.effects.EffectAttribute;
+import com.dddviewr.collada.content.effects.EffectMaterial;
 
 public class ambient extends State {
 	protected EffectAttribute attrib;

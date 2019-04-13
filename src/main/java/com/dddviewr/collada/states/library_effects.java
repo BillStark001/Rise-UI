@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.LibraryEffects;
+import com.dddviewr.collada.content.effects.LibraryEffects;
 
 public class library_effects extends State {
 	protected LibraryEffects library = new LibraryEffects();

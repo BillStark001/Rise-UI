@@ -2,6 +2,8 @@ package com.dddviewr.collada;
 
 import java.io.PrintStream;
 
+import com.dddviewr.collada.format.Base;
+
 public class Technique extends Base {
 	protected String sid;
 	protected String profile;

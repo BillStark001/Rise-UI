@@ -5,7 +5,7 @@ import org.xml.sax.Attributes;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.geometry.LibraryGeometries;
+import com.dddviewr.collada.content.geometry.LibraryGeometries;
 
 public class library_geometries extends State {
 	protected LibraryGeometries library = new LibraryGeometries();

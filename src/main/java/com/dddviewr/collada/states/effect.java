@@ -4,8 +4,8 @@ import org.xml.sax.Attributes;
 
 import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
-import com.dddviewr.collada.effects.Effect;
-import com.dddviewr.collada.effects.LibraryEffects;
+import com.dddviewr.collada.content.effects.Effect;
+import com.dddviewr.collada.content.effects.LibraryEffects;
 
 public class effect extends State {
 	protected Effect theEffect;
@@ -15,7 +15,7 @@ public class effect extends State {
 
 		this.theEffect = new Effect(attrs.getValue("id"));
 		LibraryEffects lib = ((library_effects) getParent()).getLibrary();
-		lib.addEffect(theEffect);
+		lib.addElement(theEffect);
 	}
 
 	public Effect getEffect() {
