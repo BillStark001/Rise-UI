@@ -3,7 +3,7 @@ package com.billstark001.riseui.core.polygon;
 import java.util.HashMap;
 
 import com.billstark001.riseui.io.ObjFile;
-import com.billstark001.riseui.io.ResourceLoader;
+import com.billstark001.riseui.io.CharResourceLoader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -19,7 +19,7 @@ public class Presets {
 	public static void loadPresets() {
 		ResourceLocation low = new ResourceLocation("riseui:models/presets.obj");
 		ResourceLocation high = new ResourceLocation("riseui:models/presets_high_lod.obj");
-		ResourceLoader res = ResourceLoader.getInstance();
+		CharResourceLoader res = CharResourceLoader.getInstance();
 		res.loadRes(low);
 		res.loadRes(high);
 		pre = new ObjFile(res.getRes(low));

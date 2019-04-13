@@ -35,14 +35,6 @@ public final class ObjFile {
 		proc = new HashMap<String, ArrayList>();
 		parse();
 	}
-	/*
-	 * private static String read (String file) { StringBuffer s = new
-	 * StringBuffer(); try { FileReader input = new FileReader(file); int b = 0;
-	 * try { while (b != -1) { b = input.read(); s = s.append((char)b); }
-	 * input.close(); } catch (IOException e) { e.printStackTrace(); } } catch
-	 * (FileNotFoundException e) { System.out.println("Inexistent File!");
-	 * e.printStackTrace(); } return s.toString(); }
-	 */
 
 	private static String[] optimize(String str) {
 		String[] s = str.split("\n");
@@ -212,57 +204,7 @@ public final class ObjFile {
 		Triad[] t_ = faces.toArray(new Triad[0]);
 		return new PolygonMesh(mtv, mtt, mtn, t_, vindex, mats);
 	}
-	/*
-	@Deprecated
-	public PolygonMeshOld generateMesh(String name) {
-		if (!proc.containsKey(name))
-			return null;
-		ArrayList<String> orig = proc.get(name);
-		int mat = 0, face = 0;
-		for (String cur : orig) {
-			if (cur.startsWith("m"))
-				++mat;
-			else if (cur.startsWith("f"))
-				++face;
-		}
-		String[] matid = new String[face];
-		int[] faceid = new int[face];
-		ArrayList<Vector> lv = new ArrayList<Vector>();
-		ArrayList<Vector> ln = new ArrayList<Vector>();
-		ArrayList<Vector> lu = new ArrayList<Vector>();
-		ArrayList<Matrix> luc = null, lnc = null, lvc = null;
-		int v_count = 0, f_count = 0;
-		for (String cur : orig) {
-			if (cur.startsWith("m")) {
-				matid[f_count] = cur.substring(2);
-			} else if (cur.startsWith("f")) {
-				String[] st = cur.split(" ");
-				for (int i = 1; i < st.length; ++i) {
-					if (st[i].equals(""))
-						continue;
-					String[] ss = st[i].split("/");
-					lv.add(vertex.get(Integer.valueOf(ss[0]) - 1));
-					if (ss.length == 3)
-						ln.add(normal.get(Integer.valueOf(ss[2]) - 1));
-					lu.add(coord.get(Integer.valueOf(ss[1]) - 1));
-					++v_count;
-				}
-				faceid[f_count] = v_count;
-				++f_count;
-			}
-		}
-		Matrix mu = new Matrix(lu.toArray(new Vector[0]));
-		Matrix mv = new Matrix(lv.toArray(new Vector[0]));
-		Matrix mn = null;
-		if (ln.size() > 0)
-			mn = new Matrix(ln.toArray(new Vector[0]));
-		return new PolygonMeshOld(mv, mu, mn, faceid, matid);
-	}
-
-	public void pr(Object o) {
-		System.out.println(o);
-	}
-	*/
+	
 	private static Comparator<Pair> paircomp = new Comparator<Pair>() {
 		@Override
 		public int compare(Pair t1, Pair t2) {
@@ -407,8 +349,8 @@ public final class ObjFile {
 	}
 	
 	public void linkMtlFile() {
-		String sm = ResourceLoader.getInstance().getRes(new ResourceLocation(mtldir));
-		if (sm == ResourceLoader.MISSING_RES) this.linked_mtl = MtlFile.getDefault();
+		String sm = CharResourceLoader.getInstance().getRes(new ResourceLocation(mtldir));
+		if (sm == CharResourceLoader.MISSING_RES) this.linked_mtl = MtlFile.getDefault();
 		else this.linked_mtl = new MtlFile(sm);
 	}
 

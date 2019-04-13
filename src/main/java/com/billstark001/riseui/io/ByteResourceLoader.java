@@ -2,6 +2,8 @@ package com.billstark001.riseui.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,40 +22,45 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 //Quotation: net.minecraft.client.renderer.texture.TextureManager
 @SideOnly(Side.CLIENT)
-public class ResourceLoader implements IResourceManagerReloadListener
+public class ByteResourceLoader implements IResourceManagerReloadListener
 {
+	private static final int BYTE_BUFFER = 4096;
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final String MISSING_RES = "";
+    public static final byte[] MISSING_RES = new byte[0];
     public static final ResourceLocation RESOURCE_LOCATION_EMPTY = new ResourceLocation("");
     
-    private final Map<ResourceLocation, String> mapRes = Maps.<ResourceLocation, String>newHashMap();
+    private final Map<ResourceLocation, byte[]> mapRes = Maps.<ResourceLocation, byte[]>newHashMap();
     private final IResourceManager res;
 
-    private ResourceLoader(IResourceManager resMan)
-    {
-        this.res = resMan;
-    }
-    
-    public static final ResourceLoader INSTANCE = new ResourceLoader(Minecraft.getMinecraft().getResourceManager());
-    public static ResourceLoader getInstance() {return INSTANCE;}
+    private ByteResourceLoader(IResourceManager resMan) {this.res = resMan;}
+    public static final ByteResourceLoader INSTANCE = new ByteResourceLoader(Minecraft.getMinecraft().getResourceManager());
+    public static ByteResourceLoader getInstance() {return INSTANCE;}
     
     public boolean loadRes(ResourceLocation location) {return loadRes(location, MISSING_RES);}
-
-    public boolean loadRes(ResourceLocation location, String res)
+    public boolean loadRes(ResourceLocation location, byte[] res)
     {
         boolean flag = true;
         if (mapRes.containsKey(location)) return flag;
         try
         {
         	InputStream input = this.res.getResource(location).getInputStream();
-    		StringBuffer s = new StringBuffer();
+    		byte[] buffer = new byte[BYTE_BUFFER];
+    		ArrayList<byte[]> cache = new ArrayList<byte[]>();
     		int b = 0;
-    		while (b != -1) {
-    			b = input.read();
-    			s = s.append((char)b);
+    		int acc = 0;
+    		while (b > -1) {
+    			b = input.read(buffer);
+    			if (b == -1) break;
+    			if (b != BYTE_BUFFER) buffer = Arrays.copyOf(buffer, b);
+    			acc += b;
+    			cache.add(buffer.clone());
     		}
     		input.close();
-    		res = s.toString();
+    		byte[] bfinal = new byte[acc];
+    		for (int i = 0; i < cache.size(); ++i) {
+    			System.arraycopy(cache.get(i), 0, bfinal, i * BYTE_BUFFER, cache.get(i).length);
+    		}
+    		res = bfinal;
         }
         catch (IOException ioexception)
         {
@@ -62,7 +69,7 @@ public class ResourceLoader implements IResourceManagerReloadListener
                 LOGGER.warn("Failed to load resource: {}", location, ioexception);
             }
 
-            res = this.MISSING_RES;
+            res = ByteResourceLoader.MISSING_RES;
             this.mapRes.put(location, res);
             flag = false;
         }
@@ -70,14 +77,14 @@ public class ResourceLoader implements IResourceManagerReloadListener
         return flag;
     }
     
-    public String getRes(ResourceLocation location)
+    public byte[] getRes(ResourceLocation location)
     {
         return this.mapRes.get(location);
     }
     
     public void delRes(ResourceLocation location)
     {
-        String res = this.getRes(location);
+        byte[] res = this.getRes(location);
 
         if (res != null)
         {
@@ -87,16 +94,16 @@ public class ResourceLoader implements IResourceManagerReloadListener
 
     public void onResourceManagerReload(IResourceManager res)
     {
-        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Reloading Rise UI 3D Resource Manager", this.mapRes.keySet().size(), true);
-        Iterator<Entry<ResourceLocation, String>> iterator = this.mapRes.entrySet().iterator();
+        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Reloading Rise UI Byte Resource Manager", this.mapRes.keySet().size(), true);
+        Iterator<Entry<ResourceLocation, byte[]>> iterator = this.mapRes.entrySet().iterator();
 
         while (iterator.hasNext())
         {
-            Entry<ResourceLocation, String> entry = iterator.next();
+            Entry<ResourceLocation, byte[]> entry = iterator.next();
             bar.step(entry.getKey().toString());
-            String s = entry.getValue();
+            byte[] s = entry.getValue();
 
-            if (s.equals(this.MISSING_RES))
+            if (s.equals(ByteResourceLoader.MISSING_RES))
             {
                 iterator.remove();
             }

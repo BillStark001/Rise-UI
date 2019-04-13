@@ -9,7 +9,7 @@ import com.billstark001.riseui.core.polygon.PolygonMesh;
 import com.billstark001.riseui.core.polygon.Presets;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
-import com.billstark001.riseui.io.ResourceLoader;
+import com.billstark001.riseui.io.CharResourceLoader;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 
@@ -25,7 +25,7 @@ public class RenderTestObject{
 	private static long tend;
 	
 	
-	private static ResourceLoader res = ResourceLoader.getInstance();
+	private static CharResourceLoader res = CharResourceLoader.getInstance();
 	private static GlRenderHelper render = GlRenderHelper.getInstance();
 	private static EntityPlayer player = Minecraft.getMinecraft().player;
 	private static World world = Minecraft.getMinecraft().world;
