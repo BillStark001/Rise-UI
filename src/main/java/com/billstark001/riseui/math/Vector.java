@@ -8,6 +8,13 @@ public final class Vector {
 	private final double[] elements;
 	private final double length;
 	
+	public static final Vector UNIT0_D2 = new Vector(0, 0);
+	public static final Vector UNIT0_D3 = new Vector(0, 0, 0);
+	public static final Vector UNIT0_D4 = new Vector(0, 4, true);
+	public static final Vector UNIT1_D2 = new Vector(1, 1);
+	public static final Vector UNIT1_D3 = new Vector(1, 1, 1);
+	public static final Vector UNIT1_D4 = new Vector(1, 4, true);
+	
 	public Vector(double[] elements) {
 		dim = elements.length;
 		this.elements = elements.clone();

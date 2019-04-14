@@ -202,7 +202,9 @@ public final class ObjFile {
 		//pr(vtt);
 		//pr(vtn);
 		Triad[] t_ = faces.toArray(new Triad[0]);
-		return new PolygonMesh(mtv, mtt, mtn, t_, vindex, mats);
+		PolygonMesh ans = new PolygonMesh(mtv, mtt, mtn, t_, vindex, mats);
+		ans.setName(name);
+		return ans;
 	}
 	
 	private static Comparator<Pair> paircomp = new Comparator<Pair>() {
@@ -332,6 +334,7 @@ public final class ObjFile {
 		}
 		
 		PolygonGrid ans = new PolygonGrid(mtv, ansa);
+		ans.setName(name);
 		return ans;
 	}
 

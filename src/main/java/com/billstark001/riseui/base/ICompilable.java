@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.object;
+package com.billstark001.riseui.base;
 
 public interface ICompilable {
 

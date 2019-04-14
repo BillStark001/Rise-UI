@@ -5,10 +5,9 @@ import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.object.BaseObject;
-import com.billstark001.riseui.base.object.ICompilable;
-import com.billstark001.riseui.base.object.IMeshable;
-import com.billstark001.riseui.base.object.IRenderable;
+import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.ICompilable;
+import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.io.ObjFile;
@@ -22,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, IRenderable{
+public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 	
 	private Triad[] vertices;
 	private BaseMaterial[] mindex;
@@ -64,7 +63,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 	public int getFaceCount () {return findex.length;}
 	
 	@Override
-	public boolean setParent(BaseObject obj) {
+	public boolean setParent(BaseNode obj) {
 		this.markRecompile();
 		return super.setParent(obj);
 	}
@@ -163,7 +162,7 @@ public class PolygonMesh extends BaseObject implements IMeshable, ICompilable, I
 		return mindex[index];
 	}
 
-	public void render() {
+	public void onRender() {
 		//GlRenderHelper.getInstance().renderMesh(this);
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}

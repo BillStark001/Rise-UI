@@ -3,15 +3,14 @@ package com.billstark001.riseui.core.character;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.billstark001.riseui.base.object.BaseObject;
-import com.billstark001.riseui.base.object.IGridable;
-import com.billstark001.riseui.base.object.IRenderable;
+import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public final class Joint extends BaseObject implements IGridable, IRenderable{
+public final class Joint extends BaseNode implements IGridable{
 	
 	private List<Joint> inferior = new ArrayList<Joint>();
 	private Joint superior = null;
@@ -33,7 +32,7 @@ public final class Joint extends BaseObject implements IGridable, IRenderable{
 	// Maintainence
 	
 	@Override
-	public boolean addChild(BaseObject obj) {
+	public boolean addChild(BaseNode obj) {
 		if (obj instanceof Joint) {this.addInferior((Joint) obj);}
 		return super.addChild(obj);
 	}
@@ -42,7 +41,7 @@ public final class Joint extends BaseObject implements IGridable, IRenderable{
 	}
 	
 	@Override
-	public boolean setParent(BaseObject parent) {
+	public boolean setParent(BaseNode parent) {
 		boolean flag = super.setParent(parent);
 		if (flag && parent instanceof Joint) {this.setSuperior((Joint) parent);}
 		return flag;
@@ -59,7 +58,11 @@ public final class Joint extends BaseObject implements IGridable, IRenderable{
 	// Render
 	
 	@Override
-	public void render() {
+	public void onRender() {
+		
+	}
+	
+	public void onRenderDebug() {
 		GlRenderHelper.getInstance().clearAccumCache();
 		refreshGrid();
 		GlRenderHelper.getInstance().renderGrid(this);

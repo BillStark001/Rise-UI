@@ -7,10 +7,9 @@ import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.object.BaseObject;
-import com.billstark001.riseui.base.object.ICompilable;
-import com.billstark001.riseui.base.object.IGridable;
-import com.billstark001.riseui.base.object.IRenderable;
+import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.ICompilable;
+import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Matrix;
@@ -23,7 +22,7 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 
-public class PolygonGrid extends BaseObject implements IGridable, ICompilable, IRenderable{
+public class PolygonGrid extends BaseNode implements IGridable, ICompilable{
 	
 	private ArrayList<int[]> segments;
 	private boolean looped;
@@ -59,7 +58,7 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 	}
 	
 	@Override
-	public boolean setParent(BaseObject obj) {
+	public boolean setParent(BaseNode obj) {
 		this.markRecompile();
 		return super.setParent(obj);
 	}
@@ -132,7 +131,7 @@ public class PolygonGrid extends BaseObject implements IGridable, ICompilable, I
 		calcRender();
 	}
 	
-	public void render() {
+	public void onRender() {
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	

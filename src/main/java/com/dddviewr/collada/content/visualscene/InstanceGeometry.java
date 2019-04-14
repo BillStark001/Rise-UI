@@ -7,19 +7,14 @@ import java.util.List;
 import com.dddviewr.collada.format.Base;
 
 public class InstanceGeometry extends Base {
-	protected String url;
 	protected List<InstanceMaterial> instanceMaterials = new ArrayList<InstanceMaterial>();
 
 	public InstanceGeometry(String url) {
-		this.url = url;
+		super(url);
 	}
 
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+	public int getUrl() {
+		return this.getId();
 	}
 
 	public List<InstanceMaterial> getInstanceMaterials() {
@@ -32,7 +27,7 @@ public class InstanceGeometry extends Base {
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.println(prefix + "InstanceGeometry (url: " + this.url + ")");
+		out.println(prefix + "InstanceGeometry (url: " + this.getUrl() + ")");
 
 		for (InstanceMaterial mat : this.instanceMaterials)
 			mat.dump(out, indent + 1);

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.dddviewr.collada.Input;
 
-public abstract class Base {
+public class Base {
 	
 	private final int id;
 	
@@ -38,6 +38,8 @@ public abstract class Base {
 		String prefix = createIndent(indent);
 		out.println(prefix + this);
 	}
+	
+	public void dump() {dump(System.out, 0);}
 	
 	public static void dump(PrintStream out, int indent, Collection<? extends Base> c) {
 		for (Base inp : c)

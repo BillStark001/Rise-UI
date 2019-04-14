@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import com.dddviewr.collada.format.Base;
 
 public class Geometry extends Base {
-	protected String id;
 	protected String name;
 	protected Mesh mesh;
 
@@ -32,7 +31,7 @@ public class Geometry extends Base {
 	}
 	
 	public String toString() {
-		return "Geometry (id: " + this.id + ", name: "
+		return "Geometry (id: " + this.getId() + ", name: "
 				+ this.name + ")";
 	}
 

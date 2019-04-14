@@ -91,12 +91,12 @@ public class Node extends Base {
 		this.instanceNode = instanceNode;
 	}
 
-	public List<Node> getChildNodes() {
-		return this.childNodes;
+	public List<Node> getChildNodesList() {
+		return new ArrayList<Node>(this.childNodes);
 	}
-
-	public void setChildNodes(List<Node> childNodes) {
-		this.childNodes = childNodes;
+	
+	public Node[] getChildNodes() {
+		return this.childNodes.toArray(new Node[0]);
 	}
 	
 	public Matrix getMatrix() {

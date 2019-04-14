@@ -6,11 +6,10 @@ import com.dddviewr.collada.format.Base;
 
 public class InstanceMaterial extends Base {
 	protected String symbol;
-	protected String target;
 
 	public InstanceMaterial(String symbol, String target) {
+		super(target);
 		this.symbol = symbol;
-		this.target = target;
 	}
 
 	public String getSymbol() {
@@ -21,17 +20,12 @@ public class InstanceMaterial extends Base {
 		this.symbol = symbol;
 	}
 
-	public String getTarget() {
-		return this.target;
+	public int getTarget() {
+		return this.getId();
 	}
 
-	public void setTarget(String target) {
-		this.target = target;
-	}
-
-	public void dump(PrintStream out, int indent) {
-		String prefix = createIndent(indent);
-		out.println(prefix + "InstanceMaterial (symbol: " + this.symbol
-				+ ", target: " + this.target + ")");
+	public String toString() {
+		return "InstanceMaterial (symbol: " + this.symbol
+				+ ", target: " + this.getId() + ")";
 	}
 }

@@ -2,11 +2,10 @@ package com.billstark001.riseui.client;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.object.BaseObject;
-import com.billstark001.riseui.base.object.ICompilable;
-import com.billstark001.riseui.base.object.IGridable;
-import com.billstark001.riseui.base.object.IMeshable;
-import com.billstark001.riseui.base.object.IRenderable;
+import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.ICompilable;
+import com.billstark001.riseui.base.IGridable;
+import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.math.InteractUtils;
@@ -27,13 +26,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GlRenderHelper {
+public final class GlRenderHelper {
 
 	private final Tessellator T;
 	private final BufferBuilder R;
 	private final TextureManager M;
 	
 	public static final int DEFAULT_COLOR = 0x00FFFF;
+	
+	private boolean render_debug = false;
+	public void setDebugState(boolean s) {this.render_debug = s;}
+	public boolean getDebugState() {return this.render_debug;}
 
 	private MtlFile mtl;
 	private int r, g, b, a;
@@ -161,13 +164,20 @@ public class GlRenderHelper {
 		GL11.glCallList(obj.getDisplayList());
 	}
 	
-	public void renderObject(BaseObject obj) {
+	public void renderObject(BaseNode obj) {
 		Vector p, r, s;
 		Quaternion q;
-		p = obj.getParent().getGlobalPos();
-		q = Quaternion.reverseAxisRotate(obj.getParent().getGlobalRot());
+		if (obj.getParent() == null) {
+			p = BaseNode.POS_UNIT;
+			q = Quaternion.reverseAxisRotate(BaseNode.ROT_UNIT);
+			s = BaseNode.SCALE_UNIT;
+		} else {
+			p = obj.getParent().getGlobalPos();
+			q = Quaternion.reverseAxisRotate(obj.getParent().getGlobalRot());
+			s = obj.getParent().getGlobalScale();
+		}
 		r = q.getImaginary();
-		s = obj.getParent().getGlobalScale();
+		
 		GL11.glPushMatrix();
 		//if (obj instanceof IRenderable) ((IRenderable) obj).render();
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
@@ -177,8 +187,8 @@ public class GlRenderHelper {
 		GL11.glPopMatrix();
 	}
 
-	private void renderObject(BaseObject obj, boolean f) {
-		if (obj == BaseObject.ROOT_OBJECT) return;
+	private void renderObject(BaseNode obj, boolean f) {
+		if (obj == null) return;
 		Vector p, r, s;
 		Quaternion q;
 		p = obj.getPos();
@@ -187,11 +197,11 @@ public class GlRenderHelper {
 		s = obj.getScale();
 		
 		GL11.glPushMatrix();
-		if (obj instanceof IRenderable) ((IRenderable) obj).render();
+		obj.render();
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
 		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
-		for (BaseObject o: obj.getChildren()) renderObject(o, f);
+		for (BaseNode o: obj.getChildren()) renderObject(o, f);
 		GL11.glPopMatrix();
 		
 	}

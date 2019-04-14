@@ -2,7 +2,7 @@ package com.billstark001.riseui.develop;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.object.BaseObject;
+import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.polygon.PolygonGrid;
 import com.billstark001.riseui.core.polygon.PolygonMesh;
@@ -87,7 +87,9 @@ public class RenderTestObject{
 		//hgrid.setParent(horse);
 		table.setParent(sphere);
 		sphere.setParent(horse);
-		BaseObject.printTree(horse);
+
+		horse.dump();
+		
 		
 	}
 	
