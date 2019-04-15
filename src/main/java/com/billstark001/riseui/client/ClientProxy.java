@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ClientProxy extends CommonProxy {
 
@@ -55,6 +56,11 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.post(new RenderTileOverlayEvent(e.getContext(), e.getPartialTicks()));
 
 		GlStateManager.popMatrix();
+	}
+	
+	@SubscribeEvent
+	public void handleTickableTags(TickEvent e) {
+		
 	}
 
 }

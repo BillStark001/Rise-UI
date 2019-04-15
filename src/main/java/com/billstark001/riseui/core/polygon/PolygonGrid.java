@@ -131,7 +131,7 @@ public class PolygonGrid extends BaseNode implements IGridable, ICompilable{
 		calcRender();
 	}
 	
-	public void onRender() {
+	public void onRender(double ptick) {
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	

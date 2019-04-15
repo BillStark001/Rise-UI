@@ -2,11 +2,13 @@ package com.billstark001.riseui.base.shader;
 
 import java.io.FileNotFoundException;
 
+import com.billstark001.riseui.base.BaseObject;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
-public class BaseMaterial {
+public class BaseMaterial extends BaseObject{
 
 	private ResourceLocation albedo_tex;
 	private ResourceLocation emit_tex;

@@ -1,7 +1,17 @@
 package com.billstark001.riseui.base;
 
-public abstract class BaseTag extends BaseObject{
-	
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import com.billstark001.riseui.math.Pair;
+
+import net.minecraft.util.ITickable;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+public abstract class BaseTag extends BaseObject {
 	protected int hierarchy;
 	protected boolean activated;
 	
@@ -11,6 +21,7 @@ public abstract class BaseTag extends BaseObject{
 	public BaseTag(int hierarchy, boolean activated) {
 		this.hierarchy = hierarchy;
 		this.activated = activated;
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public int getHierarchy() {return hierarchy;}
@@ -18,9 +29,22 @@ public abstract class BaseTag extends BaseObject{
 	public boolean isActivated() {return activated;}
 	public void setActivated(boolean activated) {this.activated = activated;}
 	
+	@SubscribeEvent
+	public abstract void update(TickEvent e);
+	
+	public abstract void onAdd(BaseNode node);
+	public abstract void onRemove(BaseNode node);
 	public abstract void onGlobalUpdate(BaseNode node);
 	public abstract void onLocalUpdate(BaseNode node);
-	public abstract void onRenderPre(BaseNode object);
-	public abstract void onRenderPost(BaseNode object);
+	public abstract void onRenderPre(BaseNode object, double ptick);
+	public abstract void onRenderPost(BaseNode object, double ptick);
+	
+	public static void sortTags(List<BaseTag> tags) {tags.sort(tagcomp);}
+	private static Comparator<BaseTag> tagcomp = new Comparator<BaseTag>() {
+		@Override
+		public int compare(BaseTag t1, BaseTag t2) {
+			return t1.hierarchy - t2.hierarchy;
+		}
+	};
 	
 }

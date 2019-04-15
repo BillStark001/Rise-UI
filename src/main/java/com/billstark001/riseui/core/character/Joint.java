@@ -58,7 +58,7 @@ public final class Joint extends BaseNode implements IGridable{
 	// Render
 	
 	@Override
-	public void onRender() {
+	public void onRender(double ptick) {
 		
 	}
 	

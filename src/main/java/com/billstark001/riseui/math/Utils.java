@@ -1,6 +1,8 @@
 package com.billstark001.riseui.math;
 
 public final class Utils {
+	
+	// Interpolation
 
 	// Composition and splitting
 	

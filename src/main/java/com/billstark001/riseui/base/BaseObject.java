@@ -22,7 +22,7 @@ public abstract class BaseObject {
 	}
 	
 	public Layer getLayer() {return this.layer;}
-	public boolean setLayer(Layer l) {return l.addMember(this);}
+	public boolean setLayer(Layer l) {if (l == null) return false; return l.addMember(this);}
 	public boolean removeFromLayer() {
 		if (this.layer == null) return false;
 		return this.layer.removeMember(this);

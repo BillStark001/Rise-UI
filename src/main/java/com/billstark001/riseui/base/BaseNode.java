@@ -5,6 +5,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import com.billstark001.riseui.math.Utils;
+import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 
@@ -167,7 +169,8 @@ public abstract class BaseNode extends BaseObject{
 			wscale = scale;
 			clarifyGlobal();
 			
-			for (BaseTag t: tags) t.onGlobalUpdate(this);
+			BaseTag.sortTags(tags);
+			for (BaseTag t: tags) if (t.isActivated()) t.onGlobalUpdate(this);
 			return;
 		}
 		parent.updateGlobalInfo();
@@ -176,7 +179,8 @@ public abstract class BaseNode extends BaseObject{
 		wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
 		clarifyGlobal();
 		
-		for (BaseTag t: tags) t.onGlobalUpdate(this);
+		BaseTag.sortTags(tags);
+		for (BaseTag t: tags) if (t.isActivated()) t.onGlobalUpdate(this);
 	}
 	//Local Info. Getter & Setter
 
@@ -188,15 +192,19 @@ public abstract class BaseNode extends BaseObject{
 		this.pos = pos;
 		markGlobalDirty();
 	}
-
 	public void setRot(Vector rot) {setRot(Quaternion.eulerToQuat(rot));}
 	public void setRot(Quaternion rot) {
 		this.rot = rot;
 		markGlobalDirty();
 	}
-	
 	public void setScale(double scale) {setScale(new Vector(scale, scale, scale));}
 	public void setScale(Vector scale) {
+		this.scale = scale;
+		markGlobalDirty();
+	}
+	public void setLocal(Vector pos, Quaternion rot, Vector scale) {
+		this.pos = pos;
+		this.rot = rot;
 		this.scale = scale;
 		markGlobalDirty();
 	}
@@ -237,6 +245,14 @@ public abstract class BaseNode extends BaseObject{
 		markGlobalDirty();
 		clarifyGlobal();
 	}
+	public void setGlobal(Vector pos, Quaternion rot, Vector scale) {
+		this.wpos = pos;
+		this.wrot = rot;
+		this.wscale = scale;
+		updateLocalInfo();
+		markGlobalDirty();
+		clarifyGlobal();
+	}
 	
 	public void setGlobalPosSolely(Vector wpos) {
 		for (BaseNode obj: children) obj.updateGlobalInfo();
@@ -258,6 +274,14 @@ public abstract class BaseNode extends BaseObject{
 		updateLocalInfo();
 		for (BaseNode obj: children) obj.updateLocalInfo();
 	}
+	public void setGlobalSolely(Vector pos, Quaternion rot, Vector scale) {
+		for (BaseNode obj: children) obj.updateGlobalInfo();
+		this.wpos = pos;
+		this.wrot = rot;
+		this.wscale = scale;
+		updateLocalInfo();
+		for (BaseNode obj: children) obj.updateLocalInfo();
+	}
 	
 	public void offset(Vector v) {setPos(Utils.compOffset(pos, v));}
 	public void rotate(Quaternion q) {setRot(Utils.compRotate(rot, q));}
@@ -269,27 +293,77 @@ public abstract class BaseNode extends BaseObject{
 
 	public boolean addTag(BaseTag tag) {
 		tags.add(tag);
+		tag.onAdd(this);
 		return true;
 	}
 	
 	public boolean removeTag(BaseTag tag) {
 		if (tags.contains(tag)) {
+			tag.onRemove(this);
 			tags.remove(tag);
 			return true;
 		}
 		return false;
 	}
 	
-	public void render() {
-		for (BaseTag t: tags) t.onRenderPre(this);
-		this.onRender();
-		this.onRenderDebug();
-		for (BaseTag t: tags) t.onRenderPost(this);
+	public void render(double ptick) {
+		
+		BaseTag.sortTags(tags);
+		BaseTag t;
+		for (int i = 0; i < tags.size(); ++i) {
+			t = tags.get(i);
+			if (t.isActivated()) t.onRenderPre(this, ptick);
+		}
+		this.onRender(ptick);
+		if (GlRenderHelper.getInstance().isDebugging()) this.onRenderDebug(ptick);
+		for (int i = tags.size() - 1; i >= 0; --i) {
+			t = tags.get(i);
+			if (t.isActivated()) t.onRenderPost(this, ptick);
+		}
 	}
 	
-	public abstract void onRender();
-	public void onRenderDebug() {
+	public abstract void onRender(double ptick);
+	public void onRenderDebug(double ptick) {
 		
+		double axis_length = 0.6;
+		GlRenderHelper h = GlRenderHelper.getInstance();
+		h.enableGridState();
+		h.setLineWidth(10);
+		//h.disableDepth();
+		
+		Vector[] vtemp = {
+				POS_UNIT,
+				new Vector(axis_length, 0, 0),
+				new Vector(0, axis_length, 0),
+				new Vector(0, 0, axis_length)
+		};
+		Matrix mtemp = new Matrix(vtemp);
+		mtemp = Utils.zoom(mtemp, scale);
+		mtemp = Utils.rotate(mtemp, rot);
+		mtemp = Utils.offset(mtemp, pos);
+		vtemp = mtemp.toVecArray();
+		
+		
+		h.setColor(255, 0, 0);
+		h.startDrawingGrid(false);
+		h.addVertex(vtemp[0]);
+		h.addVertex(vtemp[1]);
+		h.endDrawing();
+		
+		h.setColor(0, 255, 0);
+		h.startDrawingGrid(false);
+		h.addVertex(vtemp[0]);
+		h.addVertex(vtemp[2]);
+		h.endDrawing();
+		
+		h.setColor(0, 0, 255);
+		h.startDrawingGrid(false);
+		h.addVertex(vtemp[0]);
+		h.addVertex(vtemp[3]);
+		h.endDrawing();
+		
+		h.disableGridState();
+		//h.enableDepth();
 	}
 
 	// Display Functions

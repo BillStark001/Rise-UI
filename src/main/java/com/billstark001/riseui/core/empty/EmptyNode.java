@@ -5,7 +5,7 @@ import com.billstark001.riseui.base.BaseNode;
 public class EmptyNode extends BaseNode {
 
 	@Override
-	public void onRender() {
+	public void onRender(double ptick) {
 		// TODO 自动生成的方法存根
 
 	}

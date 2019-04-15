@@ -1,6 +1,11 @@
 package com.billstark001.riseui.client;
 
+import java.nio.IntBuffer;
+
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.ICompilable;
@@ -36,7 +41,7 @@ public final class GlRenderHelper {
 	
 	private boolean render_debug = false;
 	public void setDebugState(boolean s) {this.render_debug = s;}
-	public boolean getDebugState() {return this.render_debug;}
+	public boolean isDebugging() {return this.render_debug;}
 
 	private MtlFile mtl;
 	private int r, g, b, a;
@@ -107,6 +112,13 @@ public final class GlRenderHelper {
 	public void clearAccumCache() {
 		GL11.glClear(GL11.GL_ACCUM);
 	}
+	
+	public void disableDepth() {
+	}
+	
+	public void enableDepth() {
+		GL11.glDepthMask(true);
+	}
 
 	//Render
 
@@ -164,7 +176,7 @@ public final class GlRenderHelper {
 		GL11.glCallList(obj.getDisplayList());
 	}
 	
-	public void renderObject(BaseNode obj) {
+	public void renderObject(BaseNode obj, double ptick) {
 		Vector p, r, s;
 		Quaternion q;
 		if (obj.getParent() == null) {
@@ -183,11 +195,11 @@ public final class GlRenderHelper {
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
 		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
-		renderObject(obj, false);
+		renderObject(obj, false, ptick);
 		GL11.glPopMatrix();
 	}
 
-	private void renderObject(BaseNode obj, boolean f) {
+	private void renderObject(BaseNode obj, boolean f, double ptick) {
 		if (obj == null) return;
 		Vector p, r, s;
 		Quaternion q;
@@ -197,11 +209,11 @@ public final class GlRenderHelper {
 		s = obj.getScale();
 		
 		GL11.glPushMatrix();
-		obj.render();
+		obj.render(ptick);
 		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
 		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
 		GL11.glScaled(s.get(0), s.get(1), s.get(2));
-		for (BaseNode o: obj.getChildren()) renderObject(o, f);
+		for (BaseNode o: obj.getChildren()) renderObject(o, f, ptick);
 		GL11.glPopMatrix();
 		
 	}

@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.core.empty.TagTowardsTarget;
 import com.billstark001.riseui.core.polygon.PolygonGrid;
 import com.billstark001.riseui.core.polygon.PolygonMesh;
 import com.billstark001.riseui.core.polygon.Presets;
@@ -41,6 +42,10 @@ public class RenderTestObject{
 	private static final ResourceLocation tmtl = new ResourceLocation("riseui:models/table.mtl");
 	
 	public static void prepareRender() {
+		
+		TagTowardsTarget t = new TagTowardsTarget();
+		
+		render.setDebugState(true);
 		res.loadRes(lobj);
 		res.loadRes(lmtl);
 		res.loadRes(tobj);
@@ -109,7 +114,7 @@ public class RenderTestObject{
 		
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
-		render.renderObject(horse);
+		render.renderObject(horse, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			

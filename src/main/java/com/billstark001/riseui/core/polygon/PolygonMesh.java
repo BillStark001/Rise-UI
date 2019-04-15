@@ -162,7 +162,7 @@ public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 		return mindex[index];
 	}
 
-	public void onRender() {
+	public void onRender(double ptick) {
 		//GlRenderHelper.getInstance().renderMesh(this);
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
