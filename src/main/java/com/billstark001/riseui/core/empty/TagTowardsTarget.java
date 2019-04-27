@@ -2,8 +2,8 @@ package com.billstark001.riseui.core.empty;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.BaseTag;
+import com.billstark001.riseui.base.StateContainer;
 import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.StateContainer;
 import com.billstark001.riseui.math.Vector;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;

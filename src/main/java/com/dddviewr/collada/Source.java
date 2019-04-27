@@ -59,6 +59,39 @@ public class Source extends Base {
 	public String toString() {
 		return "Source (id: " + this.getId() + ", name: " + this.name + ")";
 	}
+	
+	public float[][] parseF() {return parseF(0);}
+	public float[][] parseF(int ecount) {
+		int c = this.getAccessor().getCount(), s = this.getAccessor().getStride();
+		float[][] ans = new float[c][Math.max(s, ecount)];
+		float[] data = this.getFloatArray().getData();
+		for (int i = 0; i < c; ++i) {
+			for (int j = 0; j < s; ++j) {
+				ans[i][j] = data[i * s + j];
+			}
+		}
+		return ans;
+	}
+	public double[][] parseD() {return parseD(0);}
+	public double[][] parseD(int ecount) {
+		int c = this.getAccessor().getCount(), s = this.getAccessor().getStride();
+		double[][] ans = new double[c][Math.max(s, ecount)];
+		float[] data = this.getFloatArray().getData();
+		for (int i = 0; i < c; ++i) {
+			for (int j = 0; j < s; ++j) {
+				ans[i][j] = data[i * s + j];
+			}
+		}
+		return ans;
+	}
+	
+	public String[] getParamNames() {
+		String[] ans = new String[this.getAccessor().getParams().size()];
+		for (int i = 0; i < this.getAccessor().getParams().size(); ++i) {
+			ans[i] = this.getAccessor().getParams().get(i).getName();
+		}
+		return ans;
+	}
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);

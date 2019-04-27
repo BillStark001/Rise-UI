@@ -7,11 +7,25 @@ import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
+import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public final class Joint extends BaseNode implements IGridable{
-	
+public class Joint extends BaseNode implements IGridable {
+
+	public Joint(Vector pos, Quaternion rot, Vector scale, String name) {super(pos, rot, scale, name);}
+	public Joint(Vector pos, Quaternion rot, Vector scale) {super(pos, rot, scale);}
+	public Joint(Vector pos, Quaternion rot, double scale) {super(pos, rot, scale);}
+	public Joint(Vector pos, Vector rot, Vector scale) {super(pos, rot, scale);}
+	public Joint(Vector pos, Quaternion rot) {super(pos, rot);}
+	public Joint(Vector pos) {super(pos);}
+	public Joint() {}
+	public Joint(Vector pos, Quaternion rot, double scale, String name) {super(pos, rot, scale, name);}
+	public Joint(Vector pos, Vector rot, Vector scale, String name) {super(pos, rot, scale, name);}
+	public Joint(Vector pos, Quaternion rot, String name) {super(pos, rot, name);}
+	public Joint(Vector pos, String name) {super(pos, name);}
+	public Joint(String name) {super(name);}
+
 	private List<Joint> inferior = new ArrayList<Joint>();
 	private Joint superior = null;
 	private double length;
@@ -97,5 +111,5 @@ public final class Joint extends BaseNode implements IGridable{
 	}
 	@Override
 	public Vector getVertex(int index) {return vcur.getLine(index);}
-	
+
 }

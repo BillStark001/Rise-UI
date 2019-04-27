@@ -73,4 +73,16 @@ public abstract class Primitives extends Base {
 			out.println();
 		}
 	}
+	
+	public int[][] getParsed() {
+		int s = this.inputs.size();
+		int c = (int) Math.ceil(this.data.length / s);
+		int[][] ans = new int[c][s];
+		for (int i = 0; i < c; ++i) {
+			for (int j = 0; j < s; ++j) {
+				ans[i][j] = data[i * s + j];
+			}
+		}
+		return ans;
+	}
 }

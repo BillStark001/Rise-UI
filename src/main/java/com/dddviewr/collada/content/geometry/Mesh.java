@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.dddviewr.collada.Collada;
+import com.dddviewr.collada.FloatArray;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.Source;
 import com.dddviewr.collada.content.controller.Skin;
@@ -194,31 +195,23 @@ public class Mesh extends Base {
 		return null;
 	}
 
-	public float[] getPositionData() {
+	public Source getPositionData() {
 		Source src = getSourceFromSemantic("POSITION");
-		if (src == null)
-			return null;
-		return src.getFloatArray().getData();
+		return src;
 	}
 
-	public float[] getNormalData() {
+	public Source getNormalData() {
 		Source src = getSourceFromSemantic("NORMAL");
-		if (src == null)
-			return null;
-		return src.getFloatArray().getData();
+		return src;
 	}
 
-	public float[] getTexCoordData() {
+	public Source getTexCoordData() {
 		Source src = getSourceFromSemantic("TEXCOORD");
-		if (src == null)
-			return null;
-		return src.getFloatArray().getData();
+		return src;
 	}
 
-	public float[] getTangentData() {
+	public Source getTangentData() {
 		Source src = getSourceFromSemantic("TEXTANGENT");
-		if (src == null)
-			return null;
-		return src.getFloatArray().getData();
+		return src;
 	}
 }

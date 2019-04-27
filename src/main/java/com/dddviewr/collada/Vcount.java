@@ -5,23 +5,28 @@ import java.io.PrintStream;
 import com.dddviewr.collada.format.Base;
 
 public class Vcount extends Base {
-	protected int[] data;
+	protected int[] data, acc_data;
 
 	public int[] getData() {
 		return this.data;
 	}
-
-	public void setData(int[] data) {
-		this.data = data;
+	
+	public int[] getAccData() {
+		return this.acc_data;
 	}
 
 	public void parse(StringBuilder str) {
 		String[] values = str.toString().split("\\s+");
 		int index = 0;
 		this.data = new int[values.length];
+		this.acc_data = new int[values.length];
 		for (String s : values)
-			if (s.length() != 0)
-				this.data[(index++)] = Integer.parseInt(s);
+			if (s.length() != 0){
+				int stemp = Integer.parseInt(s);
+				this.data[index] = stemp;
+				if (index == 0) this.acc_data[0] = stemp;
+				else this.acc_data[index] = stemp + this.acc_data[index - 1];
+			}
 	}
 
 	public void dump(PrintStream out, int indent) {

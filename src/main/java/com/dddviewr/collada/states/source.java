@@ -12,9 +12,7 @@ public class source extends State {
 
 	public void init(String name, Attributes attrs, StateManager mngr) {
 		super.init(name, attrs, mngr);
-		this.theSource = new Source(attrs.getValue("id"), attrs
-				.getValue("name"));
-
+		this.theSource = new Source(attrs.getValue("id"), attrs.getValue("name"));
 		State parent = getParent();
 		try {
 			Method method = parent.getClass().getMethod("addSource",

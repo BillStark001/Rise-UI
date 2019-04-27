@@ -7,13 +7,12 @@ import java.util.List;
 import com.dddviewr.collada.format.Base;
 
 public class Accessor extends Base {
-	protected String source;
 	protected int count;
 	protected int stride;
 	protected List<Param> params = new ArrayList<Param>();
 
 	public Accessor(String source, int count, int stride) {
-		this.source = source;
+		super(source);
 		this.count = count;
 		this.stride = stride;
 	}
@@ -26,12 +25,8 @@ public class Accessor extends Base {
 		this.count = count;
 	}
 
-	public String getSource() {
-		return this.source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
+	public int getSource() {
+		return this.getId();
 	}
 
 	public int getStride() {
@@ -56,7 +51,7 @@ public class Accessor extends Base {
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.println(prefix + "Accessor (source: " + this.source + ", count: "
+		out.println(prefix + "Accessor (source: " + this.getId() + ", count: "
 				+ this.count + ", stride: " + this.stride + ")");
 		for (Param p : this.params)
 			p.dump(out, indent + 1);

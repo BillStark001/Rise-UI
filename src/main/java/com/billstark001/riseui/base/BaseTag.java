@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.StateContainer;
 import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.util.ITickable;

@@ -8,7 +8,6 @@ import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.StateContainer;
 import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
