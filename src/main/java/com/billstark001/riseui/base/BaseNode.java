@@ -8,6 +8,7 @@ import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.StateContainer;
 import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
@@ -149,16 +150,25 @@ public abstract class BaseNode extends BaseObject{
 			pos = wpos;
 			rot = wrot;
 			scale = wscale;
-			
-			for (BaseTag t: tags) t.onLocalUpdate(this);
-			return;
+		} else {
+			scale = Utils.splitZoom(getGlobalScale(), parent.getGlobalScale());
+			rot = Utils.splitRotate(getGlobalRot(), parent.getGlobalRot());
+			pos = Utils.splitOffset(getGlobalPos(), parent.getGlobalPos());
+			pos = pos.div(parent.getGlobalScale());
 		}
-		scale = Utils.splitZoom(getGlobalScale(), parent.getGlobalScale());
-		rot = Utils.splitRotate(getGlobalRot(), parent.getGlobalRot());
-		pos = Utils.splitOffset(getGlobalPos(), parent.getGlobalPos());
-		pos = pos.div(parent.getGlobalScale());
-		
-		for (BaseTag t: tags) t.onLocalUpdate(this);
+		BaseTag.sortTags(tags);
+		Vector post = pos;
+		Quaternion rott = rot;
+		Vector scalet = scale;
+		for (BaseTag t: tags) {
+			StateContainer ct = t.onLocalUpdate(post, rott, scalet);
+			post = ct.p;
+			rott = ct.r;
+			scalet = ct.s;
+		}
+		pos = post; 
+		rot = rott;
+		scale = scalet;
 	}
 	
 	protected void updateGlobalInfo() {if (GlobalDirty()) updateGlobalInfoForced();}
@@ -167,20 +177,28 @@ public abstract class BaseNode extends BaseObject{
 			wpos = pos;
 			wrot = rot;
 			wscale = scale;
-			clarifyGlobal();
-			
-			BaseTag.sortTags(tags);
-			for (BaseTag t: tags) if (t.isActivated()) t.onGlobalUpdate(this);
-			return;
+		} else {
+			parent.updateGlobalInfo();
+			wpos = Utils.compOffset(parent.getGlobalPos(), getPos().mult(parent.getScale()));
+			wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
+			wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
 		}
-		parent.updateGlobalInfo();
-		wpos = Utils.compOffset(parent.getGlobalPos(), getPos().mult(parent.getScale()));
-		wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
-		wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
-		clarifyGlobal();
 		
+		clarifyGlobal();
 		BaseTag.sortTags(tags);
-		for (BaseTag t: tags) if (t.isActivated()) t.onGlobalUpdate(this);
+		
+		Vector post = wpos;
+		Quaternion rott = wrot;
+		Vector scalet = wscale;
+		for (BaseTag t: tags) {
+			StateContainer ct = t.onLocalUpdate(post, rott, scalet);
+			post = ct.p;
+			rott = ct.r;
+			scalet = ct.s;
+		}
+		wpos = post; 
+		wrot = rott;
+		wscale = scalet;
 	}
 	//Local Info. Getter & Setter
 

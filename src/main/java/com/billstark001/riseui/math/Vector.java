@@ -54,6 +54,13 @@ public final class Vector {
 		this(v.elements);
 	}
 	
+	public Vector(float[] elements) {
+		dim = elements.length;
+		this.elements = new double[elements.length];
+		for (int i = 0; i < elements.length; ++i) this.elements[i] = elements[i];
+		this.length = calcLength(this.elements);
+	}
+
 	public static final Vector Zeros(int length) {
 		double[] a = new double[length];
 		return new Vector(a);

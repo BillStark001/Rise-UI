@@ -1,5 +1,7 @@
 package com.billstark001.riseui.math;
 
+import net.minecraft.util.math.MathHelper;
+
 public final class Quaternion {
 	
 	private final double real;
@@ -88,33 +90,71 @@ public final class Quaternion {
 		x = q.imaginary.get(0);
 		y = q.imaginary.get(1);
 		z = q.imaginary.get(2);
-		double phi = Math.atan2((w*x+y*z)*2, 1-(x*x+y*y)*2);
-		double theta = Math.asin((w*y-x*z)*2);
-		double psi = Math.atan2((w*z+y*x)*2, 1-(z*z+y*y)*2);
-		return new Vector(phi, theta, psi);
+		double phi = MathHelper.atan2((w*z+y*x)*2, 1-(z*z+x*x)*2);
+		double tht = Math.asin((w*x-y*z)*2);
+		double psi = MathHelper.atan2((w*y+z*x)*2, 1-(x*x+y*y)*2);
+		return new Vector(tht, psi, phi);
 	}
 	
 	public static Quaternion eulerToQuat (Vector v) {
-		double w = Math.cos(v.get(0) / 2) * Math.cos(v.get(1) / 2) * Math.cos(v.get(2) / 2) + Math.sin(v.get(0) / 2) * Math.sin(v.get(1) / 2) * Math.sin(v.get(2) / 2);
-		double x = Math.sin(v.get(0) / 2) * Math.cos(v.get(1) / 2) * Math.cos(v.get(2) / 2) - Math.cos(v.get(0) / 2) * Math.sin(v.get(1) / 2) * Math.sin(v.get(2) / 2);
-		double y = Math.cos(v.get(0) / 2) * Math.sin(v.get(1) / 2) * Math.cos(v.get(2) / 2) + Math.sin(v.get(0) / 2) * Math.cos(v.get(1) / 2) * Math.sin(v.get(2) / 2);
-		double z = Math.cos(v.get(0) / 2) * Math.cos(v.get(1) / 2) * Math.sin(v.get(2) / 2) - Math.sin(v.get(0) / 2) * Math.sin(v.get(1) / 2) * Math.cos(v.get(2) / 2);
+		double psi = v.get(1), tht = v.get(0), phi = v.get(2);
+		double sp = Math.sin(phi / 2), cp = Math.cos(phi / 2);
+		double st = Math.sin(tht / 2), ct = Math.cos(tht / 2);
+		double sk = Math.sin(psi / 2), ck = Math.cos(psi / 2);
+		double w = cp * ct * ck + sp * st * sk;
+		double x = cp * st * ck + sp * ct * sk;
+		double y = cp * ct * sk - sp * st * ck;
+		double z = sp * ct * ck - cp * st * sk;
+		return new Quaternion(w, x, y, z);
+	}
+	
+	public static Quaternion eulerToQuatFast (Vector v) {
+		float ksi = (float) v.get(1), tht = (float) v.get(0), phi = (float) v.get(2);
+		float sp = MathHelper.sin(phi / 2), cp = MathHelper.cos(phi / 2);
+		float st = MathHelper.sin(tht / 2), ct = MathHelper.cos(tht / 2);
+		float sk = MathHelper.sin(ksi / 2), ck = MathHelper.cos(ksi / 2);
+		float w = cp * ct * ck + sp * st * sk;
+		float x = cp * st * ck + sp * ct * sk;
+		float y = cp * ct * sk - sp * st * ck;
+		float z = sp * ct * ck - cp * st * sk;
 		return new Quaternion(w, x, y, z);
 	}
 	
 	public static Matrix eulerToRotate (Vector v) {
-		double sz, cz, sy, cy, sx, cx;
-		sz = Math.sin(v.get(0)); sy = Math.sin(v.get(1)); sx = Math.sin(v.get(2));
-		cz = Math.cos(v.get(0)); cy = Math.cos(v.get(1)); cx = Math.cos(v.get(2));
-		/*double[][] dt = {
-				{cx*cy,				cx*sy,				-sx 	},
-				{sz*sx*cy-cz*sy,	sz*sx*sy+cz*cy,		sz*cx	},
-				{cz*sx*cy+sz*sy,	cz*sx*sy-sz*cy,		cz*cx	}
-		};*/
+		double sy, cy, sx, cx, sz, cz;
+		sx = Math.sin(v.get(0)); 
+		sy = Math.sin(v.get(1)); 
+		sz = Math.sin(v.get(2));
+		cx = Math.cos(v.get(0)); 
+		cy = Math.cos(v.get(1)); 
+		cz = Math.cos(v.get(2));
+		/*
 		double[][] dt = {
 				{cy*cz,	cz*sx*sy-cx*sz,	sx*sz+cx*sy*cz 	},
 				{cy*sz,	cx*cz+sx*sy*sz,	cx*sy*sz-cz*sz	},
 				{-sy,	cy*sx,			cx*cy			}
+		};
+		*/
+		double[][] dt = {
+				{cx*cy,	cy*sz*sx-cz*sy,	sz*sy+cz*sx*cy 	},
+				{cx*sy,	cz*cy+sz*sx*sy,	cz*sx*sy-cy*sy	},
+				{-sx,	cx*sz,			cz*cx			}
+		};
+		return new Matrix(dt);
+	}
+	
+	public static Matrix eulerToRotateFast (Vector v) {
+		double sy, cy, sx, cx, sz, cz;
+		sx = MathHelper.sin((float) v.get(0)); 
+		sy = MathHelper.sin((float) v.get(1)); 
+		sz = MathHelper.sin((float) v.get(2));
+		cx = MathHelper.cos((float) v.get(0)); 
+		cy = MathHelper.cos((float) v.get(1)); 
+		cz = MathHelper.cos((float) v.get(2));
+		double[][] dt = {
+				{cx*cy,	cy*sz*sx-cz*sy,	sz*sy+cz*sx*cy 	},
+				{cx*sy,	cz*cy+sz*sx*sy,	cz*sx*sy-cy*sy	},
+				{-sx,	cx*sz,			cz*cx			}
 		};
 		return new Matrix(dt);
 	}

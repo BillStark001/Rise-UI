@@ -2,9 +2,10 @@ package com.billstark001.riseui.core.empty;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.BaseTag;
+import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.StateContainer;
 import com.billstark001.riseui.math.Vector;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class TagTowardsTarget extends BaseTag {
@@ -20,15 +21,15 @@ public class TagTowardsTarget extends BaseTag {
 	public void setTarget(Vector target_pos) {this.target_pos = target_pos;}
 
 	@Override
-	public void onGlobalUpdate(BaseNode node) {
+	public StateContainer onGlobalUpdate(Vector p, Quaternion r, Vector s) {
 		// TODO 自动生成的方法存根
-		
+		return new StateContainer(p, r, s);
 	}
 
 	@Override
-	public void onLocalUpdate(BaseNode node) {
+	public StateContainer onLocalUpdate(Vector p, Quaternion r, Vector s) {
 		// TODO 自动生成的方法存根
-		
+		return new StateContainer(p, r, s);
 	}
 
 	@Override

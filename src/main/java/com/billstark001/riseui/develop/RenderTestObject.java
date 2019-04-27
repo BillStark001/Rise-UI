@@ -1,6 +1,10 @@
 package com.billstark001.riseui.develop;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.lwjgl.opengl.GL11;
+import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.client.GlRenderHelper;
@@ -11,8 +15,11 @@ import com.billstark001.riseui.core.polygon.Presets;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.io.CharResourceLoader;
+import com.billstark001.riseui.io.ColladaFile;
+import com.billstark001.riseui.io.IOUtils;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
+import com.dddviewr.collada.Collada;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -33,6 +40,7 @@ public class RenderTestObject{
 	
 	private static ObjFile h_obj, t_obj;
 	private static MtlFile h_mtl, t_mtl;
+	private static ColladaFile spider;
 	public static PolygonMesh horse, table, sphere;
 	private static PolygonGrid hgrid;
 	
@@ -40,6 +48,7 @@ public class RenderTestObject{
 	private static final ResourceLocation lmtl = new ResourceLocation("riseui:models/skh.mtl");
 	private static final ResourceLocation tobj = new ResourceLocation("riseui:models/table.obj");
 	private static final ResourceLocation tmtl = new ResourceLocation("riseui:models/table.mtl");
+	private static final ResourceLocation spic = new ResourceLocation("riseui:models/motive_spider.dae");
 	
 	public static void prepareRender() {
 		
@@ -94,6 +103,23 @@ public class RenderTestObject{
 		sphere.setParent(horse);
 
 		horse.dump();
+		
+		
+		// Spider
+		Collada stemp = null;
+		try {
+			stemp = Collada.readFile(IOUtils.getInputStream(spic));
+		} catch (FileNotFoundException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		spider = new ColladaFile(stemp);
 		
 		
 	}

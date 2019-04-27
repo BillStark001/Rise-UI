@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.billstark001.riseui.math.Pair;
+import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.StateContainer;
+import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,8 +37,8 @@ public abstract class BaseTag extends BaseObject {
 	
 	public abstract void onAdd(BaseNode node);
 	public abstract void onRemove(BaseNode node);
-	public abstract void onGlobalUpdate(BaseNode node);
-	public abstract void onLocalUpdate(BaseNode node);
+	public abstract StateContainer onGlobalUpdate(Vector p, Quaternion r, Vector s);
+	public abstract StateContainer onLocalUpdate(Vector p, Quaternion r, Vector s);
 	public abstract void onRenderPre(BaseNode object, double ptick);
 	public abstract void onRenderPost(BaseNode object, double ptick);
 	

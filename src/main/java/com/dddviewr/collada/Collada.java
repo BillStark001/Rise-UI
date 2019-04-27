@@ -1,5 +1,6 @@
 package com.dddviewr.collada;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -198,6 +199,12 @@ public class Collada extends Base {
 		reader.parse(new InputSource(input));
 		Collada collada = stateManager.getCollada();
 		return collada;
+	}
+	
+	public static Collada readFile(byte[] res) throws SAXException,
+			FileNotFoundException, IOException {
+		InputStream s = new ByteArrayInputStream(res);
+		return readFile(s);
 	}
 
 	public static Collada readFile(String fname) throws SAXException,

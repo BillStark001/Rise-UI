@@ -33,6 +33,17 @@ public class VisualScene extends Base {
 		return this.nodes.values().toArray(new Node[0]);
 	}
 	
+	public int[] getIds() {
+		int[] ans = new int[nodes.size()];
+		Integer[] tmp = nodes.keySet().toArray(new Integer[0]);
+		for(int i = 0; i < ans.length; ++i) ans[i] = tmp[i];
+		return ans;
+	}
+	
+	public Node getNode(int id) {
+		return this.nodes.get(id);
+	}
+	
 	public String toString() {
 		return "VisualScene (id: " + this.getId() + ", name: "
 				+ this.name + ")";

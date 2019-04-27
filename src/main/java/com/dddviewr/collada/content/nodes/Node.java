@@ -14,7 +14,7 @@ import com.dddviewr.collada.format.Base;
 public class Node extends Base {
 	protected String name;
 	protected String sid;
-	protected String type;
+	protected boolean type;
 	protected List<BaseXform> xforms = new ArrayList<BaseXform>();
 	protected List<InstanceGeometry> instanceGeometry = new ArrayList<InstanceGeometry>();
 	protected InstanceController instanceController;
@@ -26,13 +26,13 @@ public class Node extends Base {
 		super(id);
 		this.name = name;
 		this.sid = sid;
-		this.type = type;
+		this.setType(type);
 	}
 	public Node(String id, String name, String sid, String type) {
 		super(id);
 		this.name = name;
 		this.sid = sid;
-		this.type = type;
+		this.setType(type);
 	}
 	
 	public String getName() {
@@ -51,16 +51,30 @@ public class Node extends Base {
 		this.sid = sid;
 	}
 
-	public String getType() {
+	public boolean isJoint() {
 		return this.type;
+	}
+	
+	public String getType() {
+		if (isJoint()) return "JOINT";
+		else return "NODE";
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		if (type == null) {
+			this.type = false;
+			return;
+		}
+		else if (type.equals("JOINT")) this.type = true;
+		else this.type = false;
+	}
+	
+	public void setIsJoint(boolean b) {
+		this.type = b;
 	}
 
-	public List<BaseXform> getXforms() {
-		return this.xforms;
+	public BaseXform[] getXforms() {
+		return this.xforms.toArray(new BaseXform[0]);
 	}
 
 	public List<InstanceGeometry> getInstanceGeometry() {
@@ -108,15 +122,13 @@ public class Node extends Base {
 	}
 	
 	public String toString() {
-		return "Node (id: " + this.getId() + ", name: " + this.name;
+		return String.format("Node (id: %d, name: %s, sid: %s, type: %s)", 
+				this.getId(), this.getName(), this.getSid(), this.getType());
 	}
 
 	public void dump(PrintStream out, int indent) {
 		String prefix = createIndent(indent);
-		out.print(prefix + this);
-		if (this.sid != null)
-			out.print(", sid: " + this.sid);
-		out.println(", type: " + this.type + ")");
+		out.println(prefix + this);
 		for (BaseXform xform : this.xforms) {
 			xform.dump(out, indent + 1);
 		}
