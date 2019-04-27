@@ -111,7 +111,8 @@ public class RenderTestObject{
 		// Spider
 		Collada stemp = null;
 		try {
-			stemp = Collada.readFile(IOUtils.getInputStream(spic));
+			//stemp = Collada.readFile(IOUtils.getInputStream(spic));
+			stemp = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider1.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -126,7 +127,7 @@ public class RenderTestObject{
 		sp_dae.parse();
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
 		//spider.setScale(0.01);
-		spider.setPos(new Vector(200, 100, 200));
+		spider.setPos(new Vector(2, 1, 2));
 		
 	}
 	

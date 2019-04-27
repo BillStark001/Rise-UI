@@ -26,6 +26,7 @@ public class Vcount extends Base {
 				this.data[index] = stemp;
 				if (index == 0) this.acc_data[0] = stemp;
 				else this.acc_data[index] = stemp + this.acc_data[index - 1];
+				++index;
 			}
 	}
 

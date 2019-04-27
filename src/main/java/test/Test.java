@@ -52,7 +52,7 @@ public class Test {
 		
 		Collada file = null;
 		try {
-			file = Collada.readFile("D:\\Programs\\Rise-UI\\src\\main\\resources\\assets\\riseui\\models\\motive_spider.dae");
+			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider1.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();

@@ -6,6 +6,8 @@ import java.util.List;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.format.Base;
 
+import scala.actors.threadpool.Arrays;
+
 
 public abstract class Primitives extends Base {
 

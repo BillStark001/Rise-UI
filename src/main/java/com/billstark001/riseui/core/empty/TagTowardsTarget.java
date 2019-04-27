@@ -59,7 +59,6 @@ public class TagTowardsTarget extends BaseTag {
 	@Override
 	public void update(TickEvent e) {
 		// TODO 自动生成的方法存根
-		System.out.println(1);
 	}
 
 }

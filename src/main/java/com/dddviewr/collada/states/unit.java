@@ -13,7 +13,12 @@ public class unit extends State {
 	@Override
 	public void init(String name, Attributes attrs, StateManager mngr) {
 		super.init(name, attrs, mngr);
-		this.theUnit = new Unit(Float.parseFloat(attrs.getValue("meter")), attrs.getValue("name"));
+		try {
+			this.theUnit = new Unit(Float.parseFloat(attrs.getValue("meter")), attrs.getValue("name"));
+		} catch (NullPointerException e) {
+			this.theUnit = new Unit(0.01F, "centimeter");
+		}
+		
 		((COLLADA)getParent().getParent()).getCollada().setUnit(theUnit);
 	}
 }

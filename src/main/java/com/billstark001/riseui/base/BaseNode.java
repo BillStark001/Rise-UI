@@ -99,6 +99,19 @@ public abstract class BaseNode extends BaseObject{
 		updateLocalInfo();
 		return true;
 	}
+	public boolean addChildRemainLocal(BaseNode obj) {return obj.setParentRemainLocal(this);}
+	public boolean setParentRemainLocal(BaseNode parent) {
+		if (parent == null) return removeParent();
+		if (parent == this) return false;
+		if (parent.isDescendant(this)) return false;
+		if (this.parent != null && this.parent.children.contains(this)) this.parent.children.remove(this);
+		updateLocalInfo();
+		this.parent = parent;
+		if (!parent.children.contains(this)) parent.children.add(this);
+		markGlobalDirty();
+		updateGlobalInfo();
+		return true;
+	}
 	public boolean removeParent() {
 		if (this.parent == null) return false;
 		if (this.parent.children.contains(this)) this.parent.children.remove(this);
@@ -190,7 +203,7 @@ public abstract class BaseNode extends BaseObject{
 		Quaternion rott = wrot;
 		Vector scalet = wscale;
 		for (BaseTag t: tags) {
-			StateContainer ct = t.onLocalUpdate(post, rott, scalet);
+			StateContainer ct = t.onGlobalUpdate(post, rott, scalet);
 			post = ct.p;
 			rott = ct.r;
 			scalet = ct.s;
@@ -355,7 +368,7 @@ public abstract class BaseNode extends BaseObject{
 				new Vector(0, 0, axis_length)
 		};
 		Matrix mtemp = new Matrix(vtemp);
-		mtemp = Utils.zoom(mtemp, scale);
+		//mtemp = Utils.zoom(mtemp, scale);
 		mtemp = Utils.rotate(mtemp, rot);
 		mtemp = Utils.offset(mtemp, pos);
 		vtemp = mtemp.toVecArray();
@@ -402,18 +415,23 @@ public abstract class BaseNode extends BaseObject{
 		out.println(text);
 	}
 	
+	public String vec32String(Vector v) {return String.format("[%.3f, %.3f, %.3f]", v.get(0), v.get(1), v.get(2));}
+	public String quat2String(Quaternion q) {
+		return vec32String(Quaternion.quatToEuler(q).mult(180 / Math.PI));
+	}
+	
 	public void dump() {dump(System.out, 0);}
 	public void dump(PrintStream out) {dump(out, 0);}
 	private void dump(PrintStream out, int level){
 		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
 		println(out, "LOCAL:", level + 1);
-		println(out, "POS" + this.getPos(), level + 2);
-		println(out, "ROT" + this.getRot(), level + 2);
-		println(out, "SCL" + this.getScale(), level + 2);
+		println(out, "POS" + vec32String(this.getPos()), level + 2);
+		println(out, "ROT" + quat2String(this.getRot()), level + 2);
+		println(out, "SCL" + vec32String(this.getScale()), level + 2);
 		println(out, "GLOBAL:", level + 1);
-		println(out, "POS" + this.getGlobalPos(), level + 2);
-		println(out, "ROT" + this.getGlobalRot(), level + 2);
-		println(out, "SCL" + this.getGlobalScale(), level + 2);
+		println(out, "POS" + vec32String(this.getGlobalPos()), level + 2);
+		println(out, "ROT" + quat2String(this.getGlobalRot()), level + 2);
+		println(out, "SCL" + vec32String(this.getGlobalScale()), level + 2);
 		if (this.children.size() == 0) return;
 		println(out, "CHILDREN:", level + 1);
 		for (BaseNode i: this.children) {

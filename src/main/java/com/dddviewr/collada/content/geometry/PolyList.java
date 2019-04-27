@@ -5,6 +5,8 @@ import java.io.PrintStream;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.Vcount;
 
+import scala.actors.threadpool.Arrays;
+
 
 public class PolyList extends Primitives {
 	protected Vcount theVcount;
@@ -32,10 +34,7 @@ public class PolyList extends Primitives {
 		theVcount.dump(out, indent + 1);
 		if (data != null) {
 			out.print(prefix);
-			for (int d : data) {
-				out.print(" " + d);
-			}
-			out.println();
+			out.println(Arrays.toString(this.data));
 		}
 	}
 	

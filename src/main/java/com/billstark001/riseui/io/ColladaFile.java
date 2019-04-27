@@ -104,7 +104,7 @@ public class ColladaFile {
 				else if (d[2] > 0.999) rz = d[3];
 			}
 		}
-		Vector vr = new Vector(rx, ry, rz);
+		Vector vr = new Vector(rx, ry, rz).mult(Math.PI / 180);
 		Quaternion r = Quaternion.eulerToQuatFast(vr);
 		ans = new StateContainer(p, r, s);
 		return ans;
@@ -159,7 +159,7 @@ public class ColladaFile {
 		}
 		for (Node nt: n.getChildNodes()) {
 			BaseNode bnt = parseNode(nt);
-			ans.addChild(bnt);
+			ans.addChildRemainLocal(bnt);
 		}
 		return ans;
 	}
