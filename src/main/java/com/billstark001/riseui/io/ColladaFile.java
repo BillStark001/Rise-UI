@@ -124,9 +124,9 @@ public class ColladaFile {
 			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
 			for (int i = 0; i < nr_faces; ++i) {
 				vertices.add(new Triad(vtemp[i][0], vtemp[i][1], vtemp[i][2]));
-				if (i == 0) mindex.add(new BaseMaterial(""));
+				if (i == 0) mindex.add(new BaseMaterial("textures/entity/spider/spider.png"));
 				// TODO Material Instantiation
-				else mindex.add(BaseMaterial.MISSING);
+				else mindex.add(null);
 			}
 		}
 		int[] findex = new int[findext.size()];
