@@ -8,6 +8,7 @@ import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
 import com.billstark001.riseui.core.polygon.PolygonGrid;
 import com.billstark001.riseui.core.polygon.PolygonMesh;
@@ -23,6 +24,7 @@ import com.dddviewr.collada.Collada;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -40,9 +42,10 @@ public class RenderTestObject{
 	
 	private static ObjFile h_obj, t_obj;
 	private static MtlFile h_mtl, t_mtl;
-	private static ColladaFile spider;
+	private static ColladaFile sp_dae;
 	public static PolygonMesh horse, table, sphere;
 	private static PolygonGrid hgrid;
+	private static EmptyNode spider;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
 	private static final ResourceLocation lmtl = new ResourceLocation("riseui:models/skh.mtl");
@@ -119,8 +122,11 @@ public class RenderTestObject{
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
-		spider = new ColladaFile(stemp);
-		
+		sp_dae = new ColladaFile(stemp);
+		sp_dae.parse();
+		spider = (EmptyNode) sp_dae.getNodeByName("spider");
+		//spider.setScale(0.01);
+		spider.setPos(new Vector(200, 100, 200));
 		
 	}
 	
@@ -141,6 +147,7 @@ public class RenderTestObject{
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
 		render.renderObject(horse, delta);
+		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			

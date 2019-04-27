@@ -5,22 +5,17 @@ import java.io.PrintStream;
 import com.dddviewr.collada.format.Base;
 
 public class NewParam extends Base {
-	protected String sid;
 	protected Surface surface;
 	protected Sampler2D sampler2D;
 
 	public NewParam(String sid) {
-		this.sid = sid;
+		super(sid);
 	}
 
-	public String getSid() {
-		return this.sid;
+	public int getSid() {
+		return this.getId();
 	}
-
-	public void setSid(String sid) {
-		this.sid = sid;
-	}
-
+	
 	public Surface getSurface() {
 		return this.surface;
 	}
@@ -38,7 +33,7 @@ public class NewParam extends Base {
 	}
 	
 	public String toString() {
-		return "NewParam (sid: " + this.sid + ")";
+		return "NewParam (sid: " + this.getSid() + ")";
 	}
 
 	public void dump(PrintStream out, int indent) {

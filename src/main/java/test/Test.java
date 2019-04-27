@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
 import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.PolygonGrid;
 import com.billstark001.riseui.core.polygon.PolygonMesh;
 import com.billstark001.riseui.io.ColladaFile;
@@ -64,6 +65,8 @@ public class Test {
 		}
 		ColladaFile spider = new ColladaFile(file);
 		spider.parse();
+		EmptyNode nsp = (EmptyNode) spider.getNodeByName("spider");
+		nsp.dump();
 		//file.getLibraryGeometries().dump();
 		
 		/*

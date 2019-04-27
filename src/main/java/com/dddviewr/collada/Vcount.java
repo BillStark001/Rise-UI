@@ -40,4 +40,15 @@ public class Vcount extends Base {
 			out.println();
 		}
 	}
+
+	public void setData(int[] values) {
+		this.data = new int[values.length];
+		this.acc_data = new int[values.length];
+		int index = 0;
+		for (int i : values) {
+			this.data[index] = i;
+			if (index == 0) this.acc_data[0] = i;
+			else this.acc_data[index] = i + this.acc_data[index - 1];
+		}
+	}
 }

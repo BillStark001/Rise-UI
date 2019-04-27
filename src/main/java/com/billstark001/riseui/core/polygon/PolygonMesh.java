@@ -159,6 +159,10 @@ public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 	}
 	
 	public BaseMaterial getMaterial(int index) {
+		if (index >= mindex.length) {
+			System.out.println(index);
+			return null;
+		}
 		return mindex[index];
 	}
 

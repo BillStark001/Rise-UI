@@ -35,15 +35,11 @@ public class Effect extends Base {
 		this.newParams.add(newParam);
 	}
 
-	public NewParam findNewParam(String sid) {
+	public NewParam findNewParam(int sid) {
 		if (this.newParams == null)
 			return null;
-		String search = sid;
-		if (sid.indexOf(35) == 0)
-			search = sid.substring(1);
 		for (NewParam p : this.newParams) {
-			if (search.equals(p.getSid()))
-				return p;
+			if (sid == p.getSid()) return p;
 		}
 		return null;
 	}
