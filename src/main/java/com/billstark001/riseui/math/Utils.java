@@ -52,6 +52,16 @@ public final class Utils {
 		return ans;
 	}
 	
+	public static Vector applyRotOnVec3(Vector v, Quaternion r) {
+		if (r.isAARecord()) r = Quaternion.getQuatByAAR(r);
+		//Quaternion p = new Quaternion(v);
+		//return r.inverse().mult(p).mult(r).getImaginary();
+		Matrix q = Quaternion.quatToRotate(r);
+		Vector[] p = {v};
+		Matrix mp = new Matrix(p);
+		return mp.mult(q).getLine(0);
+	}
+	
 	// Offset, Rotate and Zoom
 	
 	public static final Vector getAirOrderAngle(Vector v, double roll) {

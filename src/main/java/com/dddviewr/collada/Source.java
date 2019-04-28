@@ -84,6 +84,19 @@ public class Source extends Base {
 		}
 		return ans;
 	}
+	public double[][] parseTexWithReverse(boolean is3) {
+		int c = this.getAccessor().getCount(), s = this.getAccessor().getStride();
+		double[][] ans;
+		if (is3) ans = new double[c][3]; else ans = new double[c][s];
+		float[] data = this.getFloatArray().getData();
+		for (int i = 0; i < c; ++i) {
+			for (int j = 0; j < s; ++j) {
+				ans[i][j] = data[i * s + j];
+				if (j == 1) ans[i][j] = 1 - ans[i][j];
+			}
+		}
+		return ans;
+	}
 	
 	public String[] getParamNames() {
 		String[] ans = new String[this.getAccessor().getParams().size()];

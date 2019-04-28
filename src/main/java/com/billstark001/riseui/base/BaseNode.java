@@ -192,9 +192,11 @@ public abstract class BaseNode extends BaseObject{
 		} else {
 			parent.updateGlobalInfo();
 			wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
-			wpos = Utils.compOffset(parent.getGlobalPos(), getPos().mult(wscale));
-			
 			wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
+			
+			wpos = Utils.compOffset(parent.getGlobalPos(), Utils.applyRotOnVec3(getPos(), parent.getGlobalRot()).mult(wscale));
+			
+			
 		}
 		
 		clarifyGlobal();
@@ -370,8 +372,8 @@ public abstract class BaseNode extends BaseObject{
 				new Vector(0, 0, axis_length)
 		};
 		Matrix mtemp = new Matrix(vtemp);
-		//Vector iscale = new Vector(1 / scale.get(0), 1 / scale.get(1), 1 / scale.get(2));
-		//mtemp = Utils.zoom(mtemp, iscale);
+		Vector iscale = new Vector(1 / wscale.get(0), 1 / wscale.get(1), 1 / wscale.get(2));
+		mtemp = Utils.zoom(mtemp, iscale);
 		mtemp = Utils.rotate(mtemp, rot);
 		mtemp = Utils.offset(mtemp, pos);
 		vtemp = mtemp.toVecArray();

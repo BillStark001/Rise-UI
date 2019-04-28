@@ -112,8 +112,8 @@ public class RenderTestObject{
 		// Spider
 		Collada stemp = null;
 		try {
-			//stemp = Collada.readFile(IOUtils.getInputStream(spic));
-			stemp = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\spider.dae");
+			stemp = Collada.readFile(IOUtils.getInputStream(spic));
+			//stemp = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\spider.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -149,7 +149,7 @@ public class RenderTestObject{
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
 		render.renderObject(horse, delta);
-		System.out.println(horse.getUVMap(0));
+		//System.out.println(horse.getUVMap(0));
 		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)

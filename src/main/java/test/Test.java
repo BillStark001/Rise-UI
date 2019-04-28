@@ -63,6 +63,8 @@ public class Test {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
+		
+		file.getLibraryVisualScenes().getElement(5).getNode(6).dump();
 		ColladaFile spider = new ColladaFile(file);
 		spider.parse();
 		EmptyNode nsp = (EmptyNode) spider.getNodeByName("spider");

@@ -218,4 +218,24 @@ public final class GlRenderHelper {
 		GlStateManager.popMatrix();
 		
 	}
+	
+	public void renderWithoutGl(BaseNode obj, double ptick) {
+		Vector p, s;
+		Quaternion q;
+		p = obj.getParent().getGlobalPos();
+		q = obj.getParent().getGlobalRot();
+		s = obj.getParent().getGlobalScale();
+		
+		GlStateManager.pushMatrix();
+		
+		obj.render(ptick);
+		
+		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
+		GlStateManager.rotate(InteractUtils.transQuat(q));
+		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
+		
+		GlStateManager.popMatrix();
+		
+		for (BaseNode o: obj.getChildren()) renderWithoutGl(o, ptick);
+	}
 }

@@ -112,7 +112,7 @@ public class ColladaFile {
 	
 	public PolygonMesh parseMesh(Mesh m) {
 		Matrix mpos = new Matrix(m.getPositionData().parseD(3));
-		Matrix mtex = new Matrix(m.getTexCoordData().parseD(3));
+		Matrix mtex = new Matrix(m.getTexCoordData().parseTexWithReverse(true));
 		Matrix mnor = new Matrix(m.getNormalData().parseD(3));
 		ArrayList<Integer> findext = new ArrayList<Integer>();
 		ArrayList<Triad> vertices = new ArrayList<Triad>();
@@ -123,7 +123,7 @@ public class ColladaFile {
 			int[][] vtemp = pr.getParsed();
 			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
 			for (int i = 0; i < nr_faces; ++i) {
-				vertices.add(new Triad(vtemp[i][0], vtemp[i][1], vtemp[i][2]));
+				vertices.add(new Triad(vtemp[i][0], vtemp[i][2], vtemp[i][1]));
 				if (i == 0) mindex.add(new BaseMaterial("riseui:tex/cave_spider.png"));
 				// TODO Material Instantiation
 				else mindex.add(null);
