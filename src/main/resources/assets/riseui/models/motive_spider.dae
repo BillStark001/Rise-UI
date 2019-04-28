@@ -12,7 +12,7 @@
 	<library_images>
 		<image id="ID3">
 			<init_from>
-				<ref>textures/entity/spider/spider.png</ref>
+				<ref>riseui:tex/spider.png</ref>
 			</init_from>
 		</image>
 	</library_images>

@@ -58,6 +58,7 @@ public class RenderTestObject{
 		TagTowardsTarget t = new TagTowardsTarget();
 		
 		render.setDebugState(true);
+		
 		res.loadRes(lobj);
 		res.loadRes(lmtl);
 		res.loadRes(tobj);
@@ -112,7 +113,7 @@ public class RenderTestObject{
 		Collada stemp = null;
 		try {
 			//stemp = Collada.readFile(IOUtils.getInputStream(spic));
-			stemp = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider1.dae");
+			stemp = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\spider.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -126,7 +127,7 @@ public class RenderTestObject{
 		sp_dae = new ColladaFile(stemp);
 		sp_dae.parse();
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
-		//spider.setScale(0.01);
+		spider.setScale(0.01);
 		spider.setPos(new Vector(2, 1, 2));
 		
 	}
@@ -148,6 +149,7 @@ public class RenderTestObject{
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
 		render.renderObject(horse, delta);
+		System.out.println(horse.getUVMap(0));
 		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)

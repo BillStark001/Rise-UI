@@ -31,16 +31,11 @@ public final class Utils {
 	}
 	
 	public static Quaternion compRotate(Quaternion rot1, Quaternion rot2) {
-		Quaternion ans;
-		if (rot1.isAxisAndAngle()) {
-			if (!rot2.isAxisAndAngle()) rot2 = Quaternion.reverseAxisRotate(rot2);
-			Vector it;
-			it = rot1.getImaginary().normalize().mult(rot1.getReal()).mult(rot2.getImaginary().normalize().mult(rot2.getReal()));
-			ans = Quaternion.AxisAndAngle(it, it.getLength());
-		} else {
-			if (rot2.isAxisAndAngle()) rot2 = Quaternion.axisRotate(rot2.getImaginary(), rot2.getReal());
-			ans = rot1.mult(rot2);
-		}
+		boolean aar_mark = rot1.isAARecord();
+		if (rot1.isAARecord()) rot1 = Quaternion.getQuatByAAR(rot1);
+		if (rot2.isAARecord()) rot2 = Quaternion.getQuatByAAR(rot2);
+		Quaternion ans = rot1.mult(rot2);
+		if (aar_mark) rot1 = Quaternion.getAARByQuat(rot1);
 		return ans;
 	}
 	
@@ -49,7 +44,12 @@ public final class Utils {
 		 * Assume returns rot3, then:
 		 * rot1 = rot3.mult(rot2)
 		 */
-		return rot1.mult(rot2.inverse());
+		boolean aar_mark = rot1.isAARecord();
+		if (rot1.isAARecord()) rot1 = Quaternion.getQuatByAAR(rot1);
+		if (rot2.isAARecord()) rot2 = Quaternion.getQuatByAAR(rot2);
+		Quaternion ans = rot1.mult(rot2.inverse());
+		if (aar_mark) rot1 = Quaternion.getAARByQuat(rot1);
+		return ans;
 	}
 	
 	// Offset, Rotate and Zoom

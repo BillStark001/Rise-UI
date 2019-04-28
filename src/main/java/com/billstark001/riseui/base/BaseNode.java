@@ -191,8 +191,9 @@ public abstract class BaseNode extends BaseObject{
 			wscale = scale;
 		} else {
 			parent.updateGlobalInfo();
-			wpos = Utils.compOffset(parent.getGlobalPos(), getPos().mult(parent.getScale()));
 			wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
+			wpos = Utils.compOffset(parent.getGlobalPos(), getPos().mult(wscale));
+			
 			wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
 		}
 		
@@ -357,9 +358,10 @@ public abstract class BaseNode extends BaseObject{
 		
 		double axis_length = 0.6;
 		GlRenderHelper h = GlRenderHelper.getInstance();
+		
+		h.disableDepth();
 		h.enableGridState();
 		h.setLineWidth(10);
-		//h.disableDepth();
 		
 		Vector[] vtemp = {
 				POS_UNIT,
@@ -368,7 +370,8 @@ public abstract class BaseNode extends BaseObject{
 				new Vector(0, 0, axis_length)
 		};
 		Matrix mtemp = new Matrix(vtemp);
-		//mtemp = Utils.zoom(mtemp, scale);
+		//Vector iscale = new Vector(1 / scale.get(0), 1 / scale.get(1), 1 / scale.get(2));
+		//mtemp = Utils.zoom(mtemp, iscale);
 		mtemp = Utils.rotate(mtemp, rot);
 		mtemp = Utils.offset(mtemp, pos);
 		vtemp = mtemp.toVecArray();
@@ -393,7 +396,7 @@ public abstract class BaseNode extends BaseObject{
 		h.endDrawing();
 		
 		h.disableGridState();
-		//h.enableDepth();
+		h.enableDepth();
 	}
 
 	// Display Functions

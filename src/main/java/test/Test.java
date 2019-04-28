@@ -52,7 +52,7 @@ public class Test {
 		
 		Collada file = null;
 		try {
-			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider1.dae");
+			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\spider.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -67,6 +67,7 @@ public class Test {
 		spider.parse();
 		EmptyNode nsp = (EmptyNode) spider.getNodeByName("spider");
 		nsp.dump();
+		System.out.println(((PolygonMesh) nsp.getChild("root").getChild("smaller_body")).getUVMap(0));
 		//file.getLibraryGeometries().dump();
 		
 		/*

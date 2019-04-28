@@ -33,12 +33,7 @@ public class Joint extends BaseNode implements IGridable {
 	private Matrix vertices = new Matrix(d);
 	private Matrix vcur;
 	
-	public Joint getSuperior() {
-		if (superior == null) return null;
-		else return superior;
-	}
-	
-	public Joint getInferior(int index) {return inferior.get(index);}
+	public Joint getSuperior() {return superior;}
 	public Joint[] getInferiors() {return inferior.toArray(new Joint[0]);}
 	
 	public double getLength() {return length;}
@@ -47,26 +42,29 @@ public class Joint extends BaseNode implements IGridable {
 	
 	@Override
 	public boolean addChild(BaseNode obj) {
-		if (obj instanceof Joint) {this.addInferior((Joint) obj);}
-		return super.addChild(obj);
-	}
-	public boolean addInferior(Joint j) {
-		return j.setSuperior(this);
+		boolean flag = super.addChild(obj);
+		if (flag && obj instanceof Joint) {this.inferior.add((Joint) obj);}
+		return flag;
 	}
 	
 	@Override
 	public boolean setParent(BaseNode parent) {
 		boolean flag = super.setParent(parent);
-		if (flag && parent instanceof Joint) {this.setSuperior((Joint) parent);}
+		if (flag && parent != null && parent instanceof Joint) {
+			this.superior = (Joint) parent;
+			this.length = this.wpos.add(this.superior.wpos.mult(-1)).getLength();
+		}
 		return flag;
 	}
-	public boolean setSuperior(Joint j) {
-		if (j == this || j == null || j == superior) return false;
-		if (superior != null && superior.inferior.contains(this))superior.inferior.remove(this);
-		this.superior = j;
-		if (!j.inferior.contains(this)) j.inferior.add(this);
-		this.length = this.pos.getLength();
-		return true;
+	
+	@Override
+	public boolean removeParent() {
+		if (this.parent instanceof Joint) {
+			if (((Joint) this.parent).inferior.contains(this)) ((Joint) this.parent).inferior.remove(this); 
+			this.superior = null;
+			this.length = 0;
+		}
+		return super.removeParent();
 	}
 	
 	// Render
@@ -77,9 +75,10 @@ public class Joint extends BaseNode implements IGridable {
 	}
 	
 	public void onRenderDebug() {
-		GlRenderHelper.getInstance().clearAccumCache();
+		GlRenderHelper.getInstance().disableDepth();
 		refreshGrid();
 		GlRenderHelper.getInstance().renderGrid(this);
+		GlRenderHelper.getInstance().enableDepth();
 	}
 
 	@Override

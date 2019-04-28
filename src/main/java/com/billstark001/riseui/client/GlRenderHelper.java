@@ -3,9 +3,6 @@ package com.billstark001.riseui.client;
 import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.ICompilable;
@@ -21,6 +18,7 @@ import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -89,24 +87,24 @@ public final class GlRenderHelper {
 	public void setColor(int color, double alpha) {setColor(color); setAlpha(alpha);}
 	public void setColor(int color, float alpha) {setColor(color); setAlpha(alpha);}
 	
-	public void setLineWidth(double width) {GL11.glLineWidth((float) width);}
+	public void setLineWidth(double width) {GlStateManager.glLineWidth((float) width);}
 	
 	//State Management
 	
 	public void enableGridState() {
-		GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.disableCull();
+		GlStateManager.disableTexture2D();
         setLineWidth(1.5);
 	}
 	
 	public void disableGridState() {
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableCull();
+        GlStateManager.disableBlend();
+        GlStateManager.enableLighting();
 	}
 	
 	public void clearAccumCache() {
@@ -114,26 +112,27 @@ public final class GlRenderHelper {
 	}
 	
 	public void disableDepth() {
+		GlStateManager.disableDepth();
 	}
 	
 	public void enableDepth() {
-		GL11.glDepthMask(true);
+		GlStateManager.enableDepth();
 	}
 
 	//Render
 
 	public void renderSurface(Matrix pos, Matrix uv) {
-		startDrawingMesh();
 		Vector[] vpos = pos.toVecArray();
 		Vector[] vuv = uv.toVecArray();
-		for (int i = 0; i < vpos.length; ++i) {
-			addVertex(vpos[i], vuv[i]);
-		}
+		startDrawingMesh();
+		for (int i = 0; i < vpos.length; ++i) addVertex(vpos[i], vuv[i]);
+		endDrawing();
+		startDrawingMesh();
+		for (int i = vpos.length - 1; i > -1 ; --i) addVertex(vpos[i], vuv[i]);
 		endDrawing();
 	}
 
 	public void renderMesh(IMeshable mesh) {
-		//String cur_tex = ":";
 		BaseMaterial cur_tex = BaseMaterial.MISSING;
 		for (int i = 0; i < mesh.getFaceCount(); ++i){
 			Triad[] t_ = mesh.getFace(i);
@@ -177,44 +176,46 @@ public final class GlRenderHelper {
 	}
 	
 	public void renderObject(BaseNode obj, double ptick) {
-		Vector p, r, s;
+		Vector p, s;
 		Quaternion q;
 		if (obj.getParent() == null) {
 			p = BaseNode.POS_UNIT;
-			q = Quaternion.reverseAxisRotate(BaseNode.ROT_UNIT);
+			q = BaseNode.ROT_UNIT;
 			s = BaseNode.SCALE_UNIT;
 		} else {
 			p = obj.getParent().getGlobalPos();
-			q = Quaternion.reverseAxisRotate(obj.getParent().getGlobalRot());
+			q = obj.getParent().getGlobalRot();
 			s = obj.getParent().getGlobalScale();
 		}
-		r = q.getImaginary();
 		
-		GL11.glPushMatrix();
-		//if (obj instanceof IRenderable) ((IRenderable) obj).render();
-		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
-		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
-		GL11.glScaled(s.get(0), s.get(1), s.get(2));
+		GlStateManager.pushMatrix();
+		
+		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
+		GlStateManager.rotate(InteractUtils.transQuat(q));
+		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
+		
 		renderObject(obj, false, ptick);
-		GL11.glPopMatrix();
+		
+		GlStateManager.popMatrix();
 	}
 
 	private void renderObject(BaseNode obj, boolean f, double ptick) {
 		if (obj == null) return;
-		Vector p, r, s;
+		Vector p, s;
 		Quaternion q;
 		p = obj.getPos();
-		q = Quaternion.reverseAxisRotate(obj.getRot());
-		r = q.getImaginary();
+		q = obj.getRot();
 		s = obj.getScale();
 		
-		GL11.glPushMatrix();
+		GlStateManager.pushMatrix();
 		obj.render(ptick);
-		GL11.glTranslated(p.get(0), p.get(1), p.get(2));
-		GL11.glRotated(q.getReal() * -360 / Math.PI, r.get(0), r.get(1), r.get(2));
-		GL11.glScaled(s.get(0), s.get(1), s.get(2));
+		
+		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
+		GlStateManager.rotate(InteractUtils.transQuat(q));
+		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
+		
 		for (BaseNode o: obj.getChildren()) renderObject(o, f, ptick);
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 		
 	}
 }

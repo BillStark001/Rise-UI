@@ -105,7 +105,7 @@ public class ColladaFile {
 			}
 		}
 		Vector vr = new Vector(rx, ry, rz).mult(Math.PI / 180);
-		Quaternion r = Quaternion.eulerToQuatFast(vr);
+		Quaternion r = Quaternion.eulerToQuat(vr);
 		ans = new StateContainer(p, r, s);
 		return ans;
 	}
@@ -124,7 +124,7 @@ public class ColladaFile {
 			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
 			for (int i = 0; i < nr_faces; ++i) {
 				vertices.add(new Triad(vtemp[i][0], vtemp[i][1], vtemp[i][2]));
-				if (i == 0) mindex.add(new BaseMaterial("textures/entity/spider/spider.png"));
+				if (i == 0) mindex.add(new BaseMaterial("riseui:tex/cave_spider.png"));
 				// TODO Material Instantiation
 				else mindex.add(null);
 			}

@@ -29,6 +29,13 @@ public final class InteractUtils {
 	public static final Vec3i transDI(Vec3d v) {return new Vec3i(v.x, v.y, v.z);}
 	public static final Vec3d transDI(Vec3i v) {return new Vec3d(v.getX(), v.getY(), v.getZ());}
 	
+	public static org.lwjgl.util.vector.Quaternion transQuat(Quaternion q) {
+		float x, y, z, w;
+		w = q.getF(0);
+		x = q.getF(1); y = q.getF(2); z = q.getF(3);
+		return new org.lwjgl.util.vector.Quaternion(x, y, z, w);
+    }
+	
 	public static final Vector getAirOrderAngle(Vector v, double roll) {return Utils.getAirOrderAngle(v, roll);}
 	public static final Matrix getRotateAffine(Vector v, double roll) {return Utils.getRotateAffine(v, roll);}
 	

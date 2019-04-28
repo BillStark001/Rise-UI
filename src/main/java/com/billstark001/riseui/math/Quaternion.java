@@ -1,5 +1,6 @@
 package com.billstark001.riseui.math;
 
+import java.nio.FloatBuffer;
 import net.minecraft.util.math.MathHelper;
 
 public final class Quaternion {
@@ -8,7 +9,7 @@ public final class Quaternion {
 	private final Vector imaginary;
 	private boolean axis = false;
 	
-	public boolean isAxisAndAngle() {return axis;}
+	public boolean isAARecord() {return axis;}
 	private void setAxis(boolean axis) {this.axis = axis;}
 
 	public Quaternion () {
@@ -46,6 +47,11 @@ public final class Quaternion {
 		if(index < 0 || index > 3) throw new IndexOutOfBoundsException("The index must be 0, 1, 2 or 3!");
 		if(index == 0) return real;
 		else return imaginary.get(index - 1);
+	}
+	public float getF (int index) {
+		if(index < 0 || index > 3) throw new IndexOutOfBoundsException("The index must be 0, 1, 2 or 3!");
+		if(index == 0) return (float) real;
+		else return (float) imaginary.get(index - 1);
 	}
 
 	public boolean isPure () {return getReal() == 0;}
@@ -178,23 +184,29 @@ public final class Quaternion {
 		return eulerToRotate(v);
 	}
 	
-	public static Quaternion AxisAndAngle(Vector axis, double angle) {
+	public static Quaternion getAARByAA(Vector axis, double angle) {
 		axis = axis.normalize();
 		Quaternion ans = new Quaternion(angle, axis);
 		ans.setAxis(true);
 		return ans;
 	}
 	
-	public static Quaternion axisRotate(Vector axis, double angle) {
+	public static Quaternion getQuatByAAR(Quaternion q) {
+		if (!q.isAARecord()) return q;
+		else return getQuatByAA(q.getImaginary(), q.getReal());
+	}
+	public static Quaternion getQuatByAA(Vector axis, double angle) {
 		axis = axis.normalize();
 		return new Quaternion(Math.cos(angle), axis.mult(Math.sin(angle)));
 	}
 	
-	public static Quaternion reverseAxisRotate(Quaternion q) {
+	public static Quaternion getAARByQuat(Quaternion q) {
 		double angle = Math.asin(q.getImaginary().getLength());
 		if (q.getReal() < 0) angle = Math.PI - angle;
-		Quaternion ans =  Quaternion.AxisAndAngle(q.getImaginary().normalize(), angle);
+		Quaternion ans =  Quaternion.getAARByAA(q.getImaginary().normalize(), angle);
 		return ans;
 	}
+	
+	// Strange Utils
 	
 }
