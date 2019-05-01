@@ -103,14 +103,14 @@ public final class Quaternion {
 	}
 	
 	public static Quaternion eulerToQuat (Vector v) {
-		double phi = v.get(2) / 2, tht = v.get(0) / 2, ksi = v.get(1) / 2;
-		double sp = Math.sin(phi), cp = Math.cos(phi);
-		double st = Math.sin(tht), ct = Math.cos(tht);
-		double sk = Math.sin(ksi), ck = Math.cos(ksi);
-		double w = cp * ct * ck + sp * st * sk;
-		double x = cp * st * ck + sp * ct * sk;
-		double y = cp * ct * sk - sp * st * ck;
-		double z = sp * ct * ck - cp * st * sk;
+		double a = v.get(1) / 2, b = v.get(0) / 2, r = v.get(2) / 2;
+		double sa = Math.sin(a), ca = Math.cos(a);
+		double sb = Math.sin(b), cb = Math.cos(b);
+		double sr = Math.sin(r), cr = Math.cos(r);
+		double w = ca * cb * cr + sa * sb * sr;
+		double x = ca * sb * cr + sa * cb * sr;
+		double y = sa * cb * cr - ca * sb * sr;
+		double z = ca * cb * sr - sa * sb * cr;
 		return new Quaternion(w, x, y, z);
 	}
 	
