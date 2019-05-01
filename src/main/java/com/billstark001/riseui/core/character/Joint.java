@@ -1,5 +1,6 @@
 package com.billstark001.riseui.core.character;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,10 @@ public class Joint extends BaseNode implements IGridable {
 	public Joint getSuperior() {return superior;}
 	public Joint[] getInferiors() {return inferior.toArray(new Joint[0]);}
 	
-	public double getLength() {return length;}
+	public double getLength() {
+		if (this.parent == null || !(this.parent instanceof Joint)) return 0;
+		return this.getGlobalPos().add(this.parent.getGlobalPos().mult(-1)).getLength();
+	}
 
 	// Maintainence
 	
@@ -52,7 +56,6 @@ public class Joint extends BaseNode implements IGridable {
 		boolean flag = super.setParent(parent);
 		if (flag && parent != null && parent instanceof Joint) {
 			this.superior = (Joint) parent;
-			this.length = this.wpos.add(this.superior.wpos.mult(-1)).getLength();
 		}
 		return flag;
 	}
@@ -65,6 +68,26 @@ public class Joint extends BaseNode implements IGridable {
 			this.length = 0;
 		}
 		return super.removeParent();
+	}
+	
+	@Override
+	public void dump(PrintStream out, int level){
+		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
+		println(out, "LOCAL:", level + 1);
+		println(out, "POS" + vec32String(this.getPos()), level + 2);
+		println(out, "ROT" + quat2String(this.getRot()), level + 2);
+		println(out, "SCL" + vec32String(this.getScale()), level + 2);
+		println(out, "GLOBAL:", level + 1);
+		println(out, "POS" + vec32String(this.getGlobalPos()), level + 2);
+		println(out, "ROT" + quat2String(this.getGlobalRot()), level + 2);
+		println(out, "SCL" + vec32String(this.getGlobalScale()), level + 2);
+		println(out, "LENGTH: " + this.getLength(), level + 1);
+		if (this.children.size() == 0) return;
+		println(out, "", level + 1);
+		println(out, "CHILDREN:", level + 1);
+		for (BaseNode i: this.children) {
+			i.dump(out, level + 2);
+		}
 	}
 	
 	// Render

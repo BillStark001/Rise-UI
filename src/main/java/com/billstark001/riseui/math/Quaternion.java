@@ -103,10 +103,10 @@ public final class Quaternion {
 	}
 	
 	public static Quaternion eulerToQuat (Vector v) {
-		double psi = v.get(1) / 2, tht = v.get(0) / 2, phi = v.get(2) / 2;
+		double phi = v.get(2) / 2, tht = v.get(0) / 2, ksi = v.get(1) / 2;
 		double sp = Math.sin(phi), cp = Math.cos(phi);
 		double st = Math.sin(tht), ct = Math.cos(tht);
-		double sk = Math.sin(psi), ck = Math.cos(psi);
+		double sk = Math.sin(ksi), ck = Math.cos(ksi);
 		double w = cp * ct * ck + sp * st * sk;
 		double x = cp * st * ck + sp * ct * sk;
 		double y = cp * ct * sk - sp * st * ck;
@@ -115,7 +115,7 @@ public final class Quaternion {
 	}
 	
 	public static Quaternion eulerToQuatFast (Vector v) {
-		float ksi = (float) v.get(1) / 2, tht = (float) v.get(0) / 2, phi = (float) v.get(2) / 2;
+		float phi = (float) v.get(2) / 2, tht = (float) v.get(0) / 2, ksi = (float) v.get(1) / 2;
 		float sp = MathHelper.sin(phi), cp = MathHelper.cos(phi);
 		float st = MathHelper.sin(tht), ct = MathHelper.cos(tht);
 		float sk = MathHelper.sin(ksi), ck = MathHelper.cos(ksi);

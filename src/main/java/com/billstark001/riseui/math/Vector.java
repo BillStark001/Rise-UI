@@ -208,6 +208,17 @@ public final class Vector {
 		return temp;
 	}
 	
+	public static final Vector expand0(Vector v, int l) {return expand(v, l, 0);}
+	public static final Vector expand1(Vector v, int l) {return expand(v, l, 1);}
+	public static final Vector expand(Vector v, int l, double def) {
+		if (l < v.getDimension()) return null;
+		if (l == v.getDimension()) return v;
+		double[] dans = new double[l];
+		for (int i = 0; i < v.getDimension(); ++i) dans[i] = v.get(i);
+		for (int i = v.getDimension(); i < l; ++i) dans[i] = def;
+		return new Vector(dans);
+	}
+	
 	private static final double calcLength(double[] d) {
 		double ans = 0;
 		for(int i = 0; i < d.length; ++i) ans += d[i] * d[i];

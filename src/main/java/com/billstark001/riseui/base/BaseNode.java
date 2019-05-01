@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
@@ -17,6 +18,7 @@ public abstract class BaseNode extends BaseObject{
 	protected Vector pos, wpos;
 	protected Quaternion rot, wrot;
 	protected Vector scale, wscale;
+	protected Matrix wstate;
 
 	protected List<BaseTag> tags = new ArrayList<BaseTag>();
 	protected List<BaseNode> children = new ArrayList<BaseNode>();
@@ -27,6 +29,7 @@ public abstract class BaseNode extends BaseObject{
 	public static final Vector POS_UNIT = Vector.UNIT0_D3;
 	public static final Quaternion ROT_UNIT = Quaternion.UNIT;
 	public static final Vector SCALE_UNIT = Vector.UNIT1_D3;
+	public static final Matrix STATE_UNIT = Matrix.unit(4);
 
 	public BaseNode(Vector pos, Quaternion rot, Vector scale, String name) {
 		super(name);
@@ -34,6 +37,7 @@ public abstract class BaseNode extends BaseObject{
 		this.pos = this.wpos = pos;
 		this.rot = this.wrot = rot;
 		this.scale = this.wscale = scale;
+		this.wstate = STATE_UNIT;//Utils.getStateMat(pos, rot, scale);
 		this.parent = null;
 	}
 	
@@ -185,19 +189,26 @@ public abstract class BaseNode extends BaseObject{
 	
 	protected void updateGlobalInfo() {if (GlobalDirty()) updateGlobalInfoForced();}
 	protected void updateGlobalInfoForced() {
-		if (parent == null) {
-			wpos = pos;
-			wrot = rot;
-			wscale = scale;
-		} else {
-			parent.updateGlobalInfo();
-			wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
-			wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
-			
-			wpos = Utils.compOffset(parent.getGlobalPos(), Utils.applyRotOnVec3(getPos(), parent.getGlobalRot()).mult(wscale));
-			
-			
+		BaseNode parent = new EmptyNode();
+		if (this.parent != null) {
+			this.parent.updateGlobalInfo();
+			parent = this.parent;
 		}
+		wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
+		wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
+		wstate = Utils.getStateMat(pos, rot, scale).mult(parent.wstate);
+		wpos = Utils.applyStateMat(pos, wstate);
+			
+		/*
+		//wpos = Utils.compOffset(parent.getGlobalPos(), Utils.applyRotOnVec3(getPos(), parent.getGlobalRot()).mult(wscale));
+		wpos = pos;
+		// Local Transformation
+		wpos = Utils.applyRotOnVec3(wpos.mult(parent.getScale()), parent.getRot()).add(parent.getPos());
+		BaseNode p2 = this.parent.getParent();
+		if (p2 == null) p2 = new EmptyNode();
+		wpos = Utils.applyRotOnVec3(wpos.mult(p2.getGlobalScale()), p2.getGlobalRot()).add(p2.getGlobalPos());
+		*/
+		
 		
 		clarifyGlobal();
 		BaseTag.sortTags(tags);
@@ -410,12 +421,12 @@ public abstract class BaseNode extends BaseObject{
 		return ans;
 	}
 	
-	private String genBlank(int count) {
+	protected String genBlank(int count) {
 		char[] temp = new char[count];
 		Arrays.fill(temp, ' ');
 		return new String(temp);
 	}
-	private void println(PrintStream out, String text, int blank) {
+	protected void println(PrintStream out, String text, int blank) {
 		out.print(genBlank(blank));
 		out.println(text);
 	}
@@ -427,7 +438,7 @@ public abstract class BaseNode extends BaseObject{
 	
 	public void dump() {dump(System.out, 0);}
 	public void dump(PrintStream out) {dump(out, 0);}
-	private void dump(PrintStream out, int level){
+	public void dump(PrintStream out, int level){
 		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
 		println(out, "LOCAL:", level + 1);
 		println(out, "POS" + vec32String(this.getPos()), level + 2);
@@ -438,6 +449,7 @@ public abstract class BaseNode extends BaseObject{
 		println(out, "ROT" + quat2String(this.getGlobalRot()), level + 2);
 		println(out, "SCL" + vec32String(this.getGlobalScale()), level + 2);
 		if (this.children.size() == 0) return;
+		println(out, "", level + 1);
 		println(out, "CHILDREN:", level + 1);
 		for (BaseNode i: this.children) {
 			i.dump(out, level + 2);

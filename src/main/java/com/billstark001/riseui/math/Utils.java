@@ -57,9 +57,36 @@ public final class Utils {
 		//Quaternion p = new Quaternion(v);
 		//return r.inverse().mult(p).mult(r).getImaginary();
 		Matrix q = Quaternion.quatToRotate(r);
-		Vector[] p = {v};
-		Matrix mp = new Matrix(p);
-		return mp.mult(q).getLine(0);
+		return new Matrix(v).mult(q).getLine(0);
+	}
+	
+	public static Matrix getStateMat(Vector p, Quaternion r, Vector s) {
+		double[][] ds = {
+				{s.get(0), 0, 0, 0},
+				{0, s.get(1), 0, 0},
+				{0, 0, s.get(2), 0},
+				{0, 0, 0, 1}
+		};
+		double[][] dp = {
+				{1, 0, 0, 0},
+				{0, 1, 0, 0},
+				{0, 0, 1, 0},
+				{p.get(0), p.get(1), p.get(2), 1}
+		};
+		Matrix ms = new Matrix(ds);
+		Matrix mp = new Matrix(dp);
+		Matrix mr = Matrix.homoExtend(Quaternion.quatToRotate(r), 4);
+		return ms.mult(mr).mult(mp);
+	}
+	
+	public static Vector applyStateMat(Vector p, Matrix state) {return applyStateMat(new Matrix(p), state).getLine(0);}
+	public static Matrix applyStateMat(Matrix pset, Matrix state) {
+		if (pset.getSize().getY() != 3) return null;
+		if (state.getSize().getX() != 4 || state.getSize().getY() != 4) return null;
+		pset = Matrix.expandColumn(pset, 4, 1);
+		pset = pset.mult(state);
+		pset = pset.getColumns(0, 3);
+		return pset;
 	}
 	
 	// Offset, Rotate and Zoom

@@ -41,6 +41,17 @@ public final class Matrix {
 		}
 	}
 	
+	public Matrix(Vector element) {this(element, 0, 1, 0);}
+	public Matrix(Vector element, int stack) {this(element, 0, stack, 0);}
+	public Matrix(Vector element, int length, int stack, double def) {
+		if (length > element.getDimension()) element = Vector.expand(element, length, def);
+		this.elements = new Vector[stack];
+		x = stack;
+		y = element.getDimension();
+		this.size = new Pair(x, y);
+		for (int i = 0; i < x; ++i) this.elements[i] = element;
+	}
+	
 	public Matrix(AbstractCollection<Vector> elements) {
 		x = elements.size();
 		int y = 0; for (Vector v: elements) y = Math.max(y, v.getDimension()); this.y = y;
@@ -54,25 +65,20 @@ public final class Matrix {
 		}
 	}
 	
-	public Matrix(Vector element, int repeat) {
-		x = repeat;
-		y = element.getDimension();
-		size = new Pair(x, y);
-		this.elements = new Vector[x];
-		for(int i = 0; i < x; ++i) this.elements[i] = element;
-	}
-	
-	public static final Matrix I(int size) {
-		double[][] temp = new double[size][size];
-		for(int i = 0; i < size; ++i) temp[i][i] = 1;
-		return new Matrix(temp);
-	}
+	private static final double[][] di1 = {{1}};
+	private static final double[][] di2 = {{1, 0}, {0, 1}};
+	private static final double[][] di3 = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+	private static final double[][] di4 = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+	public static final Matrix I1 = new Matrix(di1);
+	public static final Matrix I2 = new Matrix(di2);
+	public static final Matrix I3 = new Matrix(di3);
+	public static final Matrix I4 = new Matrix(di4);
 	
 	//Base functions
 	public final Pair getSize() {return size;}
 	
-	public final double get(int x, int y) {return elements[y].get(x);}
-	public final double get(Pair position) {return get((Integer)position.getX(), (Integer)position.getY());}
+	public final double get(int line, int column) {return elements[line].get(column);}
+	public final double get(Pair position) {return get(position.getX(), position.getY());}
 	
 	public boolean equals(Matrix m) {
 		if(!size.equals(m.size)) return false;
@@ -119,7 +125,7 @@ public final class Matrix {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			int z = (Integer)M.getSize().getX();
+			int z = M.getSize().getX();
 			temp = new Vector[x + z];
 			for(int i = 0; i < temp.length; ++i){
 				if(i < z) temp[i] = elements[i];
@@ -171,20 +177,70 @@ public final class Matrix {
 	}
 	
 	public final Vector[] toVecArray() {
-		Vector[] temp = new Vector[elements.length];
-		for(int i = 0; i < temp.length; ++i) {
-			temp[i] = new Vector(elements[i]);
+		return elements;
+	}
+	
+	public final double[][] to2DArray() {
+		double[][] ans = new double[this.getSize().getX()][this.getSize().getY()];
+		for (int i = 0; i < this.getSize().getX(); ++i)
+		for (int j = 0; j < this.getSize().getY(); ++j) {
+			ans[i][j] = this.get(i, j);
 		}
-		return temp;
+		return ans;
 	}
 	
 	//Utils
+	public static Matrix I(int size) {return unit(size);}
 	public static Matrix unit(int size) {
-		double[][] dtemp = new double[0][0];
+		if (size < 1) return null;
+		if (size == 1) return I1;
+		if (size == 2) return I2;
+		if (size == 3) return I3;
+		if (size == 4) return I4;
+		double[][] dtemp = new double[size][size];
 		for(int i = 0; i < size; ++i) {
 			dtemp[i][i] = 1;
 		}
 		return new Matrix(dtemp);
+	}
+	
+	public static Matrix homoExtend(Matrix m, int dimension) {
+		if (m.size.getX() != m.getSize().getY()) return null;
+		if (dimension < m.size.getX()) return null;
+		if (dimension == m.size.getX()) return m;
+		double[][] dans = new double[dimension][dimension];
+		for (int i = 0; i < m.size.getX(); ++i) for (int j = 0; j < m.size.getX(); ++j) {
+			dans[i][j] = m.get(i, j);
+		}
+		for (int i = m.size.getX(); i < dimension; ++i) dans[i][i] = 1;
+		Matrix ans = new Matrix(dans);
+		return ans;
+	}
+	
+	public static Matrix expandLine(Matrix m, int length, double def) {
+		if (length < m.size.getX()) return null;
+		if (length == m.size.getX()) return m;
+		Vector[] dans = new Vector[length];
+		Vector vt = new Vector(def, m.getSize().getY(), true);
+		for (int i = 0; i < m.getSize().getX(); ++i) dans[i] = m.getLine(i);
+		for (int i = m.getSize().getX(); i < length; ++i) dans[i] = vt;
+		return new Matrix(dans);
+	}
+	public static Matrix expandColumn(Matrix m, int length, double def) {
+		if (length < m.size.getY()) return null;
+		if (length == m.size.getY()) return m;
+		double[][] dans = new double[m.getSize().getX()][length];
+		for (int i = 0; i < m.getSize().getX(); ++i) {
+			for (int j = 0; j < m.size.getY(); ++j) {
+				//System.out.println(new Pair(i, j));
+				dans[i][j] = m.get(i, j);
+			}
+			for (int j = m.size.getY(); j < length; ++j) {
+				//System.out.println(new Pair(i, j));
+				dans[i][j] = def;
+			}
+		}
+		return new Matrix(dans);
 	}
 	
 	public static boolean compareSize(Matrix m1, Matrix m2, boolean isMult) {
@@ -208,5 +264,83 @@ public final class Matrix {
 				}
 		}
 		return false;
+	}
+	
+	public static Matrix inverse(Matrix m) {
+		if (!m.isSquare()) return null;
+		int dim = m.getSize().getX();
+		double[][] src = m.to2DArray();
+
+		int i, j, row, col, k;
+		double max, temp;
+		int[] p = new int[dim];
+		double[][] b = new double[dim][dim];
+		for (i = 0; i < dim; i++) {
+			p[i] = i;
+			b[i][i] = 1;
+		}
+
+		for (k = 0; k < dim; ++k) {
+			// find the pivot
+			max = 0;
+			row = col = i;
+			for (i = k; i < dim; i++)
+				for (j = k; j < dim; j++) {
+					temp = Math.abs(b[i][j]);
+					if (max < temp) {
+						max = temp;
+						row = i;
+						col = j;
+					}
+				}
+			// switch line and column, turn pivot to pos(k, k)
+			if (row != k) {
+				for (j = 0; j < dim; j++) {
+					temp = src[row][j];
+					src[row][j] = src[k][j];
+					src[k][j] = temp;
+					temp = b[row][j];
+					b[row][j] = b[k][j];
+					b[k][j] = temp;
+				}
+				i = p[row];
+				p[row] = p[k];
+				p[k] = i;
+			}
+			if (col != k) {
+				for (i = 0; i < dim; i++) {
+					temp = src[i][col];
+					src[i][col] = src[i][k];
+					src[i][k] = temp;
+				}
+			}
+			// process
+			for (j = k + 1; j < dim; j++)
+				src[k][j] /= src[k][k];
+			for (j = 0; j < dim; j++)
+				b[k][j] /= src[k][k];
+			src[k][k] = 1;
+
+			for (j = k + 1; j < dim; j++) {
+				for (i = 0; i < k; i++)
+					src[i][j] -= src[i][k] * src[k][j];
+				for (i = k + 1; i < dim; i++)
+					src[i][j] -= src[i][k] * src[k][j];
+			}
+			for (j = 0; j < dim; j++) {
+				for (i = 0; i < k; i++)
+					b[i][j] -= src[i][k] * b[k][j];
+				for (i = k + 1; i < dim; i++)
+					b[i][j] -= src[i][k] * b[k][j];
+			}
+			for (i = 0; i < k; i++)
+				src[i][k] = 0;
+			src[k][k] = 1;
+		}
+		// recover mat. order
+		for (j = 0; j < dim; j++)
+			for (i = 0; i < dim; i++)
+				src[p[i]][j] = b[i][j];
+		return new Matrix(src);
 	}
 }
