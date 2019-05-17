@@ -9,6 +9,7 @@ import com.billstark001.riseui.base.ICompilable;
 import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.Matrix;
@@ -222,17 +223,19 @@ public final class GlRenderHelper {
 	public void renderWithoutGl(BaseNode obj, double ptick) {
 		Vector p, s;
 		Quaternion q;
-		p = obj.getParent().getGlobalPos();
-		q = obj.getParent().getGlobalRot();
-		s = obj.getParent().getGlobalScale();
+		BaseNode parent = obj.getParent();
+		if (parent == null) parent = new EmptyNode();
+		p = parent.getGlobalPos();
+		q = parent.getGlobalRot();
+		s = parent.getGlobalScale();
 		
 		GlStateManager.pushMatrix();
-		
-		obj.render(ptick);
-		
+
 		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
 		GlStateManager.rotate(InteractUtils.transQuat(q));
 		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
+		
+		obj.render(ptick);
 		
 		GlStateManager.popMatrix();
 		

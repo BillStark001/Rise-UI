@@ -150,7 +150,7 @@ public class RenderTestObject{
 		//render.renderGrid(cube_);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
-		render.renderObject(spider, delta);
+		render.renderWithoutGl(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			

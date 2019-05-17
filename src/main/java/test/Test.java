@@ -33,6 +33,7 @@ import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.states.mesh;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.b3d.B3DLoader;
 import scala.actors.threadpool.Arrays;
 
 public class Test {
@@ -52,7 +53,7 @@ public class Test {
 		
 		Collada file = null;
 		try {
-			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\rotz.dae");
+			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\roty.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -93,7 +94,7 @@ public class Test {
 		//q.removeChild(r);
 		//p.setParent(r);
 		
-		
+		B3DLoader b;
 		/*
 		int sample = 1000000;
 		int size = 6;

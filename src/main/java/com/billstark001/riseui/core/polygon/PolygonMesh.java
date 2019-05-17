@@ -117,9 +117,10 @@ public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 	public void calcRender() {	
 		
 		vr = vpos;
+		nr = normal;
 		
 		vr = Utils.zoom(vr, scale);
-		nr = Utils.zoom(normal, scale);
+		nr = Utils.zoom(nr, scale);
 		
 		vr = Utils.rotate(vr, rot);
 		nr = Utils.rotate(nr, rot);
@@ -170,7 +171,6 @@ public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 
 	public void onRender(double ptick) {
 		//GlRenderHelper.getInstance().renderMesh(this);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GlRenderHelper.getInstance().renderCompiled(this);
 	}
 	
