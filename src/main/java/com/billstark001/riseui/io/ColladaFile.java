@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.BaseObject;
-import com.billstark001.riseui.base.StateContainer;
 import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.PolygonMesh;
@@ -89,8 +89,8 @@ public class ColladaFile {
 		}
 	}
 	
-	public StateContainer parseState(BaseXform[] xf) {
-		StateContainer ans = null;
+	public StateStandard3D parseState(BaseXform[] xf) {
+		StateStandard3D ans = null;
 		Vector p = null;
 		double ry = 0, rx = 0, rz = 0;
 		Vector s = null;
@@ -106,7 +106,7 @@ public class ColladaFile {
 		}
 		Vector vr = new Vector(rx, ry, rz).mult(Math.PI / 180);
 		Quaternion r = Quaternion.eulerToQuat(vr);
-		ans = new StateContainer(p, r, s);
+		ans = new StateStandard3D(p, r, s);
 		return ans;
 	}
 	
@@ -139,18 +139,16 @@ public class ColladaFile {
 	
 	public BaseNode parseNode(Node n) {
 		//System.out.println(n);
-		StateContainer c = parseState(n.getXforms());
+		StateStandard3D c = parseState(n.getXforms());
 		BaseNode ans = null;
-		if (n.isJoint()) ans = new Joint(c.p, c.r, c.s, n.getName());
+		if (n.isJoint()) ans = new Joint(c, n.getName());
 		else if (n.getInstanceGeometry() != null && n.getInstanceGeometry().size() > 0) {
 			Geometry gtemp = lgeo.getElement(n.getInstanceGeometry().get(0).getUrl());
 			ans = parseMesh(gtemp.getMesh());
 			ans.setName(n.getName());
-			ans.setPos(c.p);
-			ans.setRot(c.r);
-			ans.setScale(c.s);
+			ans.setLocalState(c);
 		} else {
-			ans = new EmptyNode(c.p, c.r, c.s, n.getName());
+			ans = new EmptyNode(c, n.getName());
 		}
 		
 		// TODO InstanceCamera & InstanceLight

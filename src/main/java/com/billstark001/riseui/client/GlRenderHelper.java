@@ -1,7 +1,5 @@
 package com.billstark001.riseui.client;
 
-import java.nio.IntBuffer;
-
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.base.BaseNode;
@@ -9,11 +7,8 @@ import com.billstark001.riseui.base.ICompilable;
 import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
-import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.io.MtlFile;
-import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 
@@ -24,8 +19,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -60,13 +53,17 @@ public final class GlRenderHelper {
 	//Base Functions
 
 	public void startDrawing(int type, VertexFormat format) {R.begin(type, format);}
-	public void startDrawingMesh() {R.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION_TEX);}
-	public void startDrawingGrid(boolean isLooped) {
+	public void startDrawingFace() {R.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION_TEX);}
+	public void startDrawingVert() {
+		// TODO
+	}
+	public void startDrawingEdge(boolean isLooped) {
 		if (isLooped) R.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
 		else R.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 	}
 	public void endDrawing() {T.draw();}
 
+	public void addVertex(Vector pos, Vector nrm, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).normal((float) nrm.get(0), (float) nrm.get(1), (float) nrm.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
 	public void addVertex(Vector pos, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
 	public void addVertex(Vector pos){R.pos(pos.get(0), pos.get(1), pos.get(2)).color(r, g, b, a).endVertex();}
 
@@ -91,8 +88,20 @@ public final class GlRenderHelper {
 	public void setLineWidth(double width) {GlStateManager.glLineWidth((float) width);}
 	
 	//State Management
+	// TODO
+	public void dumpState() {
+		
+	}
 	
-	public void enableGridState() {
+	public void resetState() {
+		
+	}
+	
+	public void setVertState() {
+		
+	}
+	
+	public void setEdgeState() {
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -101,7 +110,7 @@ public final class GlRenderHelper {
         setLineWidth(1.5);
 	}
 	
-	public void disableGridState() {
+	public void setFaceState() {
         GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
         GlStateManager.disableBlend();
@@ -122,27 +131,28 @@ public final class GlRenderHelper {
 
 	//Render
 
-	public void renderSurface(Matrix pos, Matrix uv) {
-		Vector[] vpos = pos.toVecArray();
-		Vector[] vuv = uv.toVecArray();
-		startDrawingMesh();
+	public void renderSurface(Matrix vertpos, Matrix normal, Matrix uvmap) {
+		Vector[] vpos = vertpos.toVecArray();
+		Vector[] vuv = uvmap.toVecArray();
+		startDrawingFace();
 		for (int i = 0; i < vpos.length; ++i) addVertex(vpos[i], vuv[i]);
 		endDrawing();
-		startDrawingMesh();
+		startDrawingFace();
 		for (int i = vpos.length - 1; i > -1 ; --i) addVertex(vpos[i], vuv[i]);
 		endDrawing();
 	}
 
+	@Deprecated
 	public void renderMesh(IMeshable mesh) {
 		BaseMaterial cur_tex = BaseMaterial.MISSING;
 		for (int i = 0; i < mesh.getFaceCount(); ++i){
-			Triad[] t_ = mesh.getFace(i);
+			Triad[] t_ = mesh.getFaceIndices(i);
 			cur_tex = mesh.getMaterial(i);
 			if (cur_tex != null) {
 				cur_tex.applyOn(M);
 				System.out.println(cur_tex.getAlbedoTexture());
 			}
-			startDrawingMesh();
+			startDrawingFace();
 			for (Triad t: t_) {
 				Vector v1, v2;
 				v1 = mesh.getVertex(t.getX());
@@ -153,17 +163,18 @@ public final class GlRenderHelper {
 		}
 	}
 
+	@Deprecated
 	public void renderGrid(IGridable grid) {
-		enableGridState();
-		for (int i = 0; i < grid.getSegmentCount(); ++i){
+		setEdgeState();
+		for (int i = 0; i < grid.getEdgeCount(); ++i){
 			int[] v_ = grid.getSegment(i);
-			startDrawingGrid(grid.getLooped());
+			startDrawingEdge(grid.isEdgeLooped());
 			for (int v: v_) {
 				addVertex(grid.getVertex(v));
 			}
 			endDrawing();
 		}
-		disableGridState();
+		setFaceState();
 	}
 	
 	public void renderPoints() {
@@ -175,70 +186,30 @@ public final class GlRenderHelper {
 		BaseMaterial.INEXISTENT.applyOn(M);
 		GL11.glCallList(obj.getDisplayList());
 	}
-	
-	public void renderObject(BaseNode obj, double ptick) {
-		Vector p, s;
-		Quaternion q;
-		if (obj.getParent() == null) {
-			p = BaseNode.POS_UNIT;
-			q = BaseNode.ROT_UNIT;
-			s = BaseNode.SCALE_UNIT;
-		} else {
-			p = obj.getParent().getGlobalPos();
-			q = obj.getParent().getGlobalRot();
-			s = obj.getParent().getGlobalScale();
-		}
-		
+
+	public void renderObjectLocal(BaseNode obj, double ptick) {
+		if (obj == null) return;
 		GlStateManager.pushMatrix();
-		
-		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
-		GlStateManager.rotate(InteractUtils.transQuat(q));
-		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
-		
-		renderObject(obj, false, ptick);
-		
+		for (BaseNode o: obj.getChildren()) renderObjectLocal(o, ptick);
+		obj.render(ptick);
+		GlStateManager.multMatrix(obj.getLocalState().getState().storeBufferF());
 		GlStateManager.popMatrix();
 	}
-
-	private void renderObject(BaseNode obj, boolean f, double ptick) {
+	
+	public void renderObject(BaseNode obj, double ptick) {
 		if (obj == null) return;
-		Vector p, s;
-		Quaternion q;
-		p = obj.getPos();
-		q = obj.getRot();
-		s = obj.getScale();
-		
 		GlStateManager.pushMatrix();
-		obj.render(ptick);
-		
-		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
-		GlStateManager.rotate(InteractUtils.transQuat(q));
-		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
-		
-		for (BaseNode o: obj.getChildren()) renderObject(o, f, ptick);
+		renderObjectLocal(obj, ptick);
+		GlStateManager.multMatrix(obj.getParentGlobalState().getState().storeBufferF());
 		GlStateManager.popMatrix();
-		
 	}
 	
 	public void renderWithoutGl(BaseNode obj, double ptick) {
-		Vector p, s;
-		Quaternion q;
-		BaseNode parent = obj.getParent();
-		if (parent == null) parent = new EmptyNode();
-		p = parent.getGlobalPos();
-		q = parent.getGlobalRot();
-		s = parent.getGlobalScale();
-		
+		if (obj == null) return;
 		GlStateManager.pushMatrix();
-
-		GlStateManager.translate(p.get(0), p.get(1), p.get(2));
-		GlStateManager.rotate(InteractUtils.transQuat(q));
-		GlStateManager.scale(s.get(0), s.get(1), s.get(2));
-		
 		obj.render(ptick);
-		
+		GlStateManager.multMatrix(obj.getGlobalState().getState().storeBufferF());
 		GlStateManager.popMatrix();
-		
 		for (BaseNode o: obj.getChildren()) renderWithoutGl(o, ptick);
 	}
 }

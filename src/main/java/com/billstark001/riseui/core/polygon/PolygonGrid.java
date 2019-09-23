@@ -63,13 +63,13 @@ public class PolygonGrid extends BaseNode implements IGridable, ICompilable{
 		return super.setParent(obj);
 	}
 
-	public int getSegmentCount () {return segments.size();}
+	public int getEdgeCount () {return segments.size();}
 	public int[] getSegment (int index) {
 		return segments.get(index);
 	}
 	public Vector getVertex(int index) {if (vpos != null) return vr.getLine(index); else return new Vector(0, 0, 0);}
 	
-	public boolean getLooped () {return looped;}
+	public boolean isEdgeLooped(int index) {return looped;}
 	public void setLooped(boolean looped) {this.looped = looped;}
 
 	public void setPos(Vector v) {super.setPos(v); this.markRecompile();}

@@ -1,18 +1,22 @@
 package com.billstark001.riseui.math;
 
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.AbstractCollection;
+
+import org.lwjgl.BufferUtils;
 
 public final class Matrix {
 	
-	private final Pair size;
+	private final Pair shape;
 	private final int x, y;
 	private final Vector[] elements;
 	//x lines y columns
 	
-	public Matrix(Pair size) {
-		this.size = size;
-		this.x = size.getX();
-		this.y = size.getY();
+	public Matrix(Pair shape) {
+		this.x = Math.max(0, shape.getX());
+		this.y = Math.max(0, shape.getY());
+		this.shape = new Pair(x, y);
 		elements = new Vector[x];
 		for(int i = 0; i < x; ++i) {
 			elements[i] = Vector.Zeros(y);
@@ -23,7 +27,7 @@ public final class Matrix {
 	public Matrix(double[][] elements) {
 		x = elements.length;
 		y = elements[0].length;
-		size = new Pair(x, y);
+		shape = new Pair(x, y);
 		this.elements = new Vector[x];
 		for(int i = 0; i < x; ++i) {
 			this.elements[i] = new Vector(elements[i]);
@@ -33,7 +37,7 @@ public final class Matrix {
 	public Matrix(Vector[] elements) {
 		x = elements.length;
 		y = Vector.maxDim(elements);
-		size = new Pair(x, y);
+		shape = new Pair(x, y);
 		this.elements = new Vector[x];
 		for(int i = 0; i < x; ++i) {
 			if(elements[i].getDimension() != y)elements[i] = elements[i].concatenate(new double[y - elements[i].getDimension()]);
@@ -48,14 +52,14 @@ public final class Matrix {
 		this.elements = new Vector[stack];
 		x = stack;
 		y = element.getDimension();
-		this.size = new Pair(x, y);
+		this.shape = new Pair(x, y);
 		for (int i = 0; i < x; ++i) this.elements[i] = element;
 	}
 	
 	public Matrix(AbstractCollection<Vector> elements) {
 		x = elements.size();
 		int y = 0; for (Vector v: elements) y = Math.max(y, v.getDimension()); this.y = y;
-		size = new Pair(x, y);
+		shape = new Pair(x, y);
 		this.elements = new Vector[x];
 		int i = 0;
 		for (Vector v: elements){
@@ -75,13 +79,13 @@ public final class Matrix {
 	public static final Matrix I4 = new Matrix(di4);
 	
 	//Base functions
-	public final Pair getSize() {return size;}
+	public final Pair getShape() {return shape;}
 	
 	public final double get(int line, int column) {return elements[line].get(column);}
 	public final double get(Pair position) {return get(position.getX(), position.getY());}
 	
 	public boolean equals(Matrix m) {
-		if(!size.equals(m.size)) return false;
+		if(!shape.equals(m.shape)) return false;
 		for(int i = 0; i < x; ++i) if(!elements[i].equals(m.elements[i])) return false;
 		return true;
 	}
@@ -104,13 +108,19 @@ public final class Matrix {
 	}
 	
 	public final boolean isSquare() {return y == x;}
+	public final Vector getDiag() {
+		if (!this.isSquare()) return null;
+		double[] ans = new double[this.x];
+		for (int i = 0; i < this.x; ++i) ans[i] = this.elements[i].get(i);
+		return new Vector(ans);
+	}
 	
 	public final Matrix concatenate(Matrix M, boolean LineWise) {
 		Vector[] temp;
 		if(LineWise){
-			if(!(size.getX() == M.size.getX()))
+			if(!(shape.getX() == M.shape.getX()))
 				try {
-					throw new Exception("Can't concatenate matrices of " + size + " and " + M.size + ".");
+					throw new Exception("Can't concatenate matrices of " + shape + " and " + M.shape + ".");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -118,14 +128,14 @@ public final class Matrix {
 			temp = new Vector[x];
 			for(int i = 0; i < x; ++i) temp[i] = elements[i].concatenate(M.getLine(i));
 		} else {
-			if(!(size.getY() == M.size.getY()))
+			if(!(shape.getY() == M.shape.getY()))
 				try {
-					throw new Exception("Can't concatenate matrices of " + size + " and " + M.size + ".");
+					throw new Exception("Can't concatenate matrices of " + shape + " and " + M.shape + ".");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			int z = M.getSize().getX();
+			int z = M.getShape().getX();
 			temp = new Vector[x + z];
 			for(int i = 0; i < temp.length; ++i){
 				if(i < z) temp[i] = elements[i];
@@ -161,7 +171,7 @@ public final class Matrix {
 	
 	public final Matrix mult(Matrix M) {
 		compareSize(this, M, true);
-		int z_ = (Integer)M.getSize().getY();
+		int z_ = (Integer)M.getShape().getY();
 		M = M.T();
 		double[][] temp = new double[x][z_];
 		for(int i = 0; i < x; ++i) 
@@ -181,10 +191,28 @@ public final class Matrix {
 	}
 	
 	public final double[][] to2DArray() {
-		double[][] ans = new double[this.getSize().getX()][this.getSize().getY()];
-		for (int i = 0; i < this.getSize().getX(); ++i)
-		for (int j = 0; j < this.getSize().getY(); ++j) {
+		double[][] ans = new double[this.getShape().getX()][this.getShape().getY()];
+		for (int i = 0; i < this.getShape().getX(); ++i)
+		for (int j = 0; j < this.getShape().getY(); ++j) {
 			ans[i][j] = this.get(i, j);
+		}
+		return ans;
+	}
+	
+	public FloatBuffer storeBufferF() {
+		FloatBuffer ans = BufferUtils.createFloatBuffer(x * y);
+		for (int i = 0; i < this.getShape().getX(); ++i)
+		for (int j = 0; j < this.getShape().getY(); ++j) {
+			ans.put((float) this.get(i, j));
+		}
+		return ans;
+	}
+
+	public DoubleBuffer storeBufferD() {
+		DoubleBuffer ans = BufferUtils.createDoubleBuffer(x * y);
+		for (int i = 0; i < this.getShape().getX(); ++i)
+		for (int j = 0; j < this.getShape().getY(); ++j) {
+			ans.put(this.get(i, j));
 		}
 		return ans;
 	}
@@ -205,37 +233,37 @@ public final class Matrix {
 	}
 	
 	public static Matrix homoExtend(Matrix m, int dimension) {
-		if (m.size.getX() != m.getSize().getY()) return null;
-		if (dimension < m.size.getX()) return null;
-		if (dimension == m.size.getX()) return m;
+		if (m.shape.getX() != m.getShape().getY()) return null;
+		if (dimension < m.shape.getX()) return null;
+		if (dimension == m.shape.getX()) return m;
 		double[][] dans = new double[dimension][dimension];
-		for (int i = 0; i < m.size.getX(); ++i) for (int j = 0; j < m.size.getX(); ++j) {
+		for (int i = 0; i < m.shape.getX(); ++i) for (int j = 0; j < m.shape.getX(); ++j) {
 			dans[i][j] = m.get(i, j);
 		}
-		for (int i = m.size.getX(); i < dimension; ++i) dans[i][i] = 1;
+		for (int i = m.shape.getX(); i < dimension; ++i) dans[i][i] = 1;
 		Matrix ans = new Matrix(dans);
 		return ans;
 	}
 	
 	public static Matrix expandLine(Matrix m, int length, double def) {
-		if (length < m.size.getX()) return null;
-		if (length == m.size.getX()) return m;
+		if (length < m.shape.getX()) return null;
+		if (length == m.shape.getX()) return m;
 		Vector[] dans = new Vector[length];
-		Vector vt = new Vector(def, m.getSize().getY(), true);
-		for (int i = 0; i < m.getSize().getX(); ++i) dans[i] = m.getLine(i);
-		for (int i = m.getSize().getX(); i < length; ++i) dans[i] = vt;
+		Vector vt = new Vector(def, m.getShape().getY(), true);
+		for (int i = 0; i < m.getShape().getX(); ++i) dans[i] = m.getLine(i);
+		for (int i = m.getShape().getX(); i < length; ++i) dans[i] = vt;
 		return new Matrix(dans);
 	}
 	public static Matrix expandColumn(Matrix m, int length, double def) {
-		if (length < m.size.getY()) return null;
-		if (length == m.size.getY()) return m;
-		double[][] dans = new double[m.getSize().getX()][length];
-		for (int i = 0; i < m.getSize().getX(); ++i) {
-			for (int j = 0; j < m.size.getY(); ++j) {
+		if (length < m.shape.getY()) return null;
+		if (length == m.shape.getY()) return m;
+		double[][] dans = new double[m.getShape().getX()][length];
+		for (int i = 0; i < m.getShape().getX(); ++i) {
+			for (int j = 0; j < m.shape.getY(); ++j) {
 				//System.out.println(new Pair(i, j));
 				dans[i][j] = m.get(i, j);
 			}
-			for (int j = m.size.getY(); j < length; ++j) {
+			for (int j = m.shape.getY(); j < length; ++j) {
 				//System.out.println(new Pair(i, j));
 				dans[i][j] = def;
 			}
@@ -245,19 +273,19 @@ public final class Matrix {
 	
 	public static boolean compareSize(Matrix m1, Matrix m2, boolean isMult) {
 		if(isMult) {
-			if(m1.size.getY() == m2.size.getX()) return true;
+			if(m1.shape.getY() == m2.shape.getX()) return true;
 			else
 				try {
-					throw new Exception("No declarations of multiplication on " + m1.size + " and " + m2.size + ". The dimension y of the first matrix should be the same as the dimension x of the second matrix.");
+					throw new ShapeMismatchException("No declarations of multiplication on " + m1.shape + " and " + m2.shape + ". The dimension y of the first matrix should be the same as the dimension x of the second matrix.");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		} else {
-			if(m1.size.equals(m2.size)) return true;
+			if(m1.shape.equals(m2.shape)) return true;
 			else
 				try {
-					throw new Exception("Varisized matrices! (" + m1.size + " and " + m2.size + ")");
+					throw new ShapeMismatchException("Varisized matrices! (" + m1.shape + " and " + m2.shape + ")");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -268,7 +296,7 @@ public final class Matrix {
 	
 	public static Matrix inverse(Matrix m) {
 		if (!m.isSquare()) return null;
-		int dim = m.getSize().getX();
+		int dim = m.getShape().getX();
 		double[][] src = m.to2DArray();
 
 		int i, j, row, col, k;
@@ -342,5 +370,11 @@ public final class Matrix {
 			for (i = 0; i < dim; i++)
 				src[p[i]][j] = b[i][j];
 		return new Matrix(src);
+	}
+	
+	public static Matrix rand(int x, int y) {
+		double[][] mt = new double[x][y];
+		for (int i = 0; i < x; ++i) for (int j = 0; j < y; ++j) mt[i][j] = Math.random(); 
+		return new Matrix(mt);
 	}
 }

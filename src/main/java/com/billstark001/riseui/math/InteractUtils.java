@@ -1,5 +1,7 @@
 package com.billstark001.riseui.math;
 
+import org.lwjgl.util.vector.Matrix4f;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -13,8 +15,8 @@ public final class InteractUtils {
 	private static Minecraft mc = Minecraft.getMinecraft();
 	
 	//Linear Algebra Related
-	public static final Vec3d[] transMat(Matrix M) {
-		int x = (Integer) M.getSize().getX();
+	public static Vec3d[] transMat(Matrix M) {
+		int x = (Integer) M.getShape().getX();
 		Vec3d[] temp = new Vec3d[x];
 		for(int i = 0; i < x; ++i) {
 			Vector v = M.getLine(i);

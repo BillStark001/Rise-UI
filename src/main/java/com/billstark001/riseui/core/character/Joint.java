@@ -6,13 +6,15 @@ import java.util.List;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.IGridable;
+import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public class Joint extends BaseNode implements IGridable {
+public class Joint extends BaseNode {
 
 	public Joint(Vector pos, Quaternion rot, Vector scale, String name) {super(pos, rot, scale, name);}
 	public Joint(Vector pos, Quaternion rot, Vector scale) {super(pos, rot, scale);}
@@ -27,6 +29,9 @@ public class Joint extends BaseNode implements IGridable {
 	public Joint(Vector pos, String name) {super(pos, name);}
 	public Joint(String name) {super(name);}
 
+	public Joint(StateStandard3D c, String name) {super(c, name);}
+	public Joint(StateStandard3D c) {super(c, null);}
+
 	private List<Joint> inferior = new ArrayList<Joint>();
 	private Joint superior = null;
 	private double length;
@@ -39,6 +44,7 @@ public class Joint extends BaseNode implements IGridable {
 	
 	public double getLength() {
 		if (this.parent == null || !(this.parent instanceof Joint)) return 0;
+		
 		return this.getGlobalPos().add(this.parent.getGlobalPos().mult(-1)).getLength();
 	}
 
@@ -70,6 +76,7 @@ public class Joint extends BaseNode implements IGridable {
 		return super.removeParent();
 	}
 	
+	/*
 	@Override
 	public void dump(PrintStream out, int level){
 		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
@@ -89,29 +96,22 @@ public class Joint extends BaseNode implements IGridable {
 			i.dump(out, level + 2);
 		}
 	}
+	*/
 	
 	// Render
-	
-	@Override
-	public void onRender(double ptick) {
-		
-	}
-	
-	public void onRenderDebug() {
-		GlRenderHelper.getInstance().disableDepth();
-		refreshGrid();
-		GlRenderHelper.getInstance().renderGrid(this);
-		GlRenderHelper.getInstance().enableDepth();
-	}
 
 	@Override
-	public boolean getLooped() {return false;}
+	public boolean isEdgeLooped(int i) {return false;}
 
 	@Override
-	public int getSegmentCount() {return 15;}
+	public int getVertCount() {return 6;}
+	@Override
+	public int getEdgeCount() {return 15;}
+	@Override
+	public int getFaceCount() {return 0;}
 
 	@Override
-	public int[] getSegment(int index) {
+	public int[] getEdgeIndices(int index) {
 		int[] ans = new int[2];
 		if (index < 0 || index >= 15) index = 0;
 		if (index == 0) {
@@ -128,10 +128,25 @@ public class Joint extends BaseNode implements IGridable {
 	}
 
 	public void refreshGrid() {
-		vcur = Utils.zoom(vertices, length);
-		vcur = Utils.rotate(vertices, rot.inverse());
+		//vcur = Utils.zoom(vertices, length);
+		//vcur = Utils.rotate(vertices, rot.inverse());
 	}
 	@Override
-	public Vector getVertex(int index) {return vcur.getLine(index);}
+	public Vector getVertPos(int index) {return vcur.getLine(index);}
+
+
+	@Override
+	public Vector getVertNrm(int index) {
+		return new Vector(0, 0, 0);
+	}
+	@Override
+	public Vector getVertUVM(int index) {
+		return new Vector(0, 0, 0);
+	}
+	@Override
+	public Triad[] getFaceIndices(int index) {
+		return null;
+	}
+
 
 }

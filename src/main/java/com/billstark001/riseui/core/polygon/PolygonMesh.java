@@ -8,7 +8,10 @@ import org.lwjgl.opengl.GL11;
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.ICompilable;
 import com.billstark001.riseui.base.IMeshable;
+import com.billstark001.riseui.base.NodeCompilableBase;
 import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.state.SimpleState;
+import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.math.Matrix;
@@ -21,46 +24,40 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
+public class PolygonMesh extends NodeCompilableBase{
 	
-	private Triad[] vertices;
-	private BaseMaterial[] mindex;
-	private int[] findex;
+	private Triad[] face_ind;
+	private int[] face_endindex;
 	
-	private Matrix vpos;
-	private Matrix texuv;
-	private Matrix normal;
+	private Matrix pos;
+	private Matrix uvm;
+	private Matrix nrm;
 	
-	private Matrix vr;
-	private Matrix tr;
-	private Matrix nr;
+	private Matrix pos_r;
+	private Matrix uvm_r;
+	private Matrix nrm_r;
+	private SimpleState special_state;
 	
-	private boolean compiled;
-	private int displayList;
-	
-	public PolygonMesh (Matrix pos, Matrix uv, Matrix normal, Triad[] vertices, int[] endindex, BaseMaterial[] mats) {
+	public PolygonMesh (Matrix pos, Matrix uvm, Matrix nrm, Triad[] face_indices, int[] face_endindex) {
+		super();
+
+		this.face_endindex = face_endindex;
+		this.face_ind = face_indices;
+		this.pos = pos;
+		this.uvm = uvm;
+		this.uvm_r = uvm;
+		this.nrm = nrm;
+		this.special_state = new StateStandard3D();
 		
-		this.compiled = false;
-		this.displayList = -1;
-		
-		this.mindex = mats;
-		this.findex = endindex;
-		this.vertices = vertices;
-		this.vpos = pos;
-		this.texuv = uv;
-		this.tr = uv;
-		this.normal = normal;
-		this.pos = new Vector(0, 0, 0);
-		this.rot = Quaternion.UNIT;
-		this.scale = new Vector(1, 1, 1);
-		calcRender();
 	}
 	
 	public PolygonMesh(PolygonMesh m) {
-		this(m.vpos, m.texuv, m.normal, m.vertices, m.findex, m.mindex);
+		this(m.pos, m.uvm, m.nrm, m.face_ind, m.face_endindex);
 	}
 	
-	public int getFaceCount () {return findex.length;}
+	public int getVertCount() {return this.pos.getShape().getX();}
+	public int getEdgeCount() {return 0;}
+	public int getFaceCount() {return face_endindex.length;}
 	
 	@Override
 	public boolean setParent(BaseNode obj) {
@@ -69,121 +66,46 @@ public class PolygonMesh extends BaseNode implements IMeshable, ICompilable{
 	}
 	
 	private int[] face (int index) {
-		int[] ans = {0, findex.length};
-		if(index > 0 && index < findex.length) ans[0] = findex[index - 1];
-		if(index >= 0 && index < findex.length) ans[1] = findex[index];
+		int[] ans = {0, face_endindex.length};
+		if(index > 0 && index < face_endindex.length) ans[0] = face_endindex[index - 1];
+		if(index >= 0 && index < face_endindex.length) ans[1] = face_endindex[index];
 		return ans;
 	}
 	
-	public Triad[] getFace(int index) {
+	public Triad[] getFaceIndices(int index) {
 		int[] f = face(index);
 		Triad[] ans = new Triad[f[1] - f[0]];
-		for (int i = f[0]; i < f[1]; ++i) ans[i - f[0]] = vertices[i];
+		for (int i = f[0]; i < f[1]; ++i) ans[i - f[0]] = face_ind[i];
 		return ans;
 	}
 	
-	public Vector getVertex(int index) {if (vpos != null) return vr.getLine(index); else return new Vector(0, 0, 0);}
-	public Vector getNormal(int index) {if (normal != null) return nr.getLine(index); else return null;}
-	public Vector getUVMap(int index) {if (texuv != null) return tr.getLine(index); else return new Vector(0, 0, 0);}
-	
-	public void setPos(Vector v) {super.setPos(v); this.markRecompile();}
-	public void setRot(Vector v) {super.setRot(v); this.markRecompile();}
-	public void setRot(Quaternion v) {super.setRot(v); this.markRecompile();}
-	public void setScale(Vector v) {super.setScale(v); this.markRecompile();}
-	public void setScale(double v) {super.setScale(v); this.markRecompile();}
-	public void setGlobalPos(Vector v) {super.setGlobalPos(v); this.markRecompile();}
-	public void setGlobalRot(Vector v) {super.setGlobalRot(v); this.markRecompile();}
-	public void setGlobalRot(Quaternion v) {super.setGlobalRot(v); this.markRecompile();}
-	public void setGlobalScale(Vector v) {super.setGlobalScale(v); this.markRecompile();}
-	public void setGlobalScale(double v) {super.setGlobalScale(v); this.markRecompile();}
-	public void offset(Vector v) {super.offset(v); this.markRecompile();}
-	public void rotate(Quaternion q) {super.rotate(q); this.markRecompile();}
-	public void rotate(Vector v) {super.rotate(v); this.markRecompile();}
-	public void zoom(Vector v) {super.zoom(v); this.markRecompile();}
-	public void zoom(double d) {super.zoom(d); this.markRecompile();}
-	
-	private void offsetMesh(Vector v) {vpos = Utils.offset(vpos, v); this.markRecompile();}
-	
-	private void zoomMesh(Vector v) {vpos = Utils.zoom(vpos, v); normal = Utils.zoom(normal, v); this.markRecompile();}
-	private void zoomMesh(double v) {vpos = Utils.zoom(vpos, v); normal = Utils.zoom(normal, v); this.markRecompile();}
-	
-	private void rotateMesh(Quaternion q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	private void rotateMesh(Vector q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
-	private void rotateMesh(Matrix q) {vpos = Utils.rotate(vpos, q); normal = Utils.rotate(normal, q); this.markRecompile();}
+	public Vector getVertPos(int index) {if (pos != null) return pos_r.getLine(index); else return new Vector(0, 0, 0);}
+	public Vector getVertNrm(int index) {if (nrm != null) return nrm_r.getLine(index); else return null;}
+	public Vector getVertUVM(int index) {if (uvm != null) return uvm_r.getLine(index); else return new Vector(0, 0, 0);}
 
-	public boolean isCompiled() {return this.compiled;}
-	public void markRecompile() {this.compiled = false;}
-	
-	public void calcRender() {	
-		
-		vr = vpos;
-		nr = normal;
-		
-		vr = Utils.zoom(vr, scale);
-		nr = Utils.zoom(nr, scale);
-		
-		vr = Utils.rotate(vr, rot);
-		nr = Utils.rotate(nr, rot);
-		
-		vr = Utils.offset(vr, pos);
-		
-		this.markRecompile();
-	}
-	
-	public void compileList() {
-		
-		calcRender();
-		
-		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
-        GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);
-        BaseMaterial.INEXISTENT.applyOn(Minecraft.getMinecraft().renderEngine);
-        GlRenderHelper.getInstance().renderMesh(this);
-        BaseMaterial.INEXISTENT.applyOn(Minecraft.getMinecraft().renderEngine);
-        GlStateManager.glEndList();
-        this.compiled = true;
-	}
-	public int getDisplayList() {return this.displayList;}
-	public int clearDisplayList() {
-		int ans = this.displayList;
-		this.displayList = -1;
-		this.compiled = false;
-		return ans;
-	}
-	
-	public void rasterize() {
-		zoomMesh(scale);
-		rotateMesh(rot);
-		offsetMesh(pos);
-		setPos(new Vector(0, 0, 0));
-		setRot(Quaternion.UNIT);
-		setScale(new Vector(1, 1, 1));
-		//updateGlobalInfo();
-		calcRender();
-	}
-	
-	public BaseMaterial getMaterial(int index) {
-		if (index >= mindex.length) {
-			System.out.println(index);
-			return null;
-		}
-		return mindex[index];
+	@Override
+	public boolean isEdgeLooped(int index) {
+		// TODO 自动生成的方法存根
+		return false;
 	}
 
-	public void onRender(double ptick) {
-		//GlRenderHelper.getInstance().renderMesh(this);
-		GlRenderHelper.getInstance().renderCompiled(this);
+	@Override
+	public int[] getEdgeIndices(int index) {
+		// TODO 自动生成的方法存根
+		return null;
 	}
-	
+		
+	/*
 	public PolygonGrid generateGrid() {
-		ArrayList<int[]> edges = ObjFile.genGridEdges(this.vertices, this.findex);
-		PolygonGrid g = new PolygonGrid(vpos, edges);
+		ArrayList<int[]> edges = ObjFile.genGridEdges(this.face_ind, this.face_endindex);
+		PolygonGrid g = new PolygonGrid(pos, edges);
 		g.setPos(getPos());
 		g.setRot(getRot());
 		g.setScale(getScale());
 		g.rasterize();
 		return g;
 	}
-	
+	*/
 	// Some Preset Polygons
 	
 }

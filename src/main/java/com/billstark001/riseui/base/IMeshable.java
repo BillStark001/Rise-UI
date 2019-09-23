@@ -11,7 +11,7 @@ public interface IMeshable {
 	
 	public int getFaceCount();
 	
-	public Triad[] getFace(int index);
+	public Triad[] getFaceIndices(int index);
 	public BaseMaterial getMaterial(int index);
 	
 	public Vector getVertex(int index);

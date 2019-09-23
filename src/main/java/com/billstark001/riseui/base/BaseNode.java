@@ -5,20 +5,28 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import com.billstark001.riseui.math.Utils;
+import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.state.ComplexState;
+import com.billstark001.riseui.base.state.SimpleState;
+import com.billstark001.riseui.base.state.State4;
+import com.billstark001.riseui.base.state.StateRot;
+import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
 
 public abstract class BaseNode extends BaseObject{
 
-	protected Vector pos, wpos;
-	protected Quaternion rot, wrot;
-	protected Vector scale, wscale;
-	protected Matrix wstate;
+	protected SimpleState local_state;
+	protected ComplexState global_state; 
+	// 4*4 homogeneous matrix
+	// computation order: M=S*R*P
+	// SVD order: M=R1*S*R2*P
 
 	protected List<BaseTag> tags = new ArrayList<BaseTag>();
 	protected List<BaseNode> children = new ArrayList<BaseNode>();
@@ -26,33 +34,44 @@ public abstract class BaseNode extends BaseObject{
 	
 	protected boolean global_dirty;
 	
-	public static final Vector POS_UNIT = Vector.UNIT0_D3;
-	public static final Quaternion ROT_UNIT = Quaternion.UNIT;
-	public static final Vector SCALE_UNIT = Vector.UNIT1_D3;
-	public static final Matrix STATE_UNIT = Matrix.unit(4);
+	public static final SimpleState STATE_STANDARD = SimpleState.STATE_STANDARD;
 
-	public BaseNode(Vector pos, Quaternion rot, Vector scale, String name) {
+	public BaseNode(StateStandard3D state, String name) {
 		super(name);
 		global_dirty = false;
-		this.pos = this.wpos = pos;
-		this.rot = this.wrot = rot;
-		this.scale = this.wscale = scale;
-		this.wstate = STATE_UNIT;//Utils.getStateMat(pos, rot, scale);
+		this.local_state = new StateStandard3D(state);
+		this.global_state = new ComplexState(STATE_STANDARD, (StateStandard3D) this.local_state);
 		this.parent = null;
 	}
 	
-	public BaseNode(Vector pos, Quaternion rot, Vector scale) {this(pos, rot, scale, DEFAULT_NAME);}
-	public BaseNode(Vector pos, Quaternion rot, double scale) {this(pos, rot, new Vector(scale, scale, scale), DEFAULT_NAME);}
-	public BaseNode(Vector pos, Vector rot, Vector scale) {this(pos, Quaternion.eulerToQuat(rot), scale, DEFAULT_NAME);}
-	public BaseNode(Vector pos, Quaternion rot) {this(pos, rot, SCALE_UNIT, DEFAULT_NAME);}
-	public BaseNode(Vector pos) {this(pos, ROT_UNIT, SCALE_UNIT, DEFAULT_NAME);}
-	public BaseNode() {this(POS_UNIT, ROT_UNIT, SCALE_UNIT, DEFAULT_NAME);}
+	public BaseNode(SimpleState state, String name) {
+		super(name);
+		global_dirty = false;
+		this.local_state = new SimpleState(state);
+		this.global_state = new ComplexState(STATE_STANDARD, this.local_state);
+		this.parent = null;
+	}
 	
-	public BaseNode(Vector pos, Quaternion rot, double scale, String name) {this(pos, rot, new Vector(scale, scale, scale), name);}
-	public BaseNode(Vector pos, Vector rot, Vector scale, String name) {this(pos, Quaternion.eulerToQuat(rot), scale, name);}
-	public BaseNode(Vector pos, Quaternion rot, String name) {this(pos, rot, SCALE_UNIT, name);}
-	public BaseNode(Vector pos, String name) {this(pos, ROT_UNIT, SCALE_UNIT, name);}
-	public BaseNode(String name) {this(POS_UNIT, ROT_UNIT, SCALE_UNIT, name);}
+	public BaseNode(Vector pos, Quaternion rot, Vector scl, String name) {
+		super(name);
+		global_dirty = false;
+		this.local_state = new StateStandard3D(pos, rot, scl);
+		this.global_state = new ComplexState(STATE_STANDARD, (StateStandard3D) this.local_state);//Utils.getStateMat(pos, rot, scl);
+		this.parent = null;
+	}
+	
+	public BaseNode(Vector pos, Quaternion rot, Vector scl) {this(pos, rot, scl, DEFAULT_NAME);}
+	public BaseNode(Vector pos, Quaternion rot, double scl) {this(pos, rot, new Vector(scl, scl, scl), DEFAULT_NAME);}
+	public BaseNode(Vector pos, Vector rot, Vector scl) {this(pos, Quaternion.eulerToQuat(rot), scl, DEFAULT_NAME);}
+	public BaseNode(Vector pos, Quaternion rot) {this(pos, rot, null, DEFAULT_NAME);}
+	public BaseNode(Vector pos) {this(pos, new StateRot().getDefaultRepr(), null, DEFAULT_NAME);}
+	public BaseNode() {this(null, new StateRot().getDefaultRepr(), null, DEFAULT_NAME);}
+	
+	public BaseNode(Vector pos, Quaternion rot, double scl, String name) {this(pos, rot, new Vector(scl, scl, scl), name);}
+	public BaseNode(Vector pos, Vector rot, Vector scl, String name) {this(pos, Quaternion.eulerToQuat(rot), scl, name);}
+	public BaseNode(Vector pos, Quaternion rot, String name) {this(pos, rot, null, name);}
+	public BaseNode(Vector pos, String name) {this(pos, new StateRot().getDefaultRepr(), null, name);}
+	public BaseNode(String name) {this(null, new StateRot().getDefaultRepr(), null, name);}
 	
 	public BaseNode getParent() {return parent;}
 	public BaseNode[] getChildren() {return children.toArray(new BaseNode[0]);}
@@ -91,16 +110,17 @@ public abstract class BaseNode extends BaseObject{
 		return flag;
 	}
 
+	// TODO check codes
 	public boolean addChild(BaseNode obj) {return obj.setParent(this);}
 	public boolean setParent(BaseNode parent) {
 		if (parent == null) return removeParent();
 		if (parent == this) return false;
 		if (parent.isDescendant(this)) return false;
 		if (this.parent != null && this.parent.children.contains(this)) this.parent.children.remove(this);
-		updateGlobalInfo();
+		updateGlobalStateCheckDirty();
 		this.parent = parent;
 		if (!parent.children.contains(this)) parent.children.add(this);
-		updateLocalInfo();
+		updateLocalState();
 		return true;
 	}
 	public boolean addChildRemainLocal(BaseNode obj) {return obj.setParentRemainLocal(this);}
@@ -108,20 +128,22 @@ public abstract class BaseNode extends BaseObject{
 		if (parent == null) return removeParent();
 		if (parent == this) return false;
 		if (parent.isDescendant(this)) return false;
-		if (this.parent != null && this.parent.children.contains(this)) this.parent.children.remove(this);
-		updateLocalInfo();
+		if (this.parent != null && this.parent.children.contains(this)) {
+			this.parent.children.remove(this);
+			updateLocalState();
+		}
 		this.parent = parent;
 		if (!parent.children.contains(this)) parent.children.add(this);
 		markGlobalDirty();
-		updateGlobalInfo();
+		updateGlobalStateCheckDirty();
 		return true;
 	}
 	public boolean removeParent() {
 		if (this.parent == null) return false;
 		if (this.parent.children.contains(this)) this.parent.children.remove(this);
-		updateGlobalInfo();
+		updateGlobalStateCheckDirty();
 		this.parent = null;
-		updateLocalInfo();
+		updateLocalState();
 		return true;
 	}
 
@@ -161,263 +183,237 @@ public abstract class BaseNode extends BaseObject{
 		for (BaseNode obj: children) obj.markGlobalDirty();
 	}
 	public void clarifyGlobal() {this.global_dirty = false;}
-	protected void updateLocalInfo() {
-		if (parent == null) {
-			pos = wpos;
-			rot = wrot;
-			scale = wscale;
-		} else {
-			scale = Utils.splitZoom(getGlobalScale(), parent.getGlobalScale());
-			rot = Utils.splitRotate(getGlobalRot(), parent.getGlobalRot());
-			pos = Utils.splitOffset(getGlobalPos(), parent.getGlobalPos());
-			pos = pos.div(parent.getGlobalScale());
-		}
-		BaseTag.sortTags(tags);
-		Vector post = pos;
-		Quaternion rott = rot;
-		Vector scalet = scale;
-		for (BaseTag t: tags) {
-			StateContainer ct = t.onLocalUpdate(post, rott, scalet);
-			post = ct.p;
-			rott = ct.r;
-			scalet = ct.s;
-		}
-		pos = post; 
-		rot = rott;
-		scale = scalet;
+	
+	/**
+	 * Called while a new global state was assigned.
+	 * S_L = S_G * S_PG^-1
+	 */
+	protected void updateLocalState() {this.updateLocalStateWithoutTag(); this.applyTags(BaseTag.TAG_PHRASE_LOCAL_UPDATE);}
+	protected void updateLocalStateWithoutTag() {
+		SimpleState A = this.getParentGlobalStateSimplified();
+		SimpleState C = this.getGlobalStateSimplified();
+		SimpleState B = State4.stateDecomposeB(C, A);
+		this.local_state = B;
 	}
 	
-	protected void updateGlobalInfo() {if (GlobalDirty()) updateGlobalInfoForced();}
-	protected void updateGlobalInfoForced() {
+	protected void updateGlobalStateCheckDirty() {if (GlobalDirty()) updateGlobalState();}
+	protected void updateGlobalStateCheckDirtyWithoutTag() {if (GlobalDirty()) updateGlobalStateWithoutTag();}
+	protected void updateGlobalState() {this.updateGlobalStateWithoutTag(); this.applyTags(BaseTag.TAG_PHRASE_GLOBAL_UPDATE);}
+	protected void updateGlobalStateWithoutTag() {
 		BaseNode parent = new EmptyNode();
 		if (this.parent != null) {
-			this.parent.updateGlobalInfo();
+			this.parent.updateGlobalStateCheckDirty();
 			parent = this.parent;
 		}
-		wscale = Utils.compZoom(parent.getGlobalScale(), getScale());
-		wrot = Utils.compRotate(parent.getGlobalRot(), getRot());
-		wstate = Utils.getStateMat(pos, rot, scale).mult(parent.wstate);
-		wpos = Utils.applyStateMat(pos, wstate);
-			
-		/*
-		//wpos = Utils.compOffset(parent.getGlobalPos(), Utils.applyRotOnVec3(getPos(), parent.getGlobalRot()).mult(wscale));
-		wpos = pos;
-		// Local Transformation
-		wpos = Utils.applyRotOnVec3(wpos.mult(parent.getScale()), parent.getRot()).add(parent.getPos());
-		BaseNode p2 = this.parent.getParent();
-		if (p2 == null) p2 = new EmptyNode();
-		wpos = Utils.applyRotOnVec3(wpos.mult(p2.getGlobalScale()), p2.getGlobalRot()).add(p2.getGlobalPos());
-		*/
-		
-		
-		clarifyGlobal();
-		BaseTag.sortTags(tags);
-		
-		Vector post = wpos;
-		Quaternion rott = wrot;
-		Vector scalet = wscale;
-		for (BaseTag t: tags) {
-			StateContainer ct = t.onGlobalUpdate(post, rott, scalet);
-			post = ct.p;
-			rott = ct.r;
-			scalet = ct.s;
-		}
-		wpos = post; 
-		wrot = rott;
-		wscale = scalet;
+		this.global_state = new ComplexState(this.parent.getGlobalStateSimplified(), this.getLocalState());
 	}
 	//Local Info. Getter & Setter
 
-	public Vector getPos() {return pos;}
-	public Quaternion getRot() {return rot;}
-	public Vector getScale() {return scale;}
+	public SimpleState getLocalState() {return this.local_state;}
+	public boolean isLocalStateStandardized() {return (this.local_state instanceof StateStandard3D);}
+	public SimpleState getLocalStateStandardized() {
+		if (this.local_state instanceof StateStandard3D)
+			return (StateStandard3D) this.local_state;
+		else return null;
+	}
 	
-	public void setPos(Vector pos) {
-		this.pos = pos;
-		markGlobalDirty();
-	}
-	public void setRot(Vector rot) {setRot(Quaternion.eulerToQuat(rot));}
-	public void setRot(Quaternion rot) {
-		this.rot = rot;
-		markGlobalDirty();
-	}
-	public void setScale(double scale) {setScale(new Vector(scale, scale, scale));}
-	public void setScale(Vector scale) {
-		this.scale = scale;
-		markGlobalDirty();
-	}
-	public void setLocal(Vector pos, Quaternion rot, Vector scale) {
-		this.pos = pos;
-		this.rot = rot;
-		this.scale = scale;
+	public void setLocalState(SimpleState state) {
+		this.local_state = state;
 		markGlobalDirty();
 	}
 	
+	public Vector getLocalPos() {
+		if (this.local_state instanceof StateStandard3D) return ((StateStandard3D) this.local_state).getPos();
+		else return this.local_state.getState().getLine(4).get(0, 3);
+	}
+
 	// Global Info. Getter & Setter
 
+	public ComplexState getGlobalState() {this.updateGlobalStateCheckDirty(); return this.global_state;}
+	public SimpleState getGlobalStateSimplified() {this.updateGlobalStateCheckDirty(); return this.global_state.toSimpleState();}
+	public ComplexState getParentGlobalState() {
+		if (this.getParent() == null) return new ComplexState();
+		else return this.getParent().getGlobalState();
+	}
+	public SimpleState getParentGlobalStateSimplified() {return getParentGlobalState().toSimpleState();}
+	
 	public Vector getGlobalPos() {
-		updateGlobalInfo();
-		return wpos;
-	}
-	public Quaternion getGlobalRot() {
-		updateGlobalInfo();
-		return wrot;
-	}
-	public Vector getGlobalScale() {
-		updateGlobalInfo();
-		return wscale;
+		return this.global_state.getState().getLine(4).get(0, 3);
 	}
 	
-	public void setGlobalPos(Vector wpos) {
-		this.wpos = wpos;
-		updateLocalInfo();
-		markGlobalDirty();
-		clarifyGlobal();
-		
-	}
-	public void setGlobalRot(Vector wrot) {setGlobalRot(Quaternion.eulerToQuat(wrot));}
-	public void setGlobalRot(Quaternion wrot) {
-		this.wrot = wrot;
+	/*
+	public void setGlobalState(Matrix state) {
+		this.global_state = state;
 		updateLocalInfo();
 		markGlobalDirty();
 		clarifyGlobal();
 	}
-	public void setGlobalScale(double wscale) {setGlobalScale(new Vector(wscale, wscale, wscale));}
-	public void setGlobalScale(Vector wscale) {
-		this.wscale = wscale;
-		updateLocalInfo();
-		markGlobalDirty();
-		clarifyGlobal();
-	}
-	public void setGlobal(Vector pos, Quaternion rot, Vector scale) {
-		this.wpos = pos;
-		this.wrot = rot;
-		this.wscale = scale;
-		updateLocalInfo();
-		markGlobalDirty();
-		clarifyGlobal();
-	}
-	
-	public void setGlobalPosSolely(Vector wpos) {
-		for (BaseNode obj: children) obj.updateGlobalInfo();
-		this.wpos = wpos;
-		updateLocalInfo();
-		for (BaseNode obj: children) obj.updateLocalInfo();
-	}
-	public void setGlobalRotSolely(Vector wrot) {setGlobalRotSolely(Quaternion.eulerToQuat(wrot));}
-	public void setGlobalRotSolely(Quaternion wrot) {
-		for (BaseNode obj: children) obj.updateGlobalInfo();
-		this.wrot = wrot;
-		updateLocalInfo();
-		for (BaseNode obj: children) obj.updateLocalInfo();
-	}
-	public void setGlobalScaleSolely(double wscale) {setGlobalScaleSolely(new Vector(wscale, wscale, wscale));}
-	public void setGlobalScaleSolely(Vector wscale) {
-		for (BaseNode obj: children) obj.updateGlobalInfo();
-		this.wscale = wscale;
-		updateLocalInfo();
-		for (BaseNode obj: children) obj.updateLocalInfo();
-	}
-	public void setGlobalSolely(Vector pos, Quaternion rot, Vector scale) {
-		for (BaseNode obj: children) obj.updateGlobalInfo();
-		this.wpos = pos;
-		this.wrot = rot;
-		this.wscale = scale;
-		updateLocalInfo();
-		for (BaseNode obj: children) obj.updateLocalInfo();
+	public void setGlobalState(Vector s, Quaternion r, Vector p) {setGlobalState(this.ROT_UNIT, s, r, p);}
+	public void setGlobalState(Quaternion r1, Vector s, Quaternion r2, Vector p) {
+		Matrix m1 = Utils.rotToHomoState(r1);
+		Matrix m2 = Utils.sclToHomoState(s);
+		Matrix m3 = Utils.rotToHomoState(r2);
+		Matrix m4 = Utils.posToHomoState(p);
+		this.setGlobalState(m1.mult(m2).mult(m3).mult(m4));
 	}
 	
 	public void offset(Vector v) {setPos(Utils.compOffset(pos, v));}
 	public void rotate(Quaternion q) {setRot(Utils.compRotate(rot, q));}
 	public void rotate(Vector v) {setRot(Utils.compRotate(rot, Quaternion.eulerToQuat(v)));}
-	public void zoom(Vector v) {setScale(Utils.compZoom(scale, v));}
-	public void zoom(double d) {setScale(Utils.compZoom(scale, new Vector(d, d, d)));}
-
-	// Handle Tags
+	public void zoom(Vector v) {setScale(Utils.compZoom(scl, v));}
+	public void zoom(double d) {setScale(Utils.compZoom(scl, new Vector(d, d, d)));}
+	 */
+	// Tags
 
 	public boolean addTag(BaseTag tag) {
 		tags.add(tag);
-		tag.onAdd(this);
+		tag.onAdded(this);
 		return true;
 	}
 	
 	public boolean removeTag(BaseTag tag) {
 		if (tags.contains(tag)) {
-			tag.onRemove(this);
+			tag.onRemoved(this);
 			tags.remove(tag);
 			return true;
 		}
 		return false;
 	}
 	
-	public void render(double ptick) {
-		
+	public void applyTags(int phrase) {this.applyTags(phrase, BaseTag.getDummyExtra());}
+	public void applyTags(int phrase, BaseTag.ApplicationExtra extra) {
 		BaseTag.sortTags(tags);
 		BaseTag t;
 		for (int i = 0; i < tags.size(); ++i) {
 			t = tags.get(i);
-			if (t.isActivated()) t.onRenderPre(this, ptick);
-		}
-		this.onRender(ptick);
-		if (GlRenderHelper.getInstance().isDebugging()) this.onRenderDebug(ptick);
-		for (int i = tags.size() - 1; i >= 0; --i) {
-			t = tags.get(i);
-			if (t.isActivated()) t.onRenderPost(this, ptick);
+			if (t.isActivated() && t.appliesOn(phrase)) t.applyOn(phrase, this, extra);
 		}
 	}
 	
-	public abstract void onRender(double ptick);
-	public void onRenderDebug(double ptick) {
+	// Render
+	
+	public void render(double ptick) {
+		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		renderer.dumpState();
+		this.applyTags(BaseTag.TAG_PHRASE_RENDER_PRE);
+		if (renderer.isDebugging()) this.renderDebug(ptick);
+		renderer.setVertState();
+		this.renderVert(ptick);
+		renderer.setEdgeState();
+		this.renderEdge(ptick);
+		renderer.setFaceState();
+		this.renderFace(ptick);
+		this.applyTags(BaseTag.TAG_PHRASE_RENDER_POST);
+		renderer.resetState();
+	}
+	
+	// Abstract Methods
+	public abstract int getVertCount();
+	public abstract int getEdgeCount();
+	public abstract int getFaceCount();
+
+	public abstract Vector getVertPos(int index);
+	public abstract Vector getVertNrm(int index);
+	public abstract Vector getVertUVM(int index);
+	
+	public abstract boolean isEdgeLooped(int index);
+	public abstract int[] getEdgeIndices(int index);
+	public abstract Triad[] getFaceIndices(int index);
+	
+	public void renderVert(double ptick) {
+		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		this.applyTags(BaseTag.TAG_PHRASE_RENDER_VERTICES, new BaseTag.ApplicationExtra(ptick));
+		for (int i = 0; i < this.getVertCount(); ++i) {
+			this.applyTags(BaseTag.TAG_PHRASE_RENDER_PARTICULAR_VERTEX, new BaseTag.ApplicationExtra(ptick, i));
+			Vector v = this.getVertPos(i);
+			renderer.startDrawingVert();
+			renderer.addVertex(v);
+			renderer.endDrawing();
+		}
+	}
+	public void renderEdge(double ptick) {
+		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		this.applyTags(BaseTag.TAG_PHRASE_RENDER_EDGES, new BaseTag.ApplicationExtra(ptick));
+		for (int i = 0; i < this.getEdgeCount(); ++i) {
+			this.applyTags(BaseTag.TAG_PHRASE_RENDER_PARTICULAR_EDGE, new BaseTag.ApplicationExtra(ptick, i));
+			int[] v_ = this.getEdgeIndices(i);
+			renderer.startDrawingEdge(this.isEdgeLooped(i));
+			for (int v: v_) {
+				renderer.addVertex(this.getVertPos(v));
+			}
+			renderer.endDrawing();
+		}
+	}
+
+	public void renderFace(double ptick) {
+		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		this.applyTags(BaseTag.TAG_PHRASE_RENDER_FACES, new BaseTag.ApplicationExtra(ptick));
+		for (int i = 0; i < this.getFaceCount(); ++i) {
+			this.applyTags(BaseTag.TAG_PHRASE_RENDER_PARTICULAR_FACE, new BaseTag.ApplicationExtra(ptick, i));
+			Triad[] t_ = this.getFaceIndices(i);
+			renderer.startDrawingFace();
+			for (Triad t : t_) {
+				Vector v1, v2;
+				v1 = this.getVertPos(t.getX());
+				v2 = this.getVertUVM(t.getY());
+				renderer.addVertex(v1, v2);
+			}
+			renderer.endDrawing();
+		}
+	}
+	
+	public void renderDebug(double ptick) {
 		
 		double axis_length = 0.6;
-		GlRenderHelper h = GlRenderHelper.getInstance();
+		GlRenderHelper renderer = GlRenderHelper.getInstance();
 		
-		h.disableDepth();
-		h.enableGridState();
-		h.setLineWidth(10);
+		renderer.disableDepth();
+		renderer.setEdgeState();
+		renderer.setLineWidth(10);
 		
 		Vector[] vtemp = {
-				POS_UNIT,
+				Vector.UNIT0_D3,
 				new Vector(axis_length, 0, 0),
 				new Vector(0, axis_length, 0),
 				new Vector(0, 0, axis_length)
 		};
+		/*
 		Matrix mtemp = new Matrix(vtemp);
-		Vector iscale = new Vector(1 / wscale.get(0), 1 / wscale.get(1), 1 / wscale.get(2));
-		mtemp = Utils.zoom(mtemp, iscale);
+		Vector iscl = new Vector(1 / wscl.get(0), 1 / wscl.get(1), 1 / wscl.get(2));
+		mtemp = Utils.zoom(mtemp, iscl);
 		mtemp = Utils.rotate(mtemp, rot);
 		mtemp = Utils.offset(mtemp, pos);
 		vtemp = mtemp.toVecArray();
+		*/
 		
+		renderer.setColor(255, 0, 0);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[0]);
+		renderer.addVertex(vtemp[1]);
+		renderer.endDrawing();
 		
-		h.setColor(255, 0, 0);
-		h.startDrawingGrid(false);
-		h.addVertex(vtemp[0]);
-		h.addVertex(vtemp[1]);
-		h.endDrawing();
+		renderer.setColor(0, 255, 0);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[0]);
+		renderer.addVertex(vtemp[2]);
+		renderer.endDrawing();
 		
-		h.setColor(0, 255, 0);
-		h.startDrawingGrid(false);
-		h.addVertex(vtemp[0]);
-		h.addVertex(vtemp[2]);
-		h.endDrawing();
+		renderer.setColor(0, 0, 255);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[0]);
+		renderer.addVertex(vtemp[3]);
+		renderer.endDrawing();
 		
-		h.setColor(0, 0, 255);
-		h.startDrawingGrid(false);
-		h.addVertex(vtemp[0]);
-		h.addVertex(vtemp[3]);
-		h.endDrawing();
-		
-		h.disableGridState();
-		h.enableDepth();
+		renderer.setFaceState();
+		renderer.enableDepth();
 	}
 
 	// Display Functions
 	
 	@Override
 	public String toString() {
-		String ans = "%s %s:\n LOCAL:\n  POS%s\n  ROT%s\n  SCL%s\n GLOBAL:\n  POS%s\n  ROT%s\n  SCL%s";
-		ans = String.format(ans, this.getClass().getSimpleName(), this.getName(), pos.toString(), rot.toString(), scale.toString(), getGlobalPos().toString(), getGlobalRot().toString(), getGlobalScale().toString());
+		String ans = "%s %s(STATE:%s)";
+		ans = String.format(ans, this.getClass().getSimpleName(), this.getName(), this.getLocalState().toString());
 		return ans;
 	}
 	
@@ -440,14 +436,8 @@ public abstract class BaseNode extends BaseObject{
 	public void dump(PrintStream out) {dump(out, 0);}
 	public void dump(PrintStream out, int level){
 		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
-		println(out, "LOCAL:", level + 1);
-		println(out, "POS" + vec32String(this.getPos()), level + 2);
-		println(out, "ROT" + quat2String(this.getRot()), level + 2);
-		println(out, "SCL" + vec32String(this.getScale()), level + 2);
-		println(out, "GLOBAL:", level + 1);
-		println(out, "POS" + vec32String(this.getGlobalPos()), level + 2);
-		println(out, "ROT" + quat2String(this.getGlobalRot()), level + 2);
-		println(out, "SCL" + vec32String(this.getGlobalScale()), level + 2);
+		println(out, "STATE_LOCAL : " + this.getLocalState(), level + 1);
+		println(out, "STATE_GLOBAL: " + this.getGlobalState(), level + 1);
 		if (this.children.size() == 0) return;
 		println(out, "", level + 1);
 		println(out, "CHILDREN:", level + 1);

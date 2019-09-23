@@ -7,10 +7,10 @@ public final class Quaternion {
 	
 	private final double real;
 	private final Vector imaginary;
-	private boolean axis = false;
+	private boolean isrec = false;
 	
-	public boolean isAARecord() {return axis;}
-	private void setAxis(boolean axis) {this.axis = axis;}
+	public boolean isAARecord() {return isrec;}
+	private void setRec(boolean rec) {this.isrec = rec;}
 
 	public Quaternion () {
 		real = 0;
@@ -167,7 +167,7 @@ public final class Quaternion {
 	
 	public static Matrix quatToRotate (Quaternion q) {
 		double w, x, y, z;
-		w = q.real;
+		w = -q.real;
 		x = q.imaginary.get(0);
 		y = q.imaginary.get(1);
 		z = q.imaginary.get(2);
@@ -187,7 +187,7 @@ public final class Quaternion {
 	public static Quaternion getAARByAA(Vector axis, double angle) {
 		axis = axis.normalize();
 		Quaternion ans = new Quaternion(angle, axis);
-		ans.setAxis(true);
+		ans.setRec(true);
 		return ans;
 	}
 	

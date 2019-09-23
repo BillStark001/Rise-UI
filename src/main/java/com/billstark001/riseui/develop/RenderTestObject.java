@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
@@ -127,8 +128,7 @@ public class RenderTestObject{
 		sp_dae = new ColladaFile(stemp);
 		sp_dae.parse();
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
-		spider.setScale(0.01);
-		spider.setPos(new Vector(2, 1, 2));
+		spider.setLocalState(new StateStandard3D(new Vector(2, 1, 2), null, 0.01));
 		
 	}
 	
@@ -150,7 +150,7 @@ public class RenderTestObject{
 		//render.renderGrid(cube_);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
-		render.renderWithoutGl(spider, delta);
+		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)
 			

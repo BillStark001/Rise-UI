@@ -5,9 +5,9 @@ import com.billstark001.riseui.math.Vector;
 
 public interface IGridable {
 	
-	public boolean getLooped();
+	public boolean isEdgeLooped();
 	
-	public int getSegmentCount();
+	public int getEdgeCount();
 	public int[] getSegment(int index);
 	
 	public Vector getVertex(int index);

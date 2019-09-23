@@ -1,5 +1,7 @@
 package com.billstark001.riseui.math;
 
+import com.billstark001.riseui.base.state.StateStandard3D;
+
 public final class Utils {
 	
 	// Interpolation
@@ -60,29 +62,47 @@ public final class Utils {
 		return new Matrix(v).mult(q).getLine(0);
 	}
 	
-	public static Matrix getStateMat(Vector p, Quaternion r, Vector s) {
+	// Homogeneous Matrix Transfer
+	
+	public static Matrix sclToHomoState(Vector s) {
 		double[][] ds = {
 				{s.get(0), 0, 0, 0},
 				{0, s.get(1), 0, 0},
 				{0, 0, s.get(2), 0},
 				{0, 0, 0, 1}
 		};
+		return new Matrix(ds);
+	}
+	
+	public static Matrix posToHomoState(Vector p) {
 		double[][] dp = {
 				{1, 0, 0, 0},
 				{0, 1, 0, 0},
 				{0, 0, 1, 0},
 				{p.get(0), p.get(1), p.get(2), 1}
 		};
-		Matrix ms = new Matrix(ds);
-		Matrix mp = new Matrix(dp);
-		Matrix mr = Matrix.homoExtend(Quaternion.quatToRotate(r), 4);
+		return new Matrix(dp);
+	}
+	
+	public static Matrix rotToHomoState(Quaternion r) {
+		return Matrix.homoExtend(Quaternion.quatToRotate(r), 4);
+	}
+	
+	public static Matrix compStateMat(Vector p, Quaternion r, Vector s) {
+		Matrix ms = sclToHomoState(s);
+		Matrix mp = posToHomoState(p);
+		Matrix mr = rotToHomoState(r);
 		return ms.mult(mr).mult(mp);
+	}
+	
+	public static StateStandard3D decompStateMat(Matrix m) {
+		return null;
 	}
 	
 	public static Vector applyStateMat(Vector p, Matrix state) {return applyStateMat(new Matrix(p), state).getLine(0);}
 	public static Matrix applyStateMat(Matrix pset, Matrix state) {
-		if (pset.getSize().getY() != 3) return null;
-		if (state.getSize().getX() != 4 || state.getSize().getY() != 4) return null;
+		if (pset.getShape().getY() != 3) return null;
+		if (state.getShape().getX() != 4 || state.getShape().getY() != 4) return null;
 		pset = Matrix.expandColumn(pset, 4, 1);
 		pset = pset.mult(state);
 		pset = pset.getColumns(0, 3);
@@ -167,4 +187,6 @@ public final class Utils {
 		return m.mult(r);
 	}
 
+	
+	
 }

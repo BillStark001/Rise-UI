@@ -23,6 +23,7 @@ import com.billstark001.riseui.core.polygon.PolygonMesh;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
+import com.billstark001.riseui.math.LinalgUtils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Utils;
@@ -50,6 +51,47 @@ public class Test {
 
 	public static void main(String[] args) {
 		
+		double[][] a = {
+				{1, 2},
+				{3, 4},
+				{5, 6}
+		};
+		Matrix m = new Matrix(a);
+		Matrix[] m_ = LinalgUtils.SVD(m);
+		System.out.println(m_[0]);
+		System.out.println(m_[1]);
+		System.out.println(m_[2]);
+		
+		/*
+		Vector p = new Vector(5, 7, 9);
+		Quaternion r = Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 6);
+		Vector s = new Vector(2, 1.5, 2.5);
+		
+		Matrix state = Utils.compStateMat(p, r, s);
+		System.out.println(state);
+		System.out.println(Matrix.inverse(Matrix.inverse(state)));
+		*/
+		
+		/*
+		long t = System.currentTimeMillis();
+		double[][] a = {
+				{5, 11, 17, 0}, 
+				{11, 25, 39, 0}, 
+				{17, 39, 61, 0},
+				{0, 0, 0, 1}
+		};
+		Matrix M = new Matrix(a);
+		//System.out.println(M);
+		System.out.println(System.currentTimeMillis() - t);
+		
+		t = System.currentTimeMillis();
+		LinalgUtils.qrDecomp(M);
+		System.out.println(System.currentTimeMillis() - t);
+		
+		t = System.currentTimeMillis();
+		System.out.println(LinalgUtils.eigen(M));
+		System.out.println(System.currentTimeMillis() - t);
+		 */
 		
 		Collada file = null;
 		try {
@@ -74,7 +116,8 @@ public class Test {
 		//file.getLibraryVisualScenes().getElement(1).getNode(2).dump();
 		ColladaFile f = new ColladaFile(file);
 		f.parse();
-		f.getNodeByName("j0").dump();
+		BaseNode j0 = f.getNodeByName("j0");
+		j0.dump();
 		
 		org.lwjgl.util.vector.Quaternion q;
 		/*
@@ -94,7 +137,6 @@ public class Test {
 		//q.removeChild(r);
 		//p.setParent(r);
 		
-		B3DLoader b;
 		/*
 		int sample = 1000000;
 		int size = 6;

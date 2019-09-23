@@ -7,6 +7,8 @@ public final class Vector {
 	private final int dim;
 	private final double[] elements;
 	private final double length;
+	private final double mlength;
+	private final double sum;
 	
 	public static final Vector UNIT0_D2 = new Vector(0, 0);
 	public static final Vector UNIT0_D3 = new Vector(0, 0, 0);
@@ -19,6 +21,8 @@ public final class Vector {
 		dim = elements.length;
 		this.elements = elements.clone();
 		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
 	}
 	
 	public Vector(double x) {
@@ -26,6 +30,8 @@ public final class Vector {
 		double[] a = {x};
 		elements = a;
 		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
 	}
 	
 	public Vector(double x, double y) {
@@ -33,6 +39,8 @@ public final class Vector {
 		double[] a = {x, y};
 		elements = a;
 		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
 	}
 	
 	public Vector(double x, double y, double z) {
@@ -40,6 +48,8 @@ public final class Vector {
 		double[] a = {x, y, z};
 		elements = a;
 		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
 	}
 	
 	public Vector(double d, int dim, boolean demix) {
@@ -48,6 +58,8 @@ public final class Vector {
 		for (int i = 0; i < dim; ++i) d_[i] = d;
 		elements = d_;
 		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
 	}
 	
 	public Vector(Vector v) {
@@ -59,6 +71,8 @@ public final class Vector {
 		this.elements = new double[elements.length];
 		for (int i = 0; i < elements.length; ++i) this.elements[i] = elements[i];
 		this.length = calcLength(this.elements);
+		this.mlength = calcMahattanDis(this.elements);
+		this.sum = calcSum(this.elements);
 	}
 
 	public static final Vector Zeros(int length) {
@@ -69,6 +83,8 @@ public final class Vector {
 	//Base functions
 	public int getDimension() {return dim;}
 	public double getLength() {return length;}
+	public double getMahattanDis() {return mlength;}
+	public double getSum() {return sum;}
 	public String toString() {return Arrays.toString(elements);}
 	public String toString(boolean b) {
 		StringBuffer ans = new StringBuffer();
@@ -146,6 +162,18 @@ public final class Vector {
 		for(int i = 0; i < dim; ++i) temp[i] = elements[i] + v.get(i);
 		return new Vector(temp);
 	}
+	public final Vector subtract(Vector v) {
+		if(dim != v.dim)
+			try {
+				throw new Exception(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		double[] temp = new double[dim];
+		for(int i = 0; i < dim; ++i) temp[i] = elements[i] - v.get(i);
+		return new Vector(temp);
+	}
 	
 	public final Vector mult(double x) {
 		double[] temp = elements.clone();
@@ -174,7 +202,7 @@ public final class Vector {
 	public final double dot(Vector v) {
 		if(dim != v.dim)
 			try {
-				throw new Exception(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
+				throw new LengthMismatchException(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -193,7 +221,7 @@ public final class Vector {
 			return new Vector(x, y, z);
 		} else
 			try {
-				throw new Exception(String.format("No declarations of cross product on dimension %d and %d(expect 2 and 2 or 3 and 3)", dim, v.dim));
+				throw new LengthMismatchException(String.format("No declarations of cross product on dimension %d and %d(expect 2 and 2 or 3 and 3)", dim, v.dim));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -219,10 +247,28 @@ public final class Vector {
 		return new Vector(dans);
 	}
 	
+	// Private Utils
 	private static final double calcLength(double[] d) {
 		double ans = 0;
-		for(int i = 0; i < d.length; ++i) ans += d[i] * d[i];
+		for (int i = 0; i < d.length; ++i) ans += d[i] * d[i];
 		return Math.sqrt(ans);
 	}
+	
+	private static final double calcMahattanDis(double[] d) {
+		double ans = 0;
+		for (int i = 0; i < d.length; ++i) ans += Math.abs(d[i]);
+		return ans;
+	}
+	
+	private static final double calcSum(double[] d) {
+		double ans = 0;
+		for (int i = 0; i < d.length; ++i) ans += d[i];
+		return ans;
+	}
 
+	public double[] toArray() {
+		double[] ans = new double[this.dim];
+		for (int i = 0; i < dim; ++i) ans[i] = this.elements[i];
+		return ans;
+	}
 }
