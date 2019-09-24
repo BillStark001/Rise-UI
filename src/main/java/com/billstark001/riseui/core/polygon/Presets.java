@@ -35,17 +35,10 @@ public class Presets {
 	
 	public static String[] getObjects() {return names;}
 	
-	public static PolygonMesh getMesh(String name) {
-		PolygonMesh ans = pre.genMesh(name);
-		if (ans == null) ans = preh.genMesh(name);
+	public static Polygon getPolygon(String name) {
+		Polygon ans = pre.genPoly(name);
+		if (ans == null) ans = preh.genPoly(name);
 		//if (ans != null) lm.put(name, ans);
-		return ans;
-	}
-	
-	public static PolygonGrid getGrid(String name) {
-		PolygonGrid ans = pre.genGrid(name);
-		if (ans == null) ans = preh.genGrid(name);
-		//if (ans != null) lw.put(name, ans);
 		return ans;
 	}
 	

@@ -24,10 +24,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class PolygonMesh extends NodeCompilableBase{
+public class Polygon extends NodeCompilableBase{
 	
-	private Triad[] face_ind;
-	private int[] face_endindex;
+	private Triad[][] face_ind;
+	private int[][] edge_ind;
 	
 	private Matrix pos;
 	private Matrix uvm;
@@ -36,28 +36,37 @@ public class PolygonMesh extends NodeCompilableBase{
 	private Matrix pos_r;
 	private Matrix uvm_r;
 	private Matrix nrm_r;
-	private SimpleState special_state;
+	private SimpleState render_state;
 	
-	public PolygonMesh (Matrix pos, Matrix uvm, Matrix nrm, Triad[] face_indices, int[] face_endindex) {
+	public Polygon (Matrix pos, Matrix uvm, Matrix nrm, Triad[][] face_indices) {
 		super();
 
-		this.face_endindex = face_endindex;
 		this.face_ind = face_indices;
 		this.pos = pos;
+		this.pos_r = pos;
 		this.uvm = uvm;
 		this.uvm_r = uvm;
 		this.nrm = nrm;
-		this.special_state = new StateStandard3D();
+		this.nrm_r = nrm;
+		this.render_state = new StateStandard3D();
 		
+		this.genEdges();
+		this.markRecompile();
 	}
 	
-	public PolygonMesh(PolygonMesh m) {
-		this(m.pos, m.uvm, m.nrm, m.face_ind, m.face_endindex);
+	public Polygon(Polygon m) {
+		this(m.pos, m.uvm, m.nrm, m.face_ind);
+	}
+	
+	public void genEdges() {
+		ArrayList<int[]> edges = ObjFile.genGridEdges(this.face_ind);
+		int[][] edge_ind = edges.toArray(new int[0][0]);
+		this.edge_ind = edge_ind;
 	}
 	
 	public int getVertCount() {return this.pos.getShape().getX();}
-	public int getEdgeCount() {return 0;}
-	public int getFaceCount() {return face_endindex.length;}
+	public int getEdgeCount() {return this.edge_ind.length;}
+	public int getFaceCount() {return this.face_ind.length;}
 	
 	@Override
 	public boolean setParent(BaseNode obj) {
@@ -65,23 +74,14 @@ public class PolygonMesh extends NodeCompilableBase{
 		return super.setParent(obj);
 	}
 	
-	private int[] face (int index) {
-		int[] ans = {0, face_endindex.length};
-		if(index > 0 && index < face_endindex.length) ans[0] = face_endindex[index - 1];
-		if(index >= 0 && index < face_endindex.length) ans[1] = face_endindex[index];
-		return ans;
-	}
-	
-	public Triad[] getFaceIndices(int index) {
-		int[] f = face(index);
-		Triad[] ans = new Triad[f[1] - f[0]];
-		for (int i = f[0]; i < f[1]; ++i) ans[i - f[0]] = face_ind[i];
-		return ans;
-	}
-	
 	public Vector getVertPos(int index) {if (pos != null) return pos_r.getLine(index); else return new Vector(0, 0, 0);}
 	public Vector getVertNrm(int index) {if (nrm != null) return nrm_r.getLine(index); else return null;}
 	public Vector getVertUVM(int index) {if (uvm != null) return uvm_r.getLine(index); else return new Vector(0, 0, 0);}
+	
+	public Triad[] getFaceIndices(int index) {
+		if (index < 0 || index >= this.face_ind.length) return null;
+		else return this.face_ind[index];
+	}
 
 	@Override
 	public boolean isEdgeLooped(int index) {
@@ -91,21 +91,35 @@ public class PolygonMesh extends NodeCompilableBase{
 
 	@Override
 	public int[] getEdgeIndices(int index) {
-		// TODO 自动生成的方法存根
-		return null;
+		if (index < 0 || index >= this.edge_ind.length) return null;
+		else return this.edge_ind[index];
 	}
 		
-	/*
-	public PolygonGrid generateGrid() {
-		ArrayList<int[]> edges = ObjFile.genGridEdges(this.face_ind, this.face_endindex);
-		PolygonGrid g = new PolygonGrid(pos, edges);
-		g.setPos(getPos());
-		g.setRot(getRot());
-		g.setScale(getScale());
-		g.rasterize();
-		return g;
+	public void setRenderState(SimpleState state) {
+		if (state == null) state = new StateStandard3D();
+		this.render_state = state; 
+		this.calcRender();
 	}
-	*/
+	public SimpleState getRenderState() {return this.render_state;}
+	
+	public void calcRender() {
+		if (this.pos != null)
+			this.pos_r = Utils.applyStateMat(this.pos, this.render_state.getState());
+		if (this.nrm != null)
+			this.nrm_r = Utils.applyStateMat(this.nrm, this.render_state.getState());
+		this.markRecompile();
+	}
+	
+	public void rasterize() {
+		if (!this.isCompiled()) {
+			this.compileList();
+		}
+		this.pos = this.pos_r;
+		this.nrm = this.nrm_r;
+		this.render_state = new StateStandard3D();
+	}
+
+	
 	// Some Preset Polygons
 	
 }

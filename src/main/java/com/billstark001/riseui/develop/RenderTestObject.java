@@ -2,8 +2,11 @@ package com.billstark001.riseui.develop;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.BaseNode;
@@ -11,21 +14,20 @@ import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
-import com.billstark001.riseui.core.polygon.PolygonGrid;
-import com.billstark001.riseui.core.polygon.PolygonMesh;
+import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.core.polygon.Presets;
-import com.billstark001.riseui.io.MtlFile;
-import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.io.CharResourceLoader;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.IOUtils;
-import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.io.MtlFile;
+import com.billstark001.riseui.io.ObjFile;
+import com.billstark001.riseui.math.InteractUtils;
+import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Vector;
 import com.dddviewr.collada.Collada;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -44,8 +46,8 @@ public class RenderTestObject{
 	private static ObjFile h_obj, t_obj;
 	private static MtlFile h_mtl, t_mtl;
 	private static ColladaFile sp_dae;
-	public static PolygonMesh horse, table, sphere;
-	private static PolygonGrid hgrid;
+	public static Polygon horse, table, sphere;
+	private static Polygon hgrid;
 	private static EmptyNode spider;
 	
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
@@ -71,31 +73,31 @@ public class RenderTestObject{
 		h_obj.linkMtlFile(h_mtl);
 		t_obj.linkMtlFile(t_mtl);
 		
-		horse = h_obj.genMesh("skh");
-		horse.setScale(0.01);
+		horse = h_obj.genPoly("skh");
+		horse.setRenderState(new StateStandard3D(null, null, 0.01));
 		horse.rasterize();
-		horse.setPos(new Vector(0, 0.5, 0));
+		horse.setLocalState(new StateStandard3D(new Vector(0, 0.5, 0)));
 		//horse.rasterize();
 		//horse.compileList();
 		//System.out.println(horse);
 		
-		table = t_obj.genMesh("table");
-		table.setScale(0.01);
+		table = t_obj.genPoly("table");
+		table.setRenderState(new StateStandard3D(null, null, 0.01));
 		table.rasterize();
-		table.setPos(new Vector(0, 2.5, 0));
+		table.setLocalState(new StateStandard3D(new Vector(0, 2.5, 0)));
 		//cube.rasterize();
 		//table.compileList();
 		//System.out.println(cube);
 		
-		hgrid = h_obj.genGrid("skh");
-		hgrid.setScale(0.005);
+		hgrid = h_obj.genPoly("skh");
+		hgrid.setRenderState(new StateStandard3D(null, null, 0.005));
 		hgrid.rasterize();
-		hgrid.setPos(new Vector(0, 3.5, 0));
+		hgrid.setLocalState(new StateStandard3D(new Vector(0, 3.5, 0)));
 		//cube_.rasterize();
 		//hgrid.compileList();
 		
-		sphere = Presets.getMesh("sphere_high_lod");
-		sphere.setScale(new Vector(3, 1, 3));
+		sphere = Presets.getPolygon("sphere_high_lod");
+		sphere.setRenderState(new StateStandard3D(null, null, new Vector(3, 1, 3)));
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();
 		//cube.setPos(new Vector(0, 0.5, 0));
@@ -129,7 +131,28 @@ public class RenderTestObject{
 		sp_dae.parse();
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
 		spider.setLocalState(new StateStandard3D(new Vector(2, 1, 2), null, 0.01));
+		spider.setVisEdge(BaseNode.Visibility.TRUE);
 		
+		spider.dump();
+		
+		GlStateManager.pushMatrix();
+		GlStateManager.multMatrix(spider.getGlobalState().getState().storeBufferF());
+		System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
+		GlStateManager.popMatrix();
+		
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(2, 1, 2);
+		GlStateManager.scale(0.01, 0.01, 0.01);
+		System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
+		GlStateManager.popMatrix();
+	}
+	
+	public static Matrix getGlMatrix(int mat) {
+		FloatBuffer mdata = BufferUtils.createFloatBuffer(16);
+		GL11.glGetFloat(mat, mdata);
+		Matrix4f m = new Matrix4f();
+		m.load(mdata);
+		return InteractUtils.transMat(m);
 	}
 	
 	public static void doRender(double delta) {
@@ -148,6 +171,7 @@ public class RenderTestObject{
 		
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
+		render.setDebugState(true);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
 		render.renderObject(spider, delta);

@@ -26,6 +26,7 @@ public abstract class NodeCompilableBase extends BaseNode {
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
 	
+	public void checkAndCompile() {if (!this.isCompiled()) this.compileList();}
 	public void compileList() {
 		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
         GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);

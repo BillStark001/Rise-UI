@@ -60,8 +60,9 @@ public class Source extends Base {
 		return "Source (id: " + this.getId() + ", name: " + this.name + ")";
 	}
 	
-	public float[][] parseF() {return parseF(0);}
-	public float[][] parseF(int ecount) {
+	public float[][] parseF() {return parseF(0, 0);}
+	public float[][] parseF(int ecount) {return parseF(ecount, 0);}
+	public float[][] parseF(int ecount, float fill) {
 		int c = this.getAccessor().getCount(), s = this.getAccessor().getStride();
 		float[][] ans = new float[c][Math.max(s, ecount)];
 		float[] data = this.getFloatArray().getData();
@@ -69,17 +70,24 @@ public class Source extends Base {
 			for (int j = 0; j < s; ++j) {
 				ans[i][j] = data[i * s + j];
 			}
+			for (int j = s; j < Math.max(s, ecount); ++j) {
+				ans[i][j] = fill;
+			}
 		}
 		return ans;
 	}
-	public double[][] parseD() {return parseD(0);}
-	public double[][] parseD(int ecount) {
+	public double[][] parseD() {return parseD(0, 0);}
+	public double[][] parseD(int ecount) {return parseD(ecount, 0);}
+	public double[][] parseD(int ecount, double fill) {
 		int c = this.getAccessor().getCount(), s = this.getAccessor().getStride();
 		double[][] ans = new double[c][Math.max(s, ecount)];
 		float[] data = this.getFloatArray().getData();
 		for (int i = 0; i < c; ++i) {
 			for (int j = 0; j < s; ++j) {
 				ans[i][j] = data[i * s + j];
+			}
+			for (int j = s; j < Math.max(s, ecount); ++j) {
+				ans[i][j] = fill;
 			}
 		}
 		return ans;

@@ -34,6 +34,38 @@ public abstract class BaseNode extends BaseObject{
 	
 	protected boolean global_dirty;
 	
+	public static enum Visibility {
+		DEFAULT,
+		TRUE,
+		FALSE;
+	}
+	
+	private Visibility vis_vert, vis_edge, vis_face;
+	public static final Visibility VIS_VERT_DEFAULT = Visibility.FALSE;
+	public static final Visibility VIS_EDGE_DEFAULT = Visibility.FALSE;
+	public static final Visibility VIS_FACE_DEFAULT = Visibility.TRUE;
+	public void setVisVert(Visibility vis) {this.vis_vert = vis;}
+	public void setVisEdge(Visibility vis) {this.vis_edge = vis;}
+	public void setVisFace(Visibility vis) {this.vis_face = vis;}
+	public Visibility getVisVert() {return this.vis_vert;}
+	public Visibility getVisEdge() {return this.vis_edge;}
+	public Visibility getVisFace() {return this.vis_face;}
+	public boolean vertsVisible() {
+		if (this.getVisVert() != Visibility.DEFAULT) return this.getVisVert() == Visibility.TRUE;
+		else if (this.parent == null) return VIS_VERT_DEFAULT == Visibility.TRUE;
+		else return this.parent.vertsVisible();
+	}
+	public boolean edgesVisible() {
+		if (this.getVisEdge() != Visibility.DEFAULT) return this.getVisEdge() == Visibility.TRUE;
+		else if (this.parent == null) return VIS_EDGE_DEFAULT == Visibility.TRUE;
+		else return this.parent.edgesVisible();
+	}
+	public boolean facesVisible() {
+		if (this.getVisFace() != Visibility.DEFAULT) return this.getVisFace() == Visibility.TRUE;
+		else if (this.parent == null) return VIS_FACE_DEFAULT == Visibility.TRUE;
+		else return this.parent.facesVisible();
+	}
+	
 	public static final SimpleState STATE_STANDARD = SimpleState.STATE_STANDARD;
 
 	public BaseNode(StateStandard3D state, String name) {
@@ -135,7 +167,7 @@ public abstract class BaseNode extends BaseObject{
 		this.parent = parent;
 		if (!parent.children.contains(this)) parent.children.add(this);
 		markGlobalDirty();
-		updateGlobalStateCheckDirty();
+		//updateGlobalStateCheckDirty();
 		return true;
 	}
 	public boolean removeParent() {
@@ -205,7 +237,7 @@ public abstract class BaseNode extends BaseObject{
 			this.parent.updateGlobalStateCheckDirty();
 			parent = this.parent;
 		}
-		this.global_state = new ComplexState(this.parent.getGlobalStateSimplified(), this.getLocalState());
+		this.global_state = new ComplexState(this.getLocalState(), parent.getGlobalStateSimplified());
 	}
 	//Local Info. Getter & Setter
 
@@ -266,18 +298,15 @@ public abstract class BaseNode extends BaseObject{
 	// Tags
 
 	public boolean addTag(BaseTag tag) {
-		tags.add(tag);
-		tag.onAdded(this);
-		return true;
+		boolean flag = tag.onAdded(this).succeed;
+		if (flag) tags.add(tag);
+		return flag;
 	}
 	
 	public boolean removeTag(BaseTag tag) {
-		if (tags.contains(tag)) {
-			tag.onRemoved(this);
-			tags.remove(tag);
-			return true;
-		}
-		return false;
+		boolean flag = tag.onRemoved(this).succeed && tags.contains(tag);
+		if (flag) tags.remove(tag);
+		return flag;
 	}
 	
 	public void applyTags(int phrase) {this.applyTags(phrase, BaseTag.getDummyExtra());}
@@ -297,12 +326,19 @@ public abstract class BaseNode extends BaseObject{
 		renderer.dumpState();
 		this.applyTags(BaseTag.TAG_PHRASE_RENDER_PRE);
 		if (renderer.isDebugging()) this.renderDebug(ptick);
-		renderer.setVertState();
-		this.renderVert(ptick);
-		renderer.setEdgeState();
-		this.renderEdge(ptick);
-		renderer.setFaceState();
-		this.renderFace(ptick);
+		if (this.vertsVisible()) {
+			renderer.setVertState();
+			this.renderVert(ptick);
+		}
+		if (this.edgesVisible()) {
+			renderer.setEdgeState();
+			this.renderEdge(ptick);
+		}
+		if (this.facesVisible()) {
+			renderer.setFaceState();
+			this.renderFace(ptick);
+		}
+		
 		this.applyTags(BaseTag.TAG_PHRASE_RENDER_POST);
 		renderer.resetState();
 	}
@@ -364,19 +400,12 @@ public abstract class BaseNode extends BaseObject{
 	
 	public void renderDebug(double ptick) {
 		
-		double axis_length = 0.6;
 		GlRenderHelper renderer = GlRenderHelper.getInstance();
 		
 		renderer.disableDepth();
 		renderer.setEdgeState();
-		renderer.setLineWidth(10);
+		renderer.setLineWidth(3);
 		
-		Vector[] vtemp = {
-				Vector.UNIT0_D3,
-				new Vector(axis_length, 0, 0),
-				new Vector(0, axis_length, 0),
-				new Vector(0, 0, axis_length)
-		};
 		/*
 		Matrix mtemp = new Matrix(vtemp);
 		Vector iscl = new Vector(1 / wscl.get(0), 1 / wscl.get(1), 1 / wscl.get(2));
@@ -386,22 +415,43 @@ public abstract class BaseNode extends BaseObject{
 		vtemp = mtemp.toVecArray();
 		*/
 		
+		Vector[] vtemp = Matrix.I4.toVecArray();
+		//Vector[] vtemp = this.getLocalState().getState().toVecArray();
+		
 		renderer.setColor(255, 0, 0);
 		renderer.startDrawingEdge(false);
-		renderer.addVertex(vtemp[0]);
-		renderer.addVertex(vtemp[1]);
+		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[0].add(vtemp[3]));
 		renderer.endDrawing();
 		
 		renderer.setColor(0, 255, 0);
 		renderer.startDrawingEdge(false);
-		renderer.addVertex(vtemp[0]);
-		renderer.addVertex(vtemp[2]);
+		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[1].add(vtemp[3]));
 		renderer.endDrawing();
 		
 		renderer.setColor(0, 0, 255);
 		renderer.startDrawingEdge(false);
-		renderer.addVertex(vtemp[0]);
 		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[2].add(vtemp[3]));
+		renderer.endDrawing();
+		
+		renderer.setColor(255, 0, 255);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[3].subtract(vtemp[0].mult(0.5)));
+		renderer.endDrawing();
+		
+		renderer.setColor(255, 255, 0);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[3].subtract(vtemp[1].mult(0.5)));
+		renderer.endDrawing();
+		
+		renderer.setColor(0, 255, 255);
+		renderer.startDrawingEdge(false);
+		renderer.addVertex(vtemp[3]);
+		renderer.addVertex(vtemp[3].subtract(vtemp[2].mult(0.5)));
 		renderer.endDrawing();
 		
 		renderer.setFaceState();
@@ -436,7 +486,7 @@ public abstract class BaseNode extends BaseObject{
 	public void dump(PrintStream out) {dump(out, 0);}
 	public void dump(PrintStream out, int level){
 		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
-		println(out, "STATE_LOCAL : " + this.getLocalState(), level + 1);
+		println(out, String.format("STATE_LOCAL%s: %s", (this.getLocalState() instanceof StateStandard3D ? "*" : " "), this.getLocalState()), level + 1);
 		println(out, "STATE_GLOBAL: " + this.getGlobalState(), level + 1);
 		if (this.children.size() == 0) return;
 		println(out, "", level + 1);

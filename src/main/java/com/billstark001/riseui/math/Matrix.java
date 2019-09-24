@@ -200,11 +200,13 @@ public final class Matrix {
 	}
 	
 	public FloatBuffer storeBufferF() {
-		FloatBuffer ans = BufferUtils.createFloatBuffer(x * y);
+		FloatBuffer ans = BufferUtils.createFloatBuffer(this.getShape().getX() * this.getShape().getY());
 		for (int i = 0; i < this.getShape().getX(); ++i)
 		for (int j = 0; j < this.getShape().getY(); ++j) {
 			ans.put((float) this.get(i, j));
+			//System.out.println(this.get(i, j));
 		}
+		ans.clear();
 		return ans;
 	}
 
@@ -214,6 +216,7 @@ public final class Matrix {
 		for (int j = 0; j < this.getShape().getY(); ++j) {
 			ans.put(this.get(i, j));
 		}
+		ans.clear();
 		return ans;
 	}
 	

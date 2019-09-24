@@ -27,7 +27,7 @@ public class ComplexState extends State4 {
 		state_list.add(state);
 	}
 	
-	public SimpleState popState(SimpleState state) {
+	public SimpleState popState() {
 		if (state_list.size() == 0) return new SimpleState();
 		return state_list.remove(state_list.size() - 1);
 	}

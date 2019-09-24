@@ -30,7 +30,7 @@ public class StateStandard3D extends SimpleState{
 	}
 
 	public StateStandard3D(Vector pos, Quaternion rot, double scl) {this(pos, rot, new Vector(scl, scl, scl));}
-	public StateStandard3D(Vector pos, Vector rot, Vector scl) {this(pos, Quaternion.eulerToQuat(rot), scl);}
+	//public StateStandard3D(Vector pos, Vector rot, Vector scl) {this(pos, Quaternion.eulerToQuat(rot), scl);}
 	public StateStandard3D(Vector pos, Quaternion rot) {this(pos, rot, null);}
 	public StateStandard3D(Vector pos) {this(pos, new StateRot().getDefaultRepr(), null);}
 	public StateStandard3D() {this(null, new StateRot().getDefaultRepr(), null);}

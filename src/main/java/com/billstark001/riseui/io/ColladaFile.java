@@ -10,7 +10,7 @@ import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
-import com.billstark001.riseui.core.polygon.PolygonMesh;
+import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
@@ -110,30 +110,29 @@ public class ColladaFile {
 		return ans;
 	}
 	
-	public PolygonMesh parseMesh(Mesh m) {
-		Matrix mpos = new Matrix(m.getPositionData().parseD(3));
+	public Polygon parseMesh(Mesh m) {
+		Matrix mpos = new Matrix(m.getPositionData().parseD(4, 1));
 		Matrix mtex = new Matrix(m.getTexCoordData().parseTexWithReverse(true));
-		Matrix mnor = new Matrix(m.getNormalData().parseD(3));
-		ArrayList<Integer> findext = new ArrayList<Integer>();
-		ArrayList<Triad> vertices = new ArrayList<Triad>();
+		Matrix mnor = new Matrix(m.getNormalData().parseD(4, 0));
+
+		ArrayList<Triad[]> faces = new ArrayList<Triad[]>();
 		ArrayList<BaseMaterial> mindex = new ArrayList<BaseMaterial>();
 		for (Primitives p: m.getPrimitives()) {
+			ArrayList<Triad> face = new ArrayList<Triad>();
 			PolyList pr = (PolyList) p;
-			for (int i: pr.getVcount().getData()) findext.add(i);
 			int[][] vtemp = pr.getParsed();
 			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
 			for (int i = 0; i < nr_faces; ++i) {
-				vertices.add(new Triad(vtemp[i][0], vtemp[i][2], vtemp[i][1]));
+				face.add(new Triad(vtemp[i][0], vtemp[i][2], vtemp[i][1]));
 				if (i == 0) mindex.add(new BaseMaterial("riseui:tex/cave_spider.png"));
 				// TODO Material Instantiation
 				else mindex.add(null);
 			}
+			faces.add(face.toArray(new Triad[0]));
 		}
-		int[] findex = new int[findext.size()];
-		findex[0] = findext.get(0);
-		for (int i = 1; i < findext.size(); ++i) findex[i] = findex[i-1] + findext.get(i);
+
 		
-		PolygonMesh ans = new PolygonMesh(mpos, mtex, mnor, vertices.toArray(new Triad[0]), findex, mindex.toArray(new BaseMaterial[0]));
+		Polygon ans = new Polygon(mpos, mtex, mnor, faces.toArray(new Triad[0][0]));
 		return ans;
 	}
 	

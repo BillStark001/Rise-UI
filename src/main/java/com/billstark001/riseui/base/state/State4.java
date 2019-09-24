@@ -4,6 +4,8 @@ import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.ShapeMismatchException;
 
+import scala.actors.threadpool.Arrays;
+
 public class State4 {
 
 	private Matrix statemat;
@@ -94,8 +96,9 @@ public class State4 {
 	@Override
 	public String toString() {
 		Matrix state = this.getState();
-		String str_tmp = "ORIGIN: %s, X: %s, Y: %s, Z: %s";
-		return String.format(str_tmp, state.getLine(3).get(0, 3).toString(), state.getLine(0).get(0, 3).toString(), state.getLine(1).get(0, 3).toString(), state.getLine(2).get(0, 3).toString());
+		return Arrays.deepToString(state.toVecArray());
+		//String str_tmp = "ORIGIN: %s, X: %s, Y: %s, Z: %s";
+		//return String.format(str_tmp, state.getLine(3).get(0, 3).toString(), state.getLine(0).get(0, 3).toString(), state.getLine(1).get(0, 3).toString(), state.getLine(2).get(0, 3).toString());
 	}
 
 }

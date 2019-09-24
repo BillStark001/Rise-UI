@@ -12,17 +12,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.state.ComplexState;
+import com.billstark001.riseui.base.state.SimpleState;
+import com.billstark001.riseui.base.state.StatePos;
+import com.billstark001.riseui.base.state.StateRot;
+import com.billstark001.riseui.base.state.StateScl;
 import com.billstark001.riseui.core.empty.EmptyNode;
-import com.billstark001.riseui.core.polygon.PolygonGrid;
-import com.billstark001.riseui.core.polygon.PolygonMesh;
+import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
+import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.LinalgUtils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
@@ -62,15 +70,33 @@ public class Test {
 		System.out.println(m_[1]);
 		System.out.println(m_[2]);
 		
-		/*
-		Vector p = new Vector(5, 7, 9);
+		//Matrix r = Quaternion.quatToRotate(Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 2));
+		//System.out.println(LinalgUtils.eigen(r));
+		
+		
+		Vector p = new Vector(0, 0, 0);
 		Quaternion r = Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 6);
-		Vector s = new Vector(2, 1.5, 2.5);
+		Vector s = new Vector(2, 1.5, 3);
 		
 		Matrix state = Utils.compStateMat(p, r, s);
 		System.out.println(state);
 		System.out.println(Matrix.inverse(Matrix.inverse(state)));
-		*/
+		
+		System.out.println(LinalgUtils.eigen(Quaternion.quatToRotate(r).mult(Utils.sclToHomoState(s).get(0, 0, 3, 3)), 2048000));
+		
+		SimpleState s1 = new StatePos(new Vector(1, 2, 3));
+		SimpleState s2 = new StateRot(Quaternion.getQuatByAA(new Vector(1, 1, 1), 1));
+		SimpleState s3 = new StateScl(new Vector(1, 4, 9));
+		
+		ComplexState s0 = new ComplexState(s1, s3);
+		System.out.println(s0.toSimpleState());
+		
+		//GL11.glPushMatrix();
+		
+		//GL11.glTranslated(0, 0, 0);
+		System.out.println(s0.getState());
+		System.out.println(InteractUtils.transMat(s0.getState()));
+		//GL11.glPopMatrix();
 		
 		/*
 		long t = System.currentTimeMillis();
@@ -95,7 +121,7 @@ public class Test {
 		
 		Collada file = null;
 		try {
-			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\roty.dae");
+			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\spider.dae");
 		} catch (FileNotFoundException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -116,7 +142,7 @@ public class Test {
 		//file.getLibraryVisualScenes().getElement(1).getNode(2).dump();
 		ColladaFile f = new ColladaFile(file);
 		f.parse();
-		BaseNode j0 = f.getNodeByName("j0");
+		BaseNode j0 = f.getNodeByName("spider");
 		j0.dump();
 		
 		org.lwjgl.util.vector.Quaternion q;

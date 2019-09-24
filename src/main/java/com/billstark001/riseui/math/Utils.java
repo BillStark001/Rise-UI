@@ -101,12 +101,23 @@ public final class Utils {
 	
 	public static Vector applyStateMat(Vector p, Matrix state) {return applyStateMat(new Matrix(p), state).getLine(0);}
 	public static Matrix applyStateMat(Matrix pset, Matrix state) {
-		if (pset.getShape().getY() != 3) return null;
-		if (state.getShape().getX() != 4 || state.getShape().getY() != 4) return null;
-		pset = Matrix.expandColumn(pset, 4, 1);
-		pset = pset.mult(state);
-		pset = pset.getColumns(0, 3);
-		return pset;
+		if (state.getShape().equals(new Pair(3, 3))) {
+			state = Matrix.homoExtend(state, 4);
+		} else if (state.getShape().equals(new Pair(4, 4))) {
+			
+		} else {
+			return null;
+		}
+		if (pset.getShape().getY() == 3) {
+			pset = Matrix.expandColumn(pset, 4, 1);
+			pset = pset.mult(state);
+			pset = pset.getColumns(0, 3);
+			return pset;
+		} else if (pset.getShape().getY() == 4) {
+			return pset.mult(state);
+		} else {
+			return null;
+		}
 	}
 	
 	// Offset, Rotate and Zoom

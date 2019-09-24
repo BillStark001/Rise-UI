@@ -52,6 +52,15 @@ public final class Vector {
 		this.sum = calcSum(elements);
 	}
 	
+	public Vector(double w, double x, double y, double z) {
+		dim = 4;
+		double[] a = {w, x, y, z};
+		elements = a;
+		this.length = calcLength(elements);
+		this.mlength = calcMahattanDis(elements);
+		this.sum = calcSum(elements);
+	}
+	
 	public Vector(double d, int dim, boolean demix) {
 		this.dim = dim;
 		double[] d_ = new double[dim];

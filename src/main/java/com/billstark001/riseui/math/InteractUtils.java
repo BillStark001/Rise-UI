@@ -1,5 +1,7 @@
 package com.billstark001.riseui.math;
 
+import java.nio.FloatBuffer;
+
 import org.lwjgl.util.vector.Matrix4f;
 
 import net.minecraft.block.Block;
@@ -15,7 +17,25 @@ public final class InteractUtils {
 	private static Minecraft mc = Minecraft.getMinecraft();
 	
 	//Linear Algebra Related
-	public static Vec3d[] transMat(Matrix M) {
+	
+	public static Matrix transMat(Matrix4f m) {
+		double[][] mtemp = {
+				{m.m00, m.m01, m.m02, m.m03},
+				{m.m10, m.m11, m.m12, m.m13},
+				{m.m20, m.m21, m.m22, m.m23},
+				{m.m30, m.m31, m.m32, m.m33}
+		};
+		return new Matrix(mtemp);
+	}
+	
+	public static Matrix4f transMat(Matrix m) {
+		FloatBuffer buff = m.storeBufferF();
+		Matrix4f ans = new Matrix4f();
+		ans.load(buff);
+		return ans;
+	}
+	
+	public static Vec3d[] transMatToVecs(Matrix M) {
 		int x = (Integer) M.getShape().getX();
 		Vec3d[] temp = new Vec3d[x];
 		for(int i = 0; i < x; ++i) {
@@ -77,6 +97,7 @@ public final class InteractUtils {
     	if(mc.world != null) return mc.world.getBlockState(pos);
     	else return null;
     }
+    
     
 	
 }

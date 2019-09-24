@@ -7,8 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.shader.BaseMaterial;
-import com.billstark001.riseui.core.polygon.PolygonGrid;
-import com.billstark001.riseui.core.polygon.PolygonMesh;
+import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.Triad;
@@ -67,6 +66,12 @@ public final class ObjFile {
 		Vector v = new Vector(Double.valueOf(st[1]), Double.valueOf(st[2]), Double.valueOf(st[3]));
 		return v;
 	}
+	
+	private static Vector parseVertexHomo(String s, double fill) {
+		String[] st = s.split(" ");
+		Vector v = new Vector(Double.valueOf(st[1]), Double.valueOf(st[2]), Double.valueOf(st[3]), fill);
+		return v;
+	}
 
 	private Triad[] parseFace(String s) {
 		String[] st = s.split(" ");
@@ -101,11 +106,11 @@ public final class ObjFile {
 				continue;
 			else if (t.startsWith("v")) {
 				if (t.equals("v"))
-					vertex.add(parseVertex(i));
+					vertex.add(parseVertexHomo(i, 1));
 				if (t.equals("vt"))
 					coord.add(parseVertex(i));
 				if (t.equals("vn"))
-					normal.add(parseVertex(i));
+					normal.add(parseVertexHomo(i, 0));
 			} else if (t.equals("f")) {
 				tpoly.add(i);
 			} else if (t.equals("usemtl")) {
@@ -123,18 +128,18 @@ public final class ObjFile {
 			proc.put(t_, tpoly);
 	}
 	
-	public PolygonMesh genMesh(String name) {
+	public Polygon genPoly(String name) {
 		if (!proc.containsKey(name))
 			return null;
 		
 		ArrayList<String> orig = proc.get(name);
 		ArrayList<String> matid = new ArrayList<String>();
-		int face = 0;
+		int face_count = 0;
 		for (String cur : orig) {
 			if (cur.startsWith("m"))
 				matid.add(cur.substring(2));
 			else if (cur.startsWith("f"))
-				++face;
+				++face_count;
 		}
 		
 		Map<String, Integer> mv = new LinkedHashMap<String, Integer>();
@@ -142,25 +147,23 @@ public final class ObjFile {
 		Map<String, Integer> mt = new LinkedHashMap<String, Integer>();
 		int vc = 0, nc = 0, tc = 0;
 		
-		ArrayList<Triad> faces = new ArrayList<Triad>();
-		int[] vindex = new int[face];
-		BaseMaterial[] mats = new BaseMaterial[face];
-		int vcount = 0;
-		face = 0;
+		ArrayList<Triad[]> faces_t = new ArrayList<Triad[]>();
+		BaseMaterial[] mats = new BaseMaterial[face_count];
+		face_count = 0;
 
 		for (String cur : orig) {
-			BaseMaterial mat = null;
+			ArrayList<Triad> face_t = new ArrayList<Triad>();
+			
 			if (cur.startsWith("m")) {
-				mats[face] = new BaseMaterial(linked_mtl.getMat(cur.substring(2), cur.substring(2)));
+				mats[face_count] = new BaseMaterial(linked_mtl.getMat(cur.substring(2), cur.substring(2)));
 			}
 			if (!cur.startsWith("f")) continue;
 			String[] st = cur.split(" ");
-			int l = 0;
+			int cur_num_count = 0;
 			
 			for (String s: st) {
 				if (s.equals("") || s.equals("f")) continue;
-				++l;
-				++vcount;
+				++cur_num_count;
 				String[] ss = s.split("/");
 				if (!mv.containsKey(ss[0])) mv.put(ss[0], vc++);
 				if (ss.length > 2 && !mn.containsKey(ss[2])) mn.put(ss[2], nc++);
@@ -174,12 +177,13 @@ public final class ObjFile {
 					continue;
 				String[] ss = st1[i].split("/");
 				if (ss.length == 2)
-					faces.add(new Triad(mv.get(ss[0]), mt.get(ss[1]), -1));
+					face_t.add(new Triad(mv.get(ss[0]), mt.get(ss[1]), -1));
 				else
-					faces.add(new Triad(mv.get(ss[0]), mt.get(ss[1]), mn.get(ss[2])));
+					face_t.add(new Triad(mv.get(ss[0]), mt.get(ss[1]), mn.get(ss[2])));
 			}
 			
-			vindex[face++] = vcount;
+			faces_t.add(face_t.toArray(new Triad[0]));
+			face_count++;
 		}
 		//pr(faces);
 		//pr(Arrays.toString(vindex));
@@ -201,8 +205,9 @@ public final class ObjFile {
 		//pr(vtv);
 		//pr(vtt);
 		//pr(vtn);
-		Triad[] t_ = faces.toArray(new Triad[0]);
-		PolygonMesh ans = new PolygonMesh(mtv, mtt, mtn, t_, vindex, mats);
+		Triad[][] faces = faces_t.toArray(new Triad[0][0]);
+		Polygon ans = new Polygon(mtv, mtt, mtn, faces);
+		// TODO Materials?
 		ans.setName(name);
 		return ans;
 	}
@@ -225,16 +230,10 @@ public final class ObjFile {
 		}
 	};
 	
-	public static ArrayList<int[]> genGridEdges(Triad[] vertices, int[] findex) {
+	public static ArrayList<int[]> genGridEdges(Triad[][] vertices) {
 		ArrayList<Pair> lv = new ArrayList<Pair>();
-		
-		for (int i = 0; i < findex.length; ++i) {
-			int fs = 0, fe = findex.length;
-			if(i > 0 && i < findex.length) fs = findex[i - 1];
-			if(i >= 0 && i < findex.length) fe = findex[i];
-			Triad[] st = new Triad[fe - fs];
-			for (int j = fs; j < fe; ++j) st[j - fs] = vertices[j];
-			
+		for (int i = 0; i < vertices.length; ++i) {
+			Triad[] st = vertices[i];			
 			ArrayList<Integer> v1 = new ArrayList<Integer>();
 			for (Triad s: st) {
 				v1.add(s.getX());
@@ -263,6 +262,7 @@ public final class ObjFile {
 		return ansa;
 	}
 
+	/*
 	public PolygonGrid genGrid(String name) {
 
 		ArrayList<String> orig = proc.get(name);
@@ -337,6 +337,7 @@ public final class ObjFile {
 		ans.setName(name);
 		return ans;
 	}
+	*/
 
 	public String getMtldir() {
 		return mtldir;

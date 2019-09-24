@@ -1,6 +1,10 @@
 package com.billstark001.riseui.client;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.ICompilable;
@@ -8,6 +12,7 @@ import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.io.MtlFile;
+import com.billstark001.riseui.math.InteractUtils;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
@@ -189,27 +194,43 @@ public final class GlRenderHelper {
 
 	public void renderObjectLocal(BaseNode obj, double ptick) {
 		if (obj == null) return;
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
+		GlStateManager.multMatrix(obj.getLocalState().getState().storeBufferF());
 		for (BaseNode o: obj.getChildren()) renderObjectLocal(o, ptick);
 		obj.render(ptick);
-		GlStateManager.multMatrix(obj.getLocalState().getState().storeBufferF());
 		GlStateManager.popMatrix();
 	}
 	
 	public void renderObject(BaseNode obj, double ptick) {
 		if (obj == null) return;
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		renderObjectLocal(obj, ptick);
 		GlStateManager.multMatrix(obj.getParentGlobalState().getState().storeBufferF());
+		renderObjectLocal(obj, ptick);
 		GlStateManager.popMatrix();
 	}
 	
 	public void renderWithoutGl(BaseNode obj, double ptick) {
 		if (obj == null) return;
+		//System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
+		//obj.render(ptick);
+		Matrix render_matrix = obj.getGlobalState().getState();
+		//System.out.println(render_matrix);
+		GlStateManager.multMatrix(render_matrix.storeBufferF());
 		obj.render(ptick);
-		GlStateManager.multMatrix(obj.getGlobalState().getState().storeBufferF());
+		//System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
 		GlStateManager.popMatrix();
 		for (BaseNode o: obj.getChildren()) renderWithoutGl(o, ptick);
+	}
+	
+	public static Matrix getGlMatrix(int mat) {
+		FloatBuffer mdata = BufferUtils.createFloatBuffer(16);
+		GL11.glGetFloat(mat, mdata);
+		Matrix4f m = new Matrix4f();
+		m.load(mdata);
+		return InteractUtils.transMat(m);
 	}
 }
