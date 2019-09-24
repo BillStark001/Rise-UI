@@ -7,9 +7,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.ICompilable;
-import com.billstark001.riseui.base.IGridable;
-import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.math.InteractUtils;
@@ -59,9 +56,7 @@ public final class GlRenderHelper {
 
 	public void startDrawing(int type, VertexFormat format) {R.begin(type, format);}
 	public void startDrawingFace() {R.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION_TEX);}
-	public void startDrawingVert() {
-		// TODO
-	}
+	public void startDrawingVert() {R.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION_COLOR);}
 	public void startDrawingEdge(boolean isLooped) {
 		if (isLooped) R.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
 		else R.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
@@ -93,17 +88,20 @@ public final class GlRenderHelper {
 	public void setLineWidth(double width) {GlStateManager.glLineWidth((float) width);}
 	
 	//State Management
-	// TODO
 	public void dumpState() {
-		
+		// TODO
 	}
 	
 	public void resetState() {
-		
+		// TODO
 	}
 	
 	public void setVertState() {
-		
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.disableCull();
+		GlStateManager.disableTexture2D();
 	}
 	
 	public void setEdgeState() {
@@ -112,7 +110,6 @@ public final class GlRenderHelper {
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
-        setLineWidth(1.5);
 	}
 	
 	public void setFaceState() {
@@ -145,51 +142,6 @@ public final class GlRenderHelper {
 		startDrawingFace();
 		for (int i = vpos.length - 1; i > -1 ; --i) addVertex(vpos[i], vuv[i]);
 		endDrawing();
-	}
-
-	@Deprecated
-	public void renderMesh(IMeshable mesh) {
-		BaseMaterial cur_tex = BaseMaterial.MISSING;
-		for (int i = 0; i < mesh.getFaceCount(); ++i){
-			Triad[] t_ = mesh.getFaceIndices(i);
-			cur_tex = mesh.getMaterial(i);
-			if (cur_tex != null) {
-				cur_tex.applyOn(M);
-				System.out.println(cur_tex.getAlbedoTexture());
-			}
-			startDrawingFace();
-			for (Triad t: t_) {
-				Vector v1, v2;
-				v1 = mesh.getVertex(t.getX());
-				v2 = mesh.getUVMap(t.getY());
-				addVertex(v1, v2);
-			}
-			endDrawing();
-		}
-	}
-
-	@Deprecated
-	public void renderGrid(IGridable grid) {
-		setEdgeState();
-		for (int i = 0; i < grid.getEdgeCount(); ++i){
-			int[] v_ = grid.getSegment(i);
-			startDrawingEdge(grid.isEdgeLooped());
-			for (int v: v_) {
-				addVertex(grid.getVertex(v));
-			}
-			endDrawing();
-		}
-		setFaceState();
-	}
-	
-	public void renderPoints() {
-		
-	}
-
-	public void renderCompiled(ICompilable obj) {
-		if (!obj.isCompiled()) obj.compileList();
-		BaseMaterial.INEXISTENT.applyOn(M);
-		GL11.glCallList(obj.getDisplayList());
 	}
 
 	public void renderObjectLocal(BaseNode obj, double ptick) {

@@ -6,7 +6,7 @@ import com.billstark001.riseui.client.GlRenderHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class TagApplyMaterial extends BaseTag {
+public class TagApplyMaterialFace extends BaseTag {
 	
 	private static GlRenderHelper renderer = GlRenderHelper.getInstance();
 	
@@ -14,21 +14,21 @@ public class TagApplyMaterial extends BaseTag {
 	public BaseMaterial getMaterial() {return this.material;}
 	public void setMaterial(BaseMaterial mat) {this.material = mat;}
 
-	public TagApplyMaterial(int hierarchy, boolean activated, BaseMaterial material) {
+	public TagApplyMaterialFace(int hierarchy, boolean activated, BaseMaterial material) {
 		super(hierarchy, activated);
 		this.setMaterial(material);
 	}
 	
-	public TagApplyMaterial(BaseMaterial material) {this(0, true, material);}
-	public TagApplyMaterial() {this(0, true, null);}
+	public TagApplyMaterialFace(BaseMaterial material) {this(0, true, material);}
+	public TagApplyMaterialFace() {this(0, true, null);}
 	
 	@Override
 	public boolean isActivated() {return super.isActivated() && (this.material == null);}
 
-	public TagApplyMaterial(boolean activated, BaseMaterial material) {super(activated); this.setMaterial(material);}
-	public TagApplyMaterial(int hierarchy, BaseMaterial material) {super(hierarchy); this.setMaterial(material);}
-	public TagApplyMaterial(boolean activated) {super(activated);}
-	public TagApplyMaterial(int hierarchy) {super(hierarchy);}
+	public TagApplyMaterialFace(boolean activated, BaseMaterial material) {super(activated); this.setMaterial(material);}
+	public TagApplyMaterialFace(int hierarchy, BaseMaterial material) {super(hierarchy); this.setMaterial(material);}
+	public TagApplyMaterialFace(boolean activated) {super(activated);}
+	public TagApplyMaterialFace(int hierarchy) {super(hierarchy);}
 
 	@Override
 	public void update(TickEvent e) {}
@@ -38,8 +38,6 @@ public class TagApplyMaterial extends BaseTag {
 		switch (phrase) {
 		case BaseTag.TAG_PHRASE_RENDER_PRE:
 		case BaseTag.TAG_PHRASE_RENDER_POST:
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_VERTEX:
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_EDGE:
 		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			return true;
 		default:
@@ -70,13 +68,11 @@ public class TagApplyMaterial extends BaseTag {
 
 	@Override
 	public ApplicationReturn onRenderVerts(BaseNode object, double ptick) {
-		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
 	public ApplicationReturn onRenderEdges(BaseNode object, double ptick) {
-		// TODO 自动生成的方法存根
 		return null;
 	}
 
@@ -88,13 +84,11 @@ public class TagApplyMaterial extends BaseTag {
 
 	@Override
 	public ApplicationReturn onRenderVert(BaseNode object, int index, double ptick) {
-		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
 	public ApplicationReturn onRenderEdge(BaseNode object, int index, double ptick) {
-		// TODO 自动生成的方法存根
 		return null;
 	}
 

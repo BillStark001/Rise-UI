@@ -1,17 +1,13 @@
 package com.billstark001.riseui.core.character;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.IGridable;
 import com.billstark001.riseui.base.state.StateStandard3D;
-import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
 public class Joint extends BaseNode {

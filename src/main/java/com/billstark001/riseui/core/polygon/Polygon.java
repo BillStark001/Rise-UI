@@ -1,28 +1,16 @@
 package com.billstark001.riseui.core.polygon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.ICompilable;
-import com.billstark001.riseui.base.IMeshable;
 import com.billstark001.riseui.base.NodeCompilableBase;
-import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.base.state.SimpleState;
 import com.billstark001.riseui.base.state.StateStandard3D;
-import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
 
 public class Polygon extends NodeCompilableBase{
 	
