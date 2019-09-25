@@ -15,13 +15,13 @@ import net.minecraft.client.resources.IResourceManager;
 
 public class MtlFile {
 	
-	private Map<String, MaterialFace> mat;
+	private Map<String, MaterialFace> mats;
 	
 	private final String orig;
 	
 	public MtlFile (String str) {
 		this.orig = str;
-		mat = new HashMap<String, MaterialFace>();
+		mats = new HashMap<String, MaterialFace>();
 		readMtl();
 	}
 	
@@ -59,12 +59,13 @@ public class MtlFile {
 				Texture2DFromRes tex = new Texture2DFromRes(val);
 				MaterialFace mat = new MaterialFace(name);
 				mat.setAlbedo(tex);
+				this.mats.put(name, mat);
 			}
 		}
 	}
 	
 	public String[] getList () {
-		Object[] ot = mat.keySet().toArray();
+		Object[] ot = mats.keySet().toArray();
 		String[] ans = new String[ot.length];
 		for (int i = 0; i < ot.length; ++i) {
 			ans[i] = ot[i].toString();
@@ -73,7 +74,7 @@ public class MtlFile {
 	}
 	
 	public MaterialFace getMaterial (String name) {
-		return mat.getOrDefault(name, MaterialFace.DEFAULT);
+		return mats.getOrDefault(name, new MaterialFace(name));
 	}
 	
 }

@@ -174,6 +174,7 @@ public class RenderTestObject{
 		render.setDebugState(true);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
+		BaseNode spider_body = spider.getChild(0).getChild(0);
 		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)

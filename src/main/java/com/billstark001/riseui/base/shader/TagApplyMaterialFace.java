@@ -31,7 +31,7 @@ public class TagApplyMaterialFace extends BaseTag {
 	public TagApplyMaterialFace() {this(0, true, null, null);}
 	
 	@Override
-	public boolean isActivated() {return super.isActivated() && (this.material == null);}
+	public boolean isActivated() {return super.isActivated() && (this.material != null);}
 
 	public TagApplyMaterialFace(boolean activated, MaterialFace material) {super(activated); this.setMaterial(material);}
 	public TagApplyMaterialFace(int hierarchy, MaterialFace material) {super(hierarchy); this.setMaterial(material);}
@@ -104,7 +104,10 @@ public class TagApplyMaterialFace extends BaseTag {
 	public ApplicationReturn onRenderFace(BaseNode object, int index, double ptick) {
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.FACE) flag = this.selection.contains(index);
-		if (flag) this.material.getAlbedo().bindTexture();
+		if (flag) {
+			Texture2DBase albedo = this.material.getAlbedo();
+			if (albedo != null) albedo.bindTexture();
+		}
 		return null;
 	}
 

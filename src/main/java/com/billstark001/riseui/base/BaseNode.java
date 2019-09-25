@@ -40,13 +40,13 @@ public abstract class BaseNode extends BaseObject{
 		FALSE;
 	}
 	
-	private Visibility vis_vert, vis_edge, vis_face;
+	private Visibility vis_vert = Visibility.DEFAULT, vis_edge = Visibility.DEFAULT, vis_face = Visibility.DEFAULT;
 	public static final Visibility VIS_VERT_DEFAULT = Visibility.FALSE;
 	public static final Visibility VIS_EDGE_DEFAULT = Visibility.FALSE;
 	public static final Visibility VIS_FACE_DEFAULT = Visibility.TRUE;
-	public void setVisVert(Visibility vis) {this.vis_vert = vis;}
-	public void setVisEdge(Visibility vis) {this.vis_edge = vis;}
-	public void setVisFace(Visibility vis) {this.vis_face = vis;}
+	public void setVisVert(Visibility vis) {if (vis == null) vis = Visibility.DEFAULT; this.vis_vert = vis;}
+	public void setVisEdge(Visibility vis) {if (vis == null) vis = Visibility.DEFAULT; this.vis_edge = vis;}
+	public void setVisFace(Visibility vis) {if (vis == null) vis = Visibility.DEFAULT; this.vis_face = vis;}
 	public Visibility getVisVert() {return this.vis_vert;}
 	public Visibility getVisEdge() {return this.vis_edge;}
 	public Visibility getVisFace() {return this.vis_face;}
@@ -72,7 +72,7 @@ public abstract class BaseNode extends BaseObject{
 		super(name);
 		global_dirty = false;
 		this.local_state = new StateStandard3D(state);
-		this.global_state = new ComplexState(STATE_STANDARD, (StateStandard3D) this.local_state);
+		this.global_state = new ComplexState((StateStandard3D) this.local_state, this.STATE_STANDARD);
 		this.parent = null;
 	}
 	
@@ -80,7 +80,7 @@ public abstract class BaseNode extends BaseObject{
 		super(name);
 		global_dirty = false;
 		this.local_state = new SimpleState(state);
-		this.global_state = new ComplexState(STATE_STANDARD, this.local_state);
+		this.global_state = new ComplexState(this.local_state, this.STATE_STANDARD);
 		this.parent = null;
 	}
 	
@@ -88,7 +88,7 @@ public abstract class BaseNode extends BaseObject{
 		super(name);
 		global_dirty = false;
 		this.local_state = new StateStandard3D(pos, rot, scl);
-		this.global_state = new ComplexState(STATE_STANDARD, (StateStandard3D) this.local_state);//Utils.getStateMat(pos, rot, scl);
+		this.global_state = new ComplexState((StateStandard3D) this.local_state, this.STATE_STANDARD);//Utils.getStateMat(pos, rot, scl);
 		this.parent = null;
 	}
 	
@@ -298,15 +298,13 @@ public abstract class BaseNode extends BaseObject{
 	// Tags
 
 	public boolean addTag(BaseTag tag) {
-		if (!tag.appliesOn(BaseTag.TAG_PHRASE_ADDED)) return true;
-		boolean flag = tag.onAdded(this).succeed;
+		boolean flag = (!tag.appliesOn(BaseTag.TAG_PHRASE_ADDED)) || tag.onAdded(this).succeed;
 		if (flag) tags.add(tag);
 		return flag;
 	}
 	
 	public boolean removeTag(BaseTag tag) {
-		if (!tag.appliesOn(BaseTag.TAG_PHRASE_REMOVED)) return true;
-		boolean flag = tag.onRemoved(this).succeed && tags.contains(tag);
+		boolean flag = (!tag.appliesOn(BaseTag.TAG_PHRASE_REMOVED)) || (tag.onRemoved(this).succeed && tags.contains(tag));
 		if (flag) tags.remove(tag);
 		return flag;
 	}

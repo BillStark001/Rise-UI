@@ -35,6 +35,7 @@ import com.dddviewr.collada.content.geometry.LibraryGeometries;
 import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.content.geometry.PolyList;
 import com.dddviewr.collada.content.geometry.Primitives;
+import com.dddviewr.collada.content.images.LibraryImages;
 import com.dddviewr.collada.content.materials.LibraryMaterials;
 import com.dddviewr.collada.content.materials.Material;
 import com.dddviewr.collada.content.nodes.Node;
@@ -57,6 +58,7 @@ public class ColladaFile {
 	private LibraryEffects leff = null;
 	private LibraryControllers lcon = null;
 	private LibraryAnimations lani = null;
+	private LibraryImages limg = null;
 	
 	private Map<Integer, MaterialFace> material = null;
 	
@@ -90,8 +92,11 @@ public class ColladaFile {
 		leff = file.getLibraryEffects();
 		lcon = file.getLibraryControllers();
 		lani = file.getLibraryAnimations();
+		limg = file.getLibraryImages();
 		
 		// Materials
+		
+		
 		
 		material = new HashMap<Integer, MaterialFace>();
 		for (Material m: lmat.getElements()) {
@@ -99,16 +104,17 @@ public class ColladaFile {
 			int id = m.getId();
 			Effect etemp = leff.getElement(m.getInstanceEffect().getUrl());
 			EffectMaterial emat = etemp.getEffectMaterial();
+			
 			MaterialFace mat = new MaterialFace(name);
 			EffectAttribute dif, emi, tra, spe;
 			dif = emat.getDiffuse();
 			emi = emat.getEmission();
 			tra = emat.getTransparency();
 			spe = emat.getSpecular();
-			if (dif != null) mat.setAlbedo(new Texture2DFromRes(dif.getTexture().getTexture()));
-			if (emi != null) mat.setEmission(new Texture2DFromRes(emi.getTexture().getTexture()));
-			if (tra != null) mat.setTransparency(new Texture2DFromRes(tra.getTexture().getTexture()));
-			if (spe != null) mat.setSpecular(new Texture2DFromRes(spe.getTexture().getTexture()));
+			if (dif != null) mat.setAlbedo(new Texture2DFromRes(limg.getElement(etemp.findNewParam(dif.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (emi != null) mat.setEmission(new Texture2DFromRes(limg.getElement(etemp.findNewParam(emi.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (tra != null) mat.setTransparency(new Texture2DFromRes(limg.getElement(etemp.findNewParam(tra.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (spe != null) mat.setSpecular(new Texture2DFromRes(limg.getElement(etemp.findNewParam(spe.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
 			this.material.put(id, mat);
 		}
 		
@@ -149,17 +155,35 @@ public class ColladaFile {
 
 		ArrayList<Triad[]> faces = new ArrayList<Triad[]>();
 		ArrayList<MaterialFace> mats = new ArrayList<MaterialFace>();
-		for (Primitives prim: m.getPrimitives()) {
+		for (Primitives pr: m.getPrimitives()) {
+			PolyList prim = (PolyList) pr;
+			int[][] vtemp = prim.getParsed();
+			int[] face_vcounts = prim.getVcount().getAccData();
+			int nr_faces = face_vcounts.length;
+			int cur_face = 0;
+			int nr_vertices = face_vcounts[nr_faces - 1];
+			
 			ArrayList<Triad> face = new ArrayList<Triad>();
-			PolyList pr = (PolyList) prim;
-			int[][] vtemp = pr.getParsed();
-			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
-			for (int i = 0; i < nr_faces; ++i) {
+			MaterialFace cur_mat = this.material.get(prim.getMaterial());
+			
+			for (int i = 0; i < nr_vertices + 1; ++i) {
+				if (face_vcounts[cur_face] == i) { // triad[], mat
+					// Triad[]
+					faces.add(face.toArray(new Triad[0]));
+					face = new ArrayList<Triad>();
+					// Mat
+					if (cur_face == 0) mats.add(cur_mat);
+					else mats.add(null);
+					
+					cur_face += 1;
+				}
+				
+				if (i >= nr_vertices) continue;
+				
 				face.add(new Triad(vtemp[i][0], vtemp[i][2], vtemp[i][1]));
-				if (i == 0) mats.add(this.material.get(prim.getMaterial()));
-				else mats.add(null);
+				
 			}
-			faces.add(face.toArray(new Triad[0]));
+			
 		}
 		
 		int face_count = faces.size();
@@ -180,8 +204,8 @@ public class ColladaFile {
 		}
 		for (MaterialFace mat: selections.keySet()) {
 			TagSelectionHardTable sel = new TagSelectionHardTable(selections.get(mat));
-			//System.out.println(ans.addTag(sel));
-			//System.out.println(ans.addTag(new TagApplyMaterialFace(mat, sel)));
+			ans.addTag(sel);
+			ans.addTag(new TagApplyMaterialFace(mat, sel));
 		}
 		
 		return ans;

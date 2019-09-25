@@ -5,28 +5,36 @@ import java.io.PrintStream;
 import com.dddviewr.collada.format.Base;
 
 public class Texture extends Base {
-	protected String texture;
-	protected String texcoord;
+	protected int texture;
+	protected int texcoord;
 
 	public Texture(String texture, String texcoord) {
-		this.texture = texture;
-		this.texcoord = texcoord;
+		this.setTexture(texture);
+		this.setTexcoord(texcoord);
 	}
 
-	public String getTexcoord() {
+	public int getTexcoord() {
 		return this.texcoord;
 	}
 
-	public void setTexcoord(String texcoord) {
+	public void setTexcoord(int texcoord) {
 		this.texcoord = texcoord;
 	}
+	
+	public void setTexcoord(String coord) {
+		this.texcoord = Integer.valueOf(coord.substring(5));
+	}
 
-	public String getTexture() {
+	public int getTexture() {
 		return this.texture;
 	}
 
-	public void setTexture(String texture) {
+	public void setTexture(int texture) {
 		this.texture = texture;
+	}
+	
+	public void setTexture(String texture) {
+		this.texture = Integer.valueOf(texture.substring(2));
 	}
 	
 	public String toString() {

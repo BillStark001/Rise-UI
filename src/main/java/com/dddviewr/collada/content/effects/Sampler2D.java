@@ -8,6 +8,15 @@ public class Sampler2D extends Base {
 	protected String source;
 	protected String minFilter;
 	protected String magFilter;
+	protected InstanceImage instanceImage;
+
+	public InstanceImage getInstanceImage() {
+		return instanceImage;
+	}
+
+	public void setInstanceImage(InstanceImage instanceImage) {
+		this.instanceImage = instanceImage;
+	}
 
 	public String getMagFilter() {
 		return this.magFilter;
@@ -25,12 +34,13 @@ public class Sampler2D extends Base {
 		this.minFilter = minFilter;
 	}
 
-	public String getSource() {
-		return this.source;
+	public int getSource() {
+		return this.instanceImage.getUrl();
 	}
 
 	public void setSource(String source) {
-		this.source = source;
+		//this.source = source;
+		this.instanceImage = new InstanceImage(source);
 	}
 
 	public void dump(PrintStream out, int indent) {

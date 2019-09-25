@@ -126,6 +126,7 @@ public final class ObjFile {
 				t_ = i.substring(2);
 			} else if (t.equals("mtllib")) {
 				this.setMtldir(i.substring(7));
+				this.linkMtlFile();
 			}
 		}
 		if (t_ != null)
@@ -212,6 +213,7 @@ public final class ObjFile {
 
 		Triad[][] faces = faces_t.toArray(new Triad[0][0]);
 		Polygon ans = new Polygon(mtv, mtt, mtn, faces);
+		
 		// Materials
 		
 		Map<MaterialFace, boolean[]> selections = new HashMap<MaterialFace, boolean[]>();
@@ -227,8 +229,8 @@ public final class ObjFile {
 		}
 		for (MaterialFace mat: selections.keySet()) {
 			TagSelectionHardTable sel = new TagSelectionHardTable(selections.get(mat));
-			//System.out.println(ans.addTag(sel));
-			//System.out.println(ans.addTag(new TagApplyMaterialFace(mat, sel)));
+			ans.addTag(sel);
+			ans.addTag(new TagApplyMaterialFace(mat, sel));
 		}
 		
 		

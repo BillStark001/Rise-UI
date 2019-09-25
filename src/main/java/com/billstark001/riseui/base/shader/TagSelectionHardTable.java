@@ -31,13 +31,13 @@ public class TagSelectionHardTable extends TagSelectionBase {
 
 	@Override
 	public double getContainRate(int index) {
-		if (index > 0 && index < table.length) return table[index] ? 1 : 0;
+		if (index >= 0 && index < table.length) return table[index] ? 1 : 0;
 		else return 0;
 	}
 	
 	@Override
 	public boolean contains(int index) {
-		if (index > 0 && index < table.length) return table[index];
+		if (index >= 0 && index < table.length) return table[index];
 		else return false;
 	}
 

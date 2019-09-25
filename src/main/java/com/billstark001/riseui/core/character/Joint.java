@@ -33,7 +33,7 @@ public class Joint extends BaseNode {
 	private double length;
 	private double[][] d = {{0, 0, 0}, {0, 1, 0}, {0.25, 0.75, 0}, {0, 0.75, 0.25}, {-0.25, 0.75, 0}, {0, 0.75, -0.25}};
 	private Matrix vertices = new Matrix(d);
-	private Matrix vcur;
+	private Matrix vcur = vertices;
 	
 	public Joint getSuperior() {return superior;}
 	public Joint[] getInferiors() {return inferior.toArray(new Joint[0]);}
