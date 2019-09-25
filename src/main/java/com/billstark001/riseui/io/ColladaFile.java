@@ -7,6 +7,11 @@ import java.util.Map;
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.shader.MaterialFace;
+import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
+import com.billstark001.riseui.base.shader.TagSelectionHardTable;
+import com.billstark001.riseui.base.shader.Texture2DBase;
+import com.billstark001.riseui.base.shader.Texture2DFromRes;
 import com.billstark001.riseui.base.state.StateStandard3D;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
@@ -21,6 +26,9 @@ import com.dddviewr.collada.Source;
 import com.dddviewr.collada.content.animation.LibraryAnimations;
 import com.dddviewr.collada.content.controller.Controller;
 import com.dddviewr.collada.content.controller.LibraryControllers;
+import com.dddviewr.collada.content.effects.Effect;
+import com.dddviewr.collada.content.effects.EffectAttribute;
+import com.dddviewr.collada.content.effects.EffectMaterial;
 import com.dddviewr.collada.content.effects.LibraryEffects;
 import com.dddviewr.collada.content.geometry.Geometry;
 import com.dddviewr.collada.content.geometry.LibraryGeometries;
@@ -28,6 +36,7 @@ import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.content.geometry.PolyList;
 import com.dddviewr.collada.content.geometry.Primitives;
 import com.dddviewr.collada.content.materials.LibraryMaterials;
+import com.dddviewr.collada.content.materials.Material;
 import com.dddviewr.collada.content.nodes.Node;
 import com.dddviewr.collada.content.visualscene.BaseXform;
 import com.dddviewr.collada.content.visualscene.Rotate;
@@ -48,6 +57,8 @@ public class ColladaFile {
 	private LibraryEffects leff = null;
 	private LibraryControllers lcon = null;
 	private LibraryAnimations lani = null;
+	
+	private Map<Integer, MaterialFace> material = null;
 	
 	private Map<String, BaseNode> parsed = new HashMap<String, BaseNode>();
 	
@@ -79,6 +90,27 @@ public class ColladaFile {
 		leff = file.getLibraryEffects();
 		lcon = file.getLibraryControllers();
 		lani = file.getLibraryAnimations();
+		
+		// Materials
+		
+		material = new HashMap<Integer, MaterialFace>();
+		for (Material m: lmat.getElements()) {
+			String name = m.getName();
+			int id = m.getId();
+			Effect etemp = leff.getElement(m.getInstanceEffect().getUrl());
+			EffectMaterial emat = etemp.getEffectMaterial();
+			MaterialFace mat = new MaterialFace(name);
+			EffectAttribute dif, emi, tra, spe;
+			dif = emat.getDiffuse();
+			emi = emat.getEmission();
+			tra = emat.getTransparency();
+			spe = emat.getSpecular();
+			if (dif != null) mat.setAlbedo(new Texture2DFromRes(dif.getTexture().getTexture()));
+			if (emi != null) mat.setEmission(new Texture2DFromRes(emi.getTexture().getTexture()));
+			if (tra != null) mat.setTransparency(new Texture2DFromRes(tra.getTexture().getTexture()));
+			if (spe != null) mat.setSpecular(new Texture2DFromRes(spe.getTexture().getTexture()));
+			this.material.put(id, mat);
+		}
 		
 		//leff.getElement(lmat.getElement(1).getInstanceEffect().getUrl()).dump();
 		for (Node ntemp: scene.getNodes()) {
@@ -116,23 +148,42 @@ public class ColladaFile {
 		Matrix mnor = new Matrix(m.getNormalData().parseD(4, 0));
 
 		ArrayList<Triad[]> faces = new ArrayList<Triad[]>();
-		ArrayList<BaseMaterial> mindex = new ArrayList<BaseMaterial>();
-		for (Primitives p: m.getPrimitives()) {
+		ArrayList<MaterialFace> mats = new ArrayList<MaterialFace>();
+		for (Primitives prim: m.getPrimitives()) {
 			ArrayList<Triad> face = new ArrayList<Triad>();
-			PolyList pr = (PolyList) p;
+			PolyList pr = (PolyList) prim;
 			int[][] vtemp = pr.getParsed();
 			int nr_faces = vtemp.length; //pr.getVcount().getAccData()[pr.getVcount().getData().length - 1];
 			for (int i = 0; i < nr_faces; ++i) {
 				face.add(new Triad(vtemp[i][0], vtemp[i][2], vtemp[i][1]));
-				if (i == 0) mindex.add(new BaseMaterial("riseui:tex/cave_spider.png"));
-				// TODO Material Instantiation
-				else mindex.add(null);
+				if (i == 0) mats.add(this.material.get(prim.getMaterial()));
+				else mats.add(null);
 			}
 			faces.add(face.toArray(new Triad[0]));
 		}
-
+		
+		int face_count = faces.size();
+		MaterialFace[] mat_cache = mats.toArray(new MaterialFace[0]);
 		
 		Polygon ans = new Polygon(mpos, mtex, mnor, faces.toArray(new Triad[0][0]));
+		
+		Map<MaterialFace, boolean[]> selections = new HashMap<MaterialFace, boolean[]>();
+		MaterialFace current_mat = null;
+		for (int i = 0; i < face_count; ++i) {
+			MaterialFace mat = mat_cache[i];
+			if (mat != null) {
+				current_mat = mat;
+				if (!selections.containsKey(current_mat))
+					selections.put(current_mat, new boolean[face_count]);
+			}
+			selections.get(current_mat)[i] = true;
+		}
+		for (MaterialFace mat: selections.keySet()) {
+			TagSelectionHardTable sel = new TagSelectionHardTable(selections.get(mat));
+			//System.out.println(ans.addTag(sel));
+			//System.out.println(ans.addTag(new TagApplyMaterialFace(mat, sel)));
+		}
+		
 		return ans;
 	}
 	

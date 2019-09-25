@@ -7,6 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.shader.MaterialFace;
+import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
+import com.billstark001.riseui.base.shader.TagSelectionHardTable;
+import com.billstark001.riseui.base.shader.Texture2DFromRes;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Pair;
@@ -148,14 +152,18 @@ public final class ObjFile {
 		int vc = 0, nc = 0, tc = 0;
 		
 		ArrayList<Triad[]> faces_t = new ArrayList<Triad[]>();
-		BaseMaterial[] mats = new BaseMaterial[face_count];
+		MaterialFace[] mat_cache = new MaterialFace[face_count];
 		face_count = 0;
 
 		for (String cur : orig) {
 			ArrayList<Triad> face_t = new ArrayList<Triad>();
 			
 			if (cur.startsWith("m")) {
-				mats[face_count] = new BaseMaterial(linked_mtl.getMat(cur.substring(2), cur.substring(2)));
+				String mat_name = cur.substring(2);
+				if (this.linked_mtl != null) 
+					mat_cache[face_count] = this.linked_mtl.getMaterial(mat_name);
+				else
+					mat_cache[face_count] = new MaterialFace(mat_name);
 			}
 			if (!cur.startsWith("f")) continue;
 			String[] st = cur.split(" ");
@@ -201,13 +209,29 @@ public final class ObjFile {
 		if (vc != 0) mtv = new Matrix(vtv);
 		if (tc != 0) mtt = new Matrix(vtt);
 		if (nc != 0) mtn = new Matrix(vtn);
-		
-		//pr(vtv);
-		//pr(vtt);
-		//pr(vtn);
+
 		Triad[][] faces = faces_t.toArray(new Triad[0][0]);
 		Polygon ans = new Polygon(mtv, mtt, mtn, faces);
-		// TODO Materials?
+		// Materials
+		
+		Map<MaterialFace, boolean[]> selections = new HashMap<MaterialFace, boolean[]>();
+		MaterialFace current_mat = null;
+		for (int i = 0; i < face_count; ++i) {
+			MaterialFace mat = mat_cache[i];
+			if (mat != null) {
+				current_mat = mat;
+				if (!selections.containsKey(current_mat))
+					selections.put(current_mat, new boolean[face_count]);
+			}
+			selections.get(current_mat)[i] = true;
+		}
+		for (MaterialFace mat: selections.keySet()) {
+			TagSelectionHardTable sel = new TagSelectionHardTable(selections.get(mat));
+			//System.out.println(ans.addTag(sel));
+			//System.out.println(ans.addTag(new TagApplyMaterialFace(mat, sel)));
+		}
+		
+		
 		ans.setName(name);
 		return ans;
 	}

@@ -12,7 +12,7 @@ public class PolyList extends Primitives {
 	protected Vcount theVcount;
 	
 	public PolyList(String material, int polyCount) {
-		this.material = material;
+		this.setMaterial(material);
 		this.count = polyCount;
 	}	
 		

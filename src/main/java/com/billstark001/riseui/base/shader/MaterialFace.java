@@ -5,6 +5,17 @@ import com.billstark001.riseui.base.Layer;
 
 public class MaterialFace extends BaseObject{
 	
+	public static final MaterialFace DEFAULT = new MaterialFace("Default Material");
+	
+	@Override
+	public void setName(String name) {
+		if (this != MaterialFace.DEFAULT) super.setName(name);
+	}
+	public boolean setLayer(Layer layer) {
+		if (this != MaterialFace.DEFAULT) return super.setLayer(layer);
+		else return false;
+	}
+
 	public MaterialFace(String name, Layer layer) {super(name, layer);}
 	public MaterialFace(String name) {this(name, null);}
 	public MaterialFace(Layer layer) {this(null, layer);}

@@ -8,8 +8,8 @@ import com.dddviewr.collada.Input;
 public class Triangles extends Primitives {
 	private int pos;
 
-	public Triangles(String material, int count) {
-		this.material = material;
+	public Triangles(String string, int count) {
+		this.setMaterial(string);
 		this.count = count;
 	}
 

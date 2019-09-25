@@ -298,12 +298,14 @@ public abstract class BaseNode extends BaseObject{
 	// Tags
 
 	public boolean addTag(BaseTag tag) {
+		if (!tag.appliesOn(BaseTag.TAG_PHRASE_ADDED)) return true;
 		boolean flag = tag.onAdded(this).succeed;
 		if (flag) tags.add(tag);
 		return flag;
 	}
 	
 	public boolean removeTag(BaseTag tag) {
+		if (!tag.appliesOn(BaseTag.TAG_PHRASE_REMOVED)) return true;
 		boolean flag = tag.onRemoved(this).succeed && tags.contains(tag);
 		if (flag) tags.remove(tag);
 		return flag;

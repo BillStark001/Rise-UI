@@ -8,8 +8,8 @@ import com.dddviewr.collada.format.Base;
 public class Lines extends Primitives {
 	private int pos;
 
-	public Lines(String material, int count) {
-		this.material = material;
+	public Lines(String string, int count) {
+		this.setMaterial(string);
 		this.count = count;
 	}
 

@@ -2,31 +2,39 @@ package com.billstark001.riseui.base.shader;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.BaseTag;
+import com.billstark001.riseui.base.shader.TagSelectionBase.Type;
 import com.billstark001.riseui.client.GlRenderHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class TagApplyMaterialFace extends BaseTag {
 	
-	private static GlRenderHelper renderer = GlRenderHelper.getInstance();
+	//private static GlRenderHelper renderer = GlRenderHelper.getInstance();
 	
-	private BaseMaterial material;
-	public BaseMaterial getMaterial() {return this.material;}
-	public void setMaterial(BaseMaterial mat) {this.material = mat;}
+	private MaterialFace material;
+	public MaterialFace getMaterial() {return this.material;}
+	public void setMaterial(MaterialFace mat) {this.material = mat;}
+	
+	private TagSelectionBase selection;
+	public TagSelectionBase getSelection() {return this.selection;}
+	public void setSelection(TagSelectionBase selection) {this.selection = selection;}
 
-	public TagApplyMaterialFace(int hierarchy, boolean activated, BaseMaterial material) {
+	public TagApplyMaterialFace(int hierarchy, boolean activated, MaterialFace material, TagSelectionBase selection) {
 		super(hierarchy, activated);
 		this.setMaterial(material);
+		this.setSelection(selection);
 	}
 	
-	public TagApplyMaterialFace(BaseMaterial material) {this(0, true, material);}
-	public TagApplyMaterialFace() {this(0, true, null);}
+	public TagApplyMaterialFace(int hierarchy, boolean activated, MaterialFace material) {this(hierarchy, activated, material, null);}
+	public TagApplyMaterialFace(MaterialFace material, TagSelectionBase selection) {this(0, true, material, selection);}
+	public TagApplyMaterialFace(MaterialFace material) {this(0, true, material, null);}
+	public TagApplyMaterialFace() {this(0, true, null, null);}
 	
 	@Override
 	public boolean isActivated() {return super.isActivated() && (this.material == null);}
 
-	public TagApplyMaterialFace(boolean activated, BaseMaterial material) {super(activated); this.setMaterial(material);}
-	public TagApplyMaterialFace(int hierarchy, BaseMaterial material) {super(hierarchy); this.setMaterial(material);}
+	public TagApplyMaterialFace(boolean activated, MaterialFace material) {super(activated); this.setMaterial(material);}
+	public TagApplyMaterialFace(int hierarchy, MaterialFace material) {super(hierarchy); this.setMaterial(material);}
 	public TagApplyMaterialFace(boolean activated) {super(activated);}
 	public TagApplyMaterialFace(int hierarchy) {super(hierarchy);}
 
@@ -94,7 +102,9 @@ public class TagApplyMaterialFace extends BaseTag {
 
 	@Override
 	public ApplicationReturn onRenderFace(BaseNode object, int index, double ptick) {
-		// TODO 自动生成的方法存根
+		boolean flag = false;
+		if (this.selection != null && this.selection.getType() == Type.FACE) flag = this.selection.contains(index);
+		if (flag) this.material.getAlbedo().bindTexture();
 		return null;
 	}
 

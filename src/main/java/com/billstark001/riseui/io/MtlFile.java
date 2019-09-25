@@ -7,17 +7,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.billstark001.riseui.base.shader.MaterialFace;
+import com.billstark001.riseui.base.shader.Texture2DBase;
+import com.billstark001.riseui.base.shader.Texture2DFromRes;
+
 import net.minecraft.client.resources.IResourceManager;
 
 public class MtlFile {
 	
-	private Map<String, String> mat;
+	private Map<String, MaterialFace> mat;
 	
 	private final String orig;
 	
 	public MtlFile (String str) {
 		this.orig = str;
-		mat = new HashMap<String, String>();
+		mat = new HashMap<String, MaterialFace>();
 		readMtl();
 	}
 	
@@ -50,7 +54,12 @@ public class MtlFile {
 			String t = getType(i);
 			if (t.equals("dummy")) continue;
 			if (t.equals("newmtl")) name = i.substring(7);
-			else if (t.equals("map_Kd")) mat.put(name, i.substring(7));
+			else if (t.equals("map_Kd")) {
+				String val = i.substring(7);
+				Texture2DFromRes tex = new Texture2DFromRes(val);
+				MaterialFace mat = new MaterialFace(name);
+				mat.setAlbedo(tex);
+			}
 		}
 	}
 	
@@ -63,19 +72,8 @@ public class MtlFile {
 		return ans;
 	}
 	
-	public String getMat (String name) {
-		/*
-		if (!mat.containsKey(name)) {
-			Iterator<String> it = mat.keySet().iterator();
-			while (it.hasNext()) System.out.println(it.next());
-		}
-		*/
-		return mat.getOrDefault(name, "riseui:chaff");
-	}
-	
-	public String getMat (String name, String sdefault) {
-		if (!mat.containsKey(name)) System.out.println(name);
-		return mat.getOrDefault(name, sdefault);
+	public MaterialFace getMaterial (String name) {
+		return mat.getOrDefault(name, MaterialFace.DEFAULT);
 	}
 	
 }

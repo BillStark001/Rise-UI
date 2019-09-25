@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -184,5 +185,13 @@ public final class GlRenderHelper {
 		Matrix4f m = new Matrix4f();
 		m.load(mdata);
 		return InteractUtils.transMat(m);
+	}
+	
+	public void bindTexture(int tex) {
+		GlStateManager.bindTexture(tex);
+	}
+	
+	public void bindTexture(ResourceLocation loc) {
+		this.M.bindTexture(loc);
 	}
 }

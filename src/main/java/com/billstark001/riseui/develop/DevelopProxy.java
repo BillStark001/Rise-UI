@@ -87,6 +87,7 @@ public class DevelopProxy {
    		}
    	}
 	
+	/*
 	@SubscribeEvent
    	public void recompile(PlayerTickEvent e) {
    		EntityPlayer player = Minecraft.getMinecraft().player;
@@ -104,6 +105,7 @@ public class DevelopProxy {
    			speakToPlayer(player, "Cleared");
    		}
    	}
+	*/
 	
 	@SubscribeEvent
 	public void doRender(RenderTileOverlayEvent e) {

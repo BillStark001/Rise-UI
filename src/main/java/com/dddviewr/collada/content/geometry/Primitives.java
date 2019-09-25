@@ -11,18 +11,22 @@ import scala.actors.threadpool.Arrays;
 
 public abstract class Primitives extends Base {
 
-	protected String material;
+	protected int material;
 	protected List<Input> inputs = new ArrayList<Input>();
 	protected int count;
 	protected int[] data;
 
 	
-	public String getMaterial() {
+	public int getMaterial() {
 		return this.material;
 	}
 
-	public void setMaterial(String material) {
+	public void setMaterial(int material) {
 		this.material = material;
+	}
+	
+	public void setMaterial(String material) {
+		this.material = Integer.valueOf(material.substring(8));
 	}
 
 	public void addInput(Input i) {
