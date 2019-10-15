@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
@@ -47,15 +47,15 @@ public class Joint extends BaseNode {
 	// Maintainence
 	
 	@Override
-	public boolean addChild(BaseNode obj) {
-		boolean flag = super.addChild(obj);
+	public boolean addChildRemainGlobalState(BaseNode obj) {
+		boolean flag = super.addChildRemainGlobalState(obj);
 		if (flag && obj instanceof Joint) {this.inferior.add((Joint) obj);}
 		return flag;
 	}
 	
 	@Override
-	public boolean setParent(BaseNode parent) {
-		boolean flag = super.setParent(parent);
+	public boolean setParentRemainGlobalState(BaseNode parent) {
+		boolean flag = super.setParentRemainGlobalState(parent);
 		if (flag && parent != null && parent instanceof Joint) {
 			this.superior = (Joint) parent;
 		}
@@ -63,13 +63,13 @@ public class Joint extends BaseNode {
 	}
 	
 	@Override
-	public boolean removeParent() {
+	public boolean removeParentRemainGlobalState() {
 		if (this.parent instanceof Joint) {
 			if (((Joint) this.parent).inferior.contains(this)) ((Joint) this.parent).inferior.remove(this); 
 			this.superior = null;
 			this.length = 0;
 		}
-		return super.removeParent();
+		return super.removeParentRemainGlobalState();
 	}
 	
 	/*

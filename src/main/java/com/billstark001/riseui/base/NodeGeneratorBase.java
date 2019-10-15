@@ -1,8 +1,8 @@
 package com.billstark001.riseui.base;
 
 import com.billstark001.riseui.base.shader.BaseMaterial;
-import com.billstark001.riseui.base.state.SimpleState;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.SimpleState;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;

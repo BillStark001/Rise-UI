@@ -10,7 +10,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
@@ -106,8 +106,8 @@ public class RenderTestObject{
 		//System.out.println(terrain);
 		
 		//hgrid.setParent(horse);
-		table.setParent(sphere);
-		sphere.setParent(horse);
+		table.setParentRemainGlobalState(sphere);
+		sphere.setParentRemainGlobalState(horse);
 
 		horse.dump();
 		

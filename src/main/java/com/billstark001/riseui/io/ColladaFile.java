@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.BaseObject;
+import com.billstark001.riseui.base.NamedObject;
 import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.base.shader.MaterialFace;
 import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shader.TagSelectionHardTable;
 import com.billstark001.riseui.base.shader.Texture2DBase;
 import com.billstark001.riseui.base.shader.Texture2DFromRes;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
@@ -231,7 +231,7 @@ public class ColladaFile {
 		}
 		for (Node nt: n.getChildNodes()) {
 			BaseNode bnt = parseNode(nt);
-			ans.addChildRemainLocal(bnt);
+			ans.addChild(bnt);
 		}
 		return ans;
 	}

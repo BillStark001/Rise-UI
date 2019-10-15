@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.base.shader.BaseMaterial;
-import com.billstark001.riseui.base.state.ComplexState;
-import com.billstark001.riseui.base.state.SimpleState;
-import com.billstark001.riseui.base.state.State4;
-import com.billstark001.riseui.base.state.StateRot;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.ComplexState;
+import com.billstark001.riseui.base.states.SimpleState;
+import com.billstark001.riseui.base.states.State4;
+import com.billstark001.riseui.base.states.StateRot;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.math.Matrix;
@@ -20,7 +20,7 @@ import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
 
-public abstract class BaseNode extends BaseObject{
+public abstract class BaseNode extends NamedObject{
 
 	protected SimpleState local_state;
 	protected ComplexState global_state; 
@@ -142,27 +142,17 @@ public abstract class BaseNode extends BaseObject{
 		return flag;
 	}
 
-	// TODO check codes
+	
+	// Node tree operations with local world states remain
+	
 	public boolean addChild(BaseNode obj) {return obj.setParent(this);}
 	public boolean setParent(BaseNode parent) {
 		if (parent == null) return removeParent();
 		if (parent == this) return false;
 		if (parent.isDescendant(this)) return false;
-		if (this.parent != null && this.parent.children.contains(this)) this.parent.children.remove(this);
-		updateGlobalStateCheckDirty();
-		this.parent = parent;
-		if (!parent.children.contains(this)) parent.children.add(this);
-		updateLocalState();
-		return true;
-	}
-	public boolean addChildRemainLocal(BaseNode obj) {return obj.setParentRemainLocal(this);}
-	public boolean setParentRemainLocal(BaseNode parent) {
-		if (parent == null) return removeParent();
-		if (parent == this) return false;
-		if (parent.isDescendant(this)) return false;
 		if (this.parent != null && this.parent.children.contains(this)) {
 			this.parent.children.remove(this);
-			updateLocalState();
+			//updateLocalState();
 		}
 		this.parent = parent;
 		if (!parent.children.contains(this)) parent.children.add(this);
@@ -173,12 +163,10 @@ public abstract class BaseNode extends BaseObject{
 	public boolean removeParent() {
 		if (this.parent == null) return false;
 		if (this.parent.children.contains(this)) this.parent.children.remove(this);
-		updateGlobalStateCheckDirty();
 		this.parent = null;
-		updateLocalState();
+		markGlobalDirty();
 		return true;
 	}
-
 	public boolean removeChild(String name) {return removeChild(getChild(name));}
 	public boolean removeChild(int index) {return removeChild(getChild(index));}
 	public boolean removeChild(BaseNode obj) {
@@ -206,10 +194,61 @@ public abstract class BaseNode extends BaseObject{
 		}
 		return true;
 	}
+
+	// Node tree operations with local world states remain
+	
+	public boolean addChildRemainGlobalState(BaseNode obj) {return obj.setParentRemainGlobalState(this);}
+	public boolean setParentRemainGlobalState(BaseNode parent) {
+		if (parent == null) return removeParentRemainGlobalState();
+		if (parent == this) return false;
+		if (parent.isDescendant(this)) return false;
+		if (this.parent != null && this.parent.children.contains(this)) this.parent.children.remove(this);
+		updateGlobalStateCheckDirty();
+		this.parent = parent;
+		if (!parent.children.contains(this)) parent.children.add(this);
+		updateLocalState();
+		return true;
+	}
+	public boolean removeParentRemainGlobalState() {
+		if (this.parent == null) return false;
+		if (this.parent.children.contains(this)) this.parent.children.remove(this);
+		updateGlobalStateCheckDirty();
+		this.parent = null;
+		updateLocalState();
+		return true;
+	}
+	public boolean removeChildRemainGlobalState(String name) {return removeChildRemainGlobalState(getChild(name));}
+	public boolean removeChildRemainGlobalState(int index) {return removeChildRemainGlobalState(getChild(index));}
+	public boolean removeChildRemainGlobalState(BaseNode obj) {
+		if(obj == null) return false;
+		if (children.contains(obj)) {
+			obj.removeParentRemainGlobalState();
+			return true;
+		}
+		return false;
+	}
+	public boolean removeAllChildrenRemainGlobalState(String name) {
+		boolean flag = false;
+		while (children.size() > 0) {
+			BaseNode cache = children.get(0);
+			if (cache.getName().equals(name)) flag = removeChildRemainGlobalState(cache);
+			// if (!flag) return false;
+		}
+		return true;
+	}
+	public boolean removeAllChildrenRemainGlobalState() {
+		boolean flag = false;
+		while (children.size() > 0) {
+			flag = removeChildRemainGlobalState(0);
+			// if (!flag) return false;
+		}
+		return true;
+	}
+
 	
 	// Information Maintaining
 	
-	public boolean GlobalDirty() {return global_dirty;}
+	public boolean isGlobalDirty() {return global_dirty;}
 	public void markGlobalDirty() {
 		this.global_dirty = true;
 		for (BaseNode obj: children) obj.markGlobalDirty();
@@ -228,8 +267,8 @@ public abstract class BaseNode extends BaseObject{
 		this.local_state = B;
 	}
 	
-	protected void updateGlobalStateCheckDirty() {if (GlobalDirty()) updateGlobalState();}
-	protected void updateGlobalStateCheckDirtyWithoutTag() {if (GlobalDirty()) updateGlobalStateWithoutTag();}
+	protected void updateGlobalStateCheckDirty() {if (isGlobalDirty()) updateGlobalState();}
+	protected void updateGlobalStateCheckDirtyWithoutTag() {if (isGlobalDirty()) updateGlobalStateWithoutTag();}
 	protected void updateGlobalState() {this.updateGlobalStateWithoutTag(); this.applyTags(BaseTag.TAG_PHRASE_GLOBAL_UPDATE);}
 	protected void updateGlobalStateWithoutTag() {
 		BaseNode parent = new EmptyNode();
@@ -272,30 +311,6 @@ public abstract class BaseNode extends BaseObject{
 	public Vector getGlobalPos() {
 		return this.global_state.getState().getLine(4).get(0, 3);
 	}
-	
-	/*
-	public void setGlobalState(Matrix state) {
-		this.global_state = state;
-		updateLocalInfo();
-		markGlobalDirty();
-		clarifyGlobal();
-	}
-	public void setGlobalState(Vector s, Quaternion r, Vector p) {setGlobalState(this.ROT_UNIT, s, r, p);}
-	public void setGlobalState(Quaternion r1, Vector s, Quaternion r2, Vector p) {
-		Matrix m1 = Utils.rotToHomoState(r1);
-		Matrix m2 = Utils.sclToHomoState(s);
-		Matrix m3 = Utils.rotToHomoState(r2);
-		Matrix m4 = Utils.posToHomoState(p);
-		this.setGlobalState(m1.mult(m2).mult(m3).mult(m4));
-	}
-	
-	public void offset(Vector v) {setPos(Utils.compOffset(pos, v));}
-	public void rotate(Quaternion q) {setRot(Utils.compRotate(rot, q));}
-	public void rotate(Vector v) {setRot(Utils.compRotate(rot, Quaternion.eulerToQuat(v)));}
-	public void zoom(Vector v) {setScale(Utils.compZoom(scl, v));}
-	public void zoom(double d) {setScale(Utils.compZoom(scl, new Vector(d, d, d)));}
-	 */
-	// Tags
 
 	public boolean addTag(BaseTag tag) {
 		boolean flag = (!tag.appliesOn(BaseTag.TAG_PHRASE_ADDED)) || tag.onAdded(this).succeed;

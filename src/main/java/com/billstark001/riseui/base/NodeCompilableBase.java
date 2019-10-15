@@ -2,7 +2,8 @@ package com.billstark001.riseui.base;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.state.SimpleState;
+import com.billstark001.riseui.base.states.SimpleState;
+
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 

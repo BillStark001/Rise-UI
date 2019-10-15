@@ -1,16 +1,16 @@
 package com.billstark001.riseui.base;
 
-public abstract class BaseObject {
+public class NamedObject {
 
 	protected String name;
 	protected Layer layer;
 	
 	public static final String DEFAULT_NAME = "Unnamed";
 	
-	public BaseObject() {this(DEFAULT_NAME, null);}
-	public BaseObject(String name) {this(name, null);}
-	public BaseObject(Layer layer) {this(DEFAULT_NAME, layer);}
-	public BaseObject(String name, Layer layer) {
+	public NamedObject() {this(DEFAULT_NAME, null);}
+	public NamedObject(String name) {this(name, null);}
+	public NamedObject(Layer layer) {this(DEFAULT_NAME, layer);}
+	public NamedObject(String name, Layer layer) {
 		setName(name);
 		setLayer(layer);
 	}

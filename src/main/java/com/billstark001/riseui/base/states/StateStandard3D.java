@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.state;
+package com.billstark001.riseui.base.states;
 
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.billstark001.riseui.base.BaseNode;
 import com.billstark001.riseui.base.NodeCompilableBase;
-import com.billstark001.riseui.base.state.SimpleState;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.SimpleState;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Triad;
@@ -57,9 +57,9 @@ public class Polygon extends BaseNode{
 	public int getFaceCount() {return this.face_ind.length;}
 	
 	@Override
-	public boolean setParent(BaseNode obj) {
+	public boolean setParentRemainGlobalState(BaseNode obj) {
 		//this.markRecompile();
-		return super.setParent(obj);
+		return super.setParentRemainGlobalState(obj);
 	}
 	
 	public Vector getVertPos(int index) {if (pos != null) return pos_r.getLine(index); else return new Vector(0, 0, 0);}

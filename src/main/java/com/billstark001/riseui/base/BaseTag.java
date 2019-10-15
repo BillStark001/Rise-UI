@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.billstark001.riseui.base.BaseTag.ApplicationExtra;
-import com.billstark001.riseui.base.state.SimpleState;
-import com.billstark001.riseui.base.state.StateStandard3D;
+import com.billstark001.riseui.base.states.SimpleState;
+import com.billstark001.riseui.base.states.StateStandard3D;
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
@@ -16,7 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class BaseTag extends BaseObject {
+public abstract class BaseTag extends NamedObject {
 	protected int hierarchy;
 	protected boolean activated;
 	

@@ -2,13 +2,13 @@ package com.billstark001.riseui.base.shader;
 
 import java.io.FileNotFoundException;
 
-import com.billstark001.riseui.base.BaseObject;
+import com.billstark001.riseui.base.NamedObject;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
-public class BaseMaterial extends BaseObject{
+public class BaseMaterial extends NamedObject{
 
 	private ResourceLocation diffuse_tex;
 	private ResourceLocation emit_tex;
