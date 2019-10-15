@@ -1,15 +1,15 @@
 package com.billstark001.riseui.core.empty;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.BaseTag;
-import com.billstark001.riseui.base.states.SimpleState;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.TagBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class TagTowardsTarget extends BaseTag {
+public class TagTowardsTarget extends TagBase {
 
 	private Vector target_pos;
 	
@@ -31,62 +31,62 @@ public class TagTowardsTarget extends BaseTag {
 		return false;
 	}
 	@Override
-	public ApplicationReturn onAdded(BaseNode node) {
+	public ApplicationReturn onAdded(NodeBase node) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRemoved(BaseNode node) {
+	public ApplicationReturn onRemoved(NodeBase node) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onGlobalUpdate(BaseNode state) {
+	public ApplicationReturn onGlobalUpdate(NodeBase state) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onLocalUpdate(BaseNode state) {
+	public ApplicationReturn onLocalUpdate(NodeBase state) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderPre(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderPost(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderVerts(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderEdges(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderFaces(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderVert(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderEdge(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderFace(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}

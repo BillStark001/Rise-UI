@@ -9,8 +9,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
@@ -74,30 +74,30 @@ public class RenderTestObject{
 		t_obj.linkMtlFile(t_mtl);
 		
 		horse = h_obj.genPoly("skh");
-		horse.setRenderState(new StateStandard3D(null, null, 0.01));
+		horse.setRenderState(new State3DIntegrated(null, null, 0.01));
 		horse.rasterize();
-		horse.setLocalState(new StateStandard3D(new Vector(0, 0.5, 0)));
+		horse.setLocalState(new State3DIntegrated(new Vector(0, 0.5, 0)));
 		//horse.rasterize();
 		//horse.compileList();
 		//System.out.println(horse);
 		
 		table = t_obj.genPoly("table");
-		table.setRenderState(new StateStandard3D(null, null, 0.01));
+		table.setRenderState(new State3DIntegrated(null, null, 0.01));
 		table.rasterize();
-		table.setLocalState(new StateStandard3D(new Vector(0, 2.5, 0)));
+		table.setLocalState(new State3DIntegrated(new Vector(0, 2.5, 0)));
 		//cube.rasterize();
 		//table.compileList();
 		//System.out.println(cube);
 		
 		hgrid = h_obj.genPoly("skh");
-		hgrid.setRenderState(new StateStandard3D(null, null, 0.005));
+		hgrid.setRenderState(new State3DIntegrated(null, null, 0.005));
 		hgrid.rasterize();
-		hgrid.setLocalState(new StateStandard3D(new Vector(0, 3.5, 0)));
+		hgrid.setLocalState(new State3DIntegrated(new Vector(0, 3.5, 0)));
 		//cube_.rasterize();
 		//hgrid.compileList();
 		
 		sphere = Presets.getPolygon("sphere_high_lod");
-		sphere.setRenderState(new StateStandard3D(null, null, new Vector(3, 1, 3)));
+		sphere.setRenderState(new State3DIntegrated(null, null, new Vector(3, 1, 3)));
 		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
 		//terrain.rasterize();
 		//cube.setPos(new Vector(0, 0.5, 0));
@@ -130,13 +130,13 @@ public class RenderTestObject{
 		sp_dae = new ColladaFile(stemp);
 		sp_dae.parse();
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
-		spider.setLocalState(new StateStandard3D(new Vector(2, 1, 2), null, 0.01));
-		spider.setVisEdge(BaseNode.Visibility.TRUE);
+		spider.setLocalState(new State3DIntegrated(new Vector(2, 1, 2), null, 0.01));
+		spider.setVisEdge(NodeBase.Visibility.TRUE);
 		
 		spider.dump();
 		
 		GlStateManager.pushMatrix();
-		GlStateManager.multMatrix(spider.getGlobalState().getState().storeBufferF());
+		GlStateManager.multMatrix(spider.getGlobalState().get().storeBufferF());
 		System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
 		GlStateManager.popMatrix();
 		
@@ -174,7 +174,7 @@ public class RenderTestObject{
 		render.setDebugState(true);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
-		BaseNode spider_body = spider.getChild(0).getChild(0);
+		NodeBase spider_body = spider.getChild(0).getChild(0);
 		render.renderObject(spider, delta);
 		/*
 		if (DevelopProxy.mark1 == 1)

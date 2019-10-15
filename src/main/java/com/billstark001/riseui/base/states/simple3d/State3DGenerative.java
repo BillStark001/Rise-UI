@@ -1,16 +1,16 @@
-package com.billstark001.riseui.base.states;
+package com.billstark001.riseui.base.states.simple3d;
 
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.ShapeMismatchException;
 
-public abstract class GenerativeState<T> extends SimpleState {
+public abstract class State3DGenerative<T> extends State3DSimple {
 
 	private T repr;
 	private boolean state_dirty = true;
 	
-	public GenerativeState(GenerativeState<T> state) {this(state.repr);}
-	public GenerativeState() {resetRepr();}
-	public GenerativeState(T repr) {
+	public State3DGenerative(State3DGenerative<T> state) {this(state.repr);}
+	public State3DGenerative() {resetRepr();}
+	public State3DGenerative(T repr) {
 		if (repr == null) resetRepr();
 		else setStateRepr(repr);
 	}
@@ -22,17 +22,11 @@ public abstract class GenerativeState<T> extends SimpleState {
 	public abstract T getDefaultRepr();
 	public abstract Matrix getMatFromRepr();
 	
-	public Matrix getState() {
+	public Matrix get() {
 		if (this.state_dirty) {
-			try {
-				this.changeState(getMatFromRepr());
-				this.state_dirty = false;
-			} catch (ShapeMismatchException e) {
-				e.printStackTrace();
-				this.resetState();
-			}
+			this.set(this.getMatFromRepr());
 		}
-		return super.getState();
+		return super.get();
 	}
 
 }

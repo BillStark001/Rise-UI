@@ -3,14 +3,14 @@ package com.billstark001.riseui.core.character;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 
-public class Joint extends BaseNode {
+public class Joint extends NodeBase {
 
 	public Joint(Vector pos, Quaternion rot, Vector scale, String name) {super(pos, rot, scale, name);}
 	public Joint(Vector pos, Quaternion rot, Vector scale) {super(pos, rot, scale);}
@@ -25,8 +25,8 @@ public class Joint extends BaseNode {
 	public Joint(Vector pos, String name) {super(pos, name);}
 	public Joint(String name) {super(name);}
 
-	public Joint(StateStandard3D c, String name) {super(c, name);}
-	public Joint(StateStandard3D c) {super(c, null);}
+	public Joint(State3DIntegrated c, String name) {super(c, name);}
+	public Joint(State3DIntegrated c) {super(c, null);}
 
 	private List<Joint> inferior = new ArrayList<Joint>();
 	private Joint superior = null;
@@ -47,14 +47,14 @@ public class Joint extends BaseNode {
 	// Maintainence
 	
 	@Override
-	public boolean addChildRemainGlobalState(BaseNode obj) {
+	public boolean addChildRemainGlobalState(NodeBase obj) {
 		boolean flag = super.addChildRemainGlobalState(obj);
 		if (flag && obj instanceof Joint) {this.inferior.add((Joint) obj);}
 		return flag;
 	}
 	
 	@Override
-	public boolean setParentRemainGlobalState(BaseNode parent) {
+	public boolean setParentRemainGlobalState(NodeBase parent) {
 		boolean flag = super.setParentRemainGlobalState(parent);
 		if (flag && parent != null && parent instanceof Joint) {
 			this.superior = (Joint) parent;

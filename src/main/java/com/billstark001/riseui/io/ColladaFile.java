@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.NamedObject;
-import com.billstark001.riseui.base.shader.BaseMaterial;
+import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.shader.MaterialFace;
 import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shader.TagSelectionHardTable;
-import com.billstark001.riseui.base.shader.Texture2DBase;
 import com.billstark001.riseui.base.shader.Texture2DFromRes;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
@@ -21,8 +18,6 @@ import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 import com.dddviewr.collada.Collada;
-import com.dddviewr.collada.FloatArray;
-import com.dddviewr.collada.Source;
 import com.dddviewr.collada.content.animation.LibraryAnimations;
 import com.dddviewr.collada.content.controller.Controller;
 import com.dddviewr.collada.content.controller.LibraryControllers;
@@ -45,9 +40,6 @@ import com.dddviewr.collada.content.visualscene.Scale;
 import com.dddviewr.collada.content.visualscene.Translate;
 import com.dddviewr.collada.content.visualscene.VisualScene;
 
-import net.minecraft.util.ResourceLocation;
-import scala.actors.threadpool.Arrays;
-
 public class ColladaFile {
 	
 	private final Collada file;
@@ -62,15 +54,15 @@ public class ColladaFile {
 	
 	private Map<Integer, MaterialFace> material = null;
 	
-	private Map<String, BaseNode> parsed = new HashMap<String, BaseNode>();
+	private Map<String, NodeBase> parsed = new HashMap<String, NodeBase>();
 	
-	public BaseNode getNodeByName(String name) {
+	public NodeBase getNodeByName(String name) {
 		if (name == null) return null;
 		return parsed.getOrDefault(name, null);
 	}
 	
-	public BaseNode[] getNodes() {
-		return parsed.values().toArray(new BaseNode[0]);
+	public NodeBase[] getNodes() {
+		return parsed.values().toArray(new NodeBase[0]);
 	}
 	
 	public String[] getNodeNames() {
@@ -120,15 +112,15 @@ public class ColladaFile {
 		
 		//leff.getElement(lmat.getElement(1).getInstanceEffect().getUrl()).dump();
 		for (Node ntemp: scene.getNodes()) {
-			BaseNode n = parseNode(ntemp);
+			NodeBase n = parseNode(ntemp);
 			String put_name = n.getName();
 			while (parsed.containsKey(put_name)) put_name = put_name + "_";
 			parsed.put(put_name, n);
 		}
 	}
 	
-	public StateStandard3D parseState(BaseXform[] xf) {
-		StateStandard3D ans = null;
+	public State3DIntegrated parseState(BaseXform[] xf) {
+		State3DIntegrated ans = null;
 		Vector p = null;
 		double ry = 0, rx = 0, rz = 0;
 		Vector s = null;
@@ -144,7 +136,7 @@ public class ColladaFile {
 		}
 		Vector vr = new Vector(rx, ry, rz).mult(Math.PI / 180);
 		Quaternion r = Quaternion.eulerToQuat(vr);
-		ans = new StateStandard3D(p, r, s);
+		ans = new State3DIntegrated(p, r, s);
 		return ans;
 	}
 	
@@ -211,10 +203,10 @@ public class ColladaFile {
 		return ans;
 	}
 	
-	public BaseNode parseNode(Node n) {
+	public NodeBase parseNode(Node n) {
 		//System.out.println(n);
-		StateStandard3D c = parseState(n.getXforms());
-		BaseNode ans = null;
+		State3DIntegrated c = parseState(n.getXforms());
+		NodeBase ans = null;
 		if (n.isJoint()) ans = new Joint(c, n.getName());
 		else if (n.getInstanceGeometry() != null && n.getInstanceGeometry().size() > 0) {
 			Geometry gtemp = lgeo.getElement(n.getInstanceGeometry().get(0).getUrl());
@@ -230,7 +222,7 @@ public class ColladaFile {
 			Controller c1 = lcon.getElement(n.getInstanceController().getId());
 		}
 		for (Node nt: n.getChildNodes()) {
-			BaseNode bnt = parseNode(nt);
+			NodeBase bnt = parseNode(nt);
 			ans.addChild(bnt);
 		}
 		return ans;

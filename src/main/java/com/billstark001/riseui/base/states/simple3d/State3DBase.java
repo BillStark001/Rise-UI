@@ -1,29 +1,35 @@
-package com.billstark001.riseui.base.states;
+package com.billstark001.riseui.base.states.simple3d;
 
+import com.billstark001.riseui.base.states.StateSimpleBase;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.ShapeMismatchException;
 
 import scala.actors.threadpool.Arrays;
 
-public class State4 {
-
-	private Matrix statemat;
-	private String name;
+public abstract class State3DBase extends StateSimpleBase<Matrix> {
 	
-	protected State4(Matrix mat) {
+	protected State3DBase(Matrix mat) {
+		this.set(mat);
+	}
+	
+	public State3DBase() {super(DEFAULT);}
+
+	@Override
+	protected boolean set(Matrix mat) {
 		try {
-			changeState(mat);
+			super.set(checkState(mat));
 		} catch (ShapeMismatchException e) {
 			e.printStackTrace();
-			resetState();
+			return false;
 		}
-	resetName();}
-	protected State4() {resetState();resetName();}
-	
-	protected void changeState(Matrix mat) throws ShapeMismatchException {
+		return true;
+	}
+
+	protected static Matrix checkState(Matrix mat) throws ShapeMismatchException {
+		Matrix statemat = DEFAULT;
 		if (mat == null) throw ShapeMismatchException.Expect(new Pair(4, 4), mat);
-		if (mat.getShape().equals(new Pair(3, 3)) || mat.getShape().equals(new Pair(2, 2))) {
+		if (mat.getShape().equals(new Pair(3, 3)) || mat.getShape().equals(new Pair(2, 2)) || mat.getShape().equals(new Pair(1, 1))) {
 			mat = Matrix.homoExtend(mat, 4);
 			statemat = mat;
 		} else if (mat.getShape().equals(new Pair(4, 4))) {
@@ -31,72 +37,66 @@ public class State4 {
 		} else {
 			throw ShapeMismatchException.Expect(new Pair(4, 4), mat);
 		}
+		return statemat;
 	}
-	protected void resetState() {statemat = Matrix.I4;}
+	protected void resetState() {this.set(DEFAULT);}
 	
-	public Matrix getState() {if (statemat == null) return Matrix.I4; else return statemat;}
+	public static final Matrix DEFAULT = Matrix.I4;
+	@Override
+	public Matrix getDefault() {return DEFAULT;}
 	
-	public void setName(String name) {this.name = name;}
-	public String getName() {return name;}
-	public void resetName() {setName(this.getClass().getSimpleName());}
+	// Static Methods
 	
-	/*
+	/**
 	 * Compose 2 states A and B to a new state C.
 	 * States must be Matrices(4, 4) representing 3D spaces homogeneously.
 	 * C = A @ B (@: Multiplication of matrices)
 	 * Parameters:
-	 *   A: Matrix(4, 4)
-	 *   B: Matrix(4, 4)
-	 * Returns:
-	 *   C: Matrix(4, 4)
+	 * @param A Matrix(4, 4)
+	 * @param B Matrix(4, 4)
+	 * @return C Matrix(4, 4)
 	 */
 	public static Matrix stateCompose(Matrix A, Matrix B) {
 		return A.mult(B);
 	}
-	public static SimpleState stateCompose(State4 A, State4 B) {
-		return new SimpleState(stateCompose(A.getState(), B.getState()));
+	public static State3DSimple stateCompose(State3DBase A, State3DBase B) {
+		return new State3DSimple(stateCompose(A.get(), B.get()));
 	}
 	
-	/*
+	/**
 	 * Decompose state A from state C.
 	 * States must be Matrices(4, 4) representing 3D spaces homogeneously.
 	 * C = A @ B (@: Multiplication of matrices)
 	 * Hence C @ B^(-1) = A
-	 * Parameters:
-	 *   C: Matrix(4, 4)
-	 *   B: Matrix(4, 4)
-	 * Returns:
-	 *   A: Matrix(4, 4)
+	 * @param C Matrix(4, 4)
+	 * @param B Matrix(4, 4)
+	 * @return A Matrix(4, 4)
 	 */
 	public static Matrix stateDecomposeA(Matrix C, Matrix B) {
 		return C.mult(Matrix.inverse(B));
 	}
-	public static SimpleState stateDecomposeA(State4 C, State4 B) {
-		return new SimpleState(stateDecomposeA(C.getState(), B.getState()));
+	public static State3DSimple stateDecomposeA(State3DBase C, State3DBase B) {
+		return new State3DSimple(stateDecomposeA(C.get(), B.get()));
 	}
 	
-	/*
+	/**
 	 * Decompose state B from state C.
 	 * States must be Matrices(4, 4) representing 3D spaces homogeneously.
 	 * C = A @ B (@: Multiplication of matrices)
 	 * Hence A^(-1) @ C = B
-	 * Parameters:
-	 *   C: Matrix(4, 4)
-	 *   A: Matrix(4, 4)
-	 * Returns:
-	 *   B: Matrix(4, 4)
+	 * @param C Matrix(4, 4)
+	 * @param A Matrix(4, 4)
+	 * @return B Matrix(4, 4)
 	 */
 	public static Matrix stateDecomposeB(Matrix C, Matrix A) {
 		return Matrix.inverse(A).mult(C);
 	}
-	public static SimpleState stateDecomposeB(State4 C, State4 A) {
-		return new SimpleState(stateDecomposeB(C.getState(), A.getState()));
+	public static State3DSimple stateDecomposeB(State3DBase C, State3DBase A) {
+		return new State3DSimple(stateDecomposeB(C.get(), A.get()));
 	}
 	
-	@Override
 	public String toString() {
-		Matrix state = this.getState();
-		return Arrays.deepToString(state.toVecArray());
+		return this.getClass().getSimpleName() + " " + this.getName() + ": " + Arrays.deepToString(this.get().toVecArray());
 		//String str_tmp = "ORIGIN: %s, X: %s, Y: %s, Z: %s";
 		//return String.format(str_tmp, state.getLine(3).get(0, 3).toString(), state.getLine(0).get(0, 3).toString(), state.getLine(1).get(0, 3).toString(), state.getLine(2).get(0, 3).toString());
 	}

@@ -1,18 +1,17 @@
 package com.billstark001.riseui.base;
 
-import com.billstark001.riseui.base.shader.BaseMaterial;
-import com.billstark001.riseui.base.states.SimpleState;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 
-public abstract class NodeGeneratorBase extends BaseNode {
+public abstract class NodeGeneratorBase extends NodeBase {
 
 	// Extended construction functions occupying a f***in' bunch of space...
-	public NodeGeneratorBase(StateStandard3D state, String name) {super(state, name);}
-	public NodeGeneratorBase(SimpleState state, String name) {super(state, name);}
+	public NodeGeneratorBase(State3DIntegrated state, String name) {super(state, name);}
+	public NodeGeneratorBase(State3DSimple state, String name) {super(state, name);}
 	public NodeGeneratorBase(Vector pos, Quaternion rot, Vector scl, String name) {super(pos, rot, scl, name);}
 	public NodeGeneratorBase(Vector pos, Quaternion rot, Vector scl) {super(pos, rot, scl);}
 	public NodeGeneratorBase(Vector pos, Quaternion rot, double scl) {super(pos, rot, scl);}

@@ -2,17 +2,17 @@ package com.billstark001.riseui.core.polygon;
 
 import java.util.ArrayList;
 
-import com.billstark001.riseui.base.BaseNode;
+import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.NodeCompilableBase;
-import com.billstark001.riseui.base.states.SimpleState;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public class Polygon extends BaseNode{
+public class Polygon extends NodeBase{
 	
 	private Triad[][] face_ind;
 	private int[][] edge_ind;
@@ -24,7 +24,7 @@ public class Polygon extends BaseNode{
 	private Matrix pos_r;
 	private Matrix uvm_r;
 	private Matrix nrm_r;
-	private SimpleState render_state;
+	private State3DSimple render_state;
 	
 	public Polygon (Matrix pos, Matrix uvm, Matrix nrm, Triad[][] face_indices) {
 		super();
@@ -36,7 +36,7 @@ public class Polygon extends BaseNode{
 		this.uvm_r = uvm;
 		this.nrm = nrm;
 		this.nrm_r = nrm;
-		this.render_state = new StateStandard3D();
+		this.render_state = new State3DIntegrated();
 		
 		this.genEdges();
 		//this.markRecompile();
@@ -57,7 +57,7 @@ public class Polygon extends BaseNode{
 	public int getFaceCount() {return this.face_ind.length;}
 	
 	@Override
-	public boolean setParentRemainGlobalState(BaseNode obj) {
+	public boolean setParentRemainGlobalState(NodeBase obj) {
 		//this.markRecompile();
 		return super.setParentRemainGlobalState(obj);
 	}
@@ -83,18 +83,18 @@ public class Polygon extends BaseNode{
 		else return this.edge_ind[index];
 	}
 		
-	public void setRenderState(SimpleState state) {
-		if (state == null) state = new StateStandard3D();
+	public void setRenderState(State3DSimple state) {
+		if (state == null) state = new State3DIntegrated();
 		this.render_state = state; 
 		this.calcRender();
 	}
-	public SimpleState getRenderState() {return this.render_state;}
+	public State3DSimple getRenderState() {return this.render_state;}
 	
 	public void calcRender() {
 		if (this.pos != null)
-			this.pos_r = Utils.applyStateMat(this.pos, this.render_state.getState());
+			this.pos_r = Utils.applyStateMat(this.pos, this.render_state.get());
 		if (this.nrm != null)
-			this.nrm_r = Utils.applyStateMat(this.nrm, this.render_state.getState());
+			this.nrm_r = Utils.applyStateMat(this.nrm, this.render_state.get());
 		//this.markRecompile();
 	}
 	
@@ -104,7 +104,7 @@ public class Polygon extends BaseNode{
 		//}
 		this.pos = this.pos_r;
 		this.nrm = this.nrm_r;
-		this.render_state = new StateStandard3D();
+		this.render_state = new State3DIntegrated();
 	}
 
 	

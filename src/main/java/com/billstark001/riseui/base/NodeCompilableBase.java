@@ -2,12 +2,12 @@ package com.billstark001.riseui.base;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.base.states.SimpleState;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 
-public abstract class NodeCompilableBase extends BaseNode {
+public abstract class NodeCompilableBase extends NodeBase {
 
 	private boolean compiled;
 	private int displayList;
@@ -19,7 +19,7 @@ public abstract class NodeCompilableBase extends BaseNode {
 	}
 	
 	@Override
-	public void setLocalState(SimpleState state) {
+	public void setLocalState(State3DSimple state) {
 		this.markRecompile();
 		super.setLocalState(state);
 	}

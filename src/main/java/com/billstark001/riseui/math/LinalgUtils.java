@@ -364,7 +364,7 @@ public class LinalgUtils {
 		if (M.getShape().getX() == 0) return null;
 		
 		int dim = eigen.getDimension();
-		Matrix ismpl = Matrix.unit(dim);
+		Matrix ismpl = Matrix.identity(dim);
 		double[] eigens = eigen.toArray();
 		Arrays.parallelSort(eigens);
 		Vector[] ans = new Vector[dim];

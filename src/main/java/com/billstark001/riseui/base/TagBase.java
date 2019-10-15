@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.billstark001.riseui.base.BaseTag.ApplicationExtra;
-import com.billstark001.riseui.base.states.SimpleState;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.TagBase.ApplicationExtra;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.math.Pair;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Vector;
@@ -16,14 +16,14 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class BaseTag extends NamedObject {
+public abstract class TagBase extends NamedObject {
 	protected int hierarchy;
 	protected boolean activated;
 	
-	public BaseTag() {this(0, true);}
-	public BaseTag(boolean activated) {this(0, activated);}
-	public BaseTag(int hierarchy) {this(hierarchy, true);}
-	public BaseTag(int hierarchy, boolean activated) {
+	public TagBase() {this(0, true);}
+	public TagBase(boolean activated) {this(0, activated);}
+	public TagBase(int hierarchy) {this(hierarchy, true);}
+	public TagBase(int hierarchy, boolean activated) {
 		this.hierarchy = hierarchy;
 		this.activated = activated;
 		MinecraftForge.EVENT_BUS.register(this);
@@ -57,36 +57,36 @@ public abstract class BaseTag extends NamedObject {
 	public static final int TAG_PHRASE_GENERATOR_ACTIVATED = 8;
 	
 	public abstract boolean appliesOn(int phrase);
-	public ApplicationReturn applyOn(int phrase, BaseNode object) {return applyOn(phrase, object, new ApplicationExtra());}
-	public ApplicationReturn applyOn(int phrase, BaseNode object, ApplicationExtra extra) {
-		if (extra == null) extra = BaseTag.getDummyExtra();
+	public ApplicationReturn applyOn(int phrase, NodeBase object) {return applyOn(phrase, object, new ApplicationExtra());}
+	public ApplicationReturn applyOn(int phrase, NodeBase object, ApplicationExtra extra) {
+		if (extra == null) extra = TagBase.getDummyExtra();
 		switch (phrase) {
-		case BaseTag.TAG_PHRASE_RENDER_PRE:
+		case TagBase.TAG_PHRASE_RENDER_PRE:
 			return this.onRenderPre(object, extra.patrial_ticks);
-		case BaseTag.TAG_PHRASE_RENDER_POST:
+		case TagBase.TAG_PHRASE_RENDER_POST:
 			return this.onRenderPost(object, extra.patrial_ticks);
 			
-		case BaseTag.TAG_PHRASE_RENDER_VERTICES:
+		case TagBase.TAG_PHRASE_RENDER_VERTICES:
 			return this.onRenderVerts(object, extra.patrial_ticks);
-		case BaseTag.TAG_PHRASE_RENDER_EDGES:
+		case TagBase.TAG_PHRASE_RENDER_EDGES:
 			return this.onRenderEdges(object, extra.patrial_ticks);
-		case BaseTag.TAG_PHRASE_RENDER_FACES:
+		case TagBase.TAG_PHRASE_RENDER_FACES:
 			return this.onRenderFaces(object, extra.patrial_ticks);
 			
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_VERTEX:
+		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX:
 			return this.onRenderVert(object, extra.element_index, extra.patrial_ticks);
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_EDGE:
+		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE:
 			return this.onRenderEdge(object, extra.element_index, extra.patrial_ticks);
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_FACE:
+		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			return this.onRenderFace(object, extra.element_index, extra.patrial_ticks);
 			
-		case BaseTag.TAG_PHRASE_GLOBAL_UPDATE:
+		case TagBase.TAG_PHRASE_GLOBAL_UPDATE:
 			return this.onGlobalUpdate(object);
-		case BaseTag.TAG_PHRASE_LOCAL_UPDATE:
+		case TagBase.TAG_PHRASE_LOCAL_UPDATE:
 			return this.onGlobalUpdate(object);
-		case BaseTag.TAG_PHRASE_ADDED:
+		case TagBase.TAG_PHRASE_ADDED:
 			return this.onAdded(object);
-		case BaseTag.TAG_PHRASE_REMOVED:
+		case TagBase.TAG_PHRASE_REMOVED:
 			return this.onRemoved(object);
 		default:
 			return new ApplicationReturn();
@@ -110,23 +110,23 @@ public abstract class BaseTag extends NamedObject {
 	}
 	
 	
-	public abstract ApplicationReturn onAdded(BaseNode node);
-	public abstract ApplicationReturn onRemoved(BaseNode node);
-	public abstract ApplicationReturn onGlobalUpdate(BaseNode state);
-	public abstract ApplicationReturn onLocalUpdate(BaseNode state);
-	public abstract ApplicationReturn onRenderPre(BaseNode object, double ptick);
-	public abstract ApplicationReturn onRenderPost(BaseNode object, double ptick);
-	public abstract ApplicationReturn onRenderVerts(BaseNode object, double ptick);
-	public abstract ApplicationReturn onRenderEdges(BaseNode object, double ptick);
-	public abstract ApplicationReturn onRenderFaces(BaseNode object, double ptick);
-	public abstract ApplicationReturn onRenderVert(BaseNode object, int index, double ptick);
-	public abstract ApplicationReturn onRenderEdge(BaseNode object, int index, double ptick);
-	public abstract ApplicationReturn onRenderFace(BaseNode object, int index, double ptick);
+	public abstract ApplicationReturn onAdded(NodeBase node);
+	public abstract ApplicationReturn onRemoved(NodeBase node);
+	public abstract ApplicationReturn onGlobalUpdate(NodeBase state);
+	public abstract ApplicationReturn onLocalUpdate(NodeBase state);
+	public abstract ApplicationReturn onRenderPre(NodeBase object, double ptick);
+	public abstract ApplicationReturn onRenderPost(NodeBase object, double ptick);
+	public abstract ApplicationReturn onRenderVerts(NodeBase object, double ptick);
+	public abstract ApplicationReturn onRenderEdges(NodeBase object, double ptick);
+	public abstract ApplicationReturn onRenderFaces(NodeBase object, double ptick);
+	public abstract ApplicationReturn onRenderVert(NodeBase object, int index, double ptick);
+	public abstract ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick);
+	public abstract ApplicationReturn onRenderFace(NodeBase object, int index, double ptick);
 	
-	public static void sortTags(List<BaseTag> tags) {tags.sort(tagcomp);}
-	private static Comparator<BaseTag> tagcomp = new Comparator<BaseTag>() {
+	public static void sortTags(List<TagBase> tags) {tags.sort(tagcomp);}
+	private static Comparator<TagBase> tagcomp = new Comparator<TagBase>() {
 		@Override
-		public int compare(BaseTag t1, BaseTag t2) {
+		public int compare(TagBase t1, TagBase t2) {
 			return t1.hierarchy - t2.hierarchy;
 		}
 	};

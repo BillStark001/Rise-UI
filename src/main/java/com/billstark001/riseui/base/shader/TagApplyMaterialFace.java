@@ -1,13 +1,13 @@
 package com.billstark001.riseui.base.shader;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.BaseTag;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shader.TagSelectionBase.Type;
 import com.billstark001.riseui.client.GlRenderHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class TagApplyMaterialFace extends BaseTag {
+public class TagApplyMaterialFace extends TagBase {
 	
 	//private static GlRenderHelper renderer = GlRenderHelper.getInstance();
 	
@@ -44,9 +44,9 @@ public class TagApplyMaterialFace extends BaseTag {
 	@Override
 	public boolean appliesOn(int phrase) {
 		switch (phrase) {
-		case BaseTag.TAG_PHRASE_RENDER_PRE:
-		case BaseTag.TAG_PHRASE_RENDER_POST:
-		case BaseTag.TAG_PHRASE_RENDER_PARTICULAR_FACE:
+		case TagBase.TAG_PHRASE_RENDER_PRE:
+		case TagBase.TAG_PHRASE_RENDER_POST:
+		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			return true;
 		default:
 			return false;
@@ -54,54 +54,54 @@ public class TagApplyMaterialFace extends BaseTag {
 	}
 
 	@Override
-	public ApplicationReturn onAdded(BaseNode node) {return null;}
+	public ApplicationReturn onAdded(NodeBase node) {return null;}
 	@Override
-	public ApplicationReturn onRemoved(BaseNode node) {return null;}
+	public ApplicationReturn onRemoved(NodeBase node) {return null;}
 	@Override
-	public ApplicationReturn onGlobalUpdate(BaseNode state) {return null;}
+	public ApplicationReturn onGlobalUpdate(NodeBase state) {return null;}
 	@Override
-	public ApplicationReturn onLocalUpdate(BaseNode state) {return null;}
+	public ApplicationReturn onLocalUpdate(NodeBase state) {return null;}
 	
 	@Override
-	public ApplicationReturn onRenderPre(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPost(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVerts(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdges(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFaces(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVert(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdge(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFace(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.FACE) flag = this.selection.contains(index);
 		if (flag) {

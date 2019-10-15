@@ -221,8 +221,8 @@ public final class Matrix {
 	}
 	
 	//Utils
-	public static Matrix I(int size) {return unit(size);}
-	public static Matrix unit(int size) {
+	public static Matrix I(int size) {return identity(size);}
+	public static Matrix identity(int size) {
 		if (size < 1) return null;
 		if (size == 1) return I1;
 		if (size == 2) return I2;

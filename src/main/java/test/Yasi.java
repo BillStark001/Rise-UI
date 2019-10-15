@@ -2,14 +2,12 @@ package test;
 
 import com.billstark001.riseui.base.Layer;
 import com.billstark001.riseui.base.ObjectStatedBase;
-import com.billstark001.riseui.base.states.BaseState;
-import com.billstark001.riseui.base.states.BaseState.DataType;
 
 public class Yasi extends ObjectStatedBase {
 	
 	@Override
-	protected BaseState.DataType[] getNewStateTypes() {
-		BaseState.DataType[] new_types = {DataType.FLOAT, DataType.FLOAT};
+	protected Class[] getNewStateTypes() {
+		Class[] new_types = {Double.class, Double.class};
 		return new_types;
 	}
 	

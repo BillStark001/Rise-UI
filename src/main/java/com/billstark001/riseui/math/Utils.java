@@ -1,6 +1,6 @@
 package com.billstark001.riseui.math;
 
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 
 public final class Utils {
 	
@@ -19,6 +19,13 @@ public final class Utils {
 		double t_ = 1 - t;
 		Vector ans = p0.mult(t_);
 		ans.add(p1.mult(t));
+		return ans;
+	}
+	
+	public static Matrix linear(double t, Matrix m0, Matrix m1) {
+		double t_ = 1 - t;
+		Matrix ans = m0.multScalar(t_);
+		ans.add(m1.multScalar(t));
 		return ans;
 	}
 
@@ -111,7 +118,7 @@ public final class Utils {
 		return ms.mult(mr).mult(mp);
 	}
 	
-	public static StateStandard3D decompStateMat(Matrix m) {
+	public static State3DIntegrated decompStateMat(Matrix m) {
 		return null;
 	}
 	
@@ -212,6 +219,11 @@ public final class Utils {
 		if (m == null)
 			return null;
 		return m.mult(r);
+	}
+
+	public static Matrix rotToHomoState(Vector rot) {
+		//return Matrix.homoExtend(Quaternion.eulerToRotate(rot), 4);
+		return rotToHomoState(Quaternion.eulerToQuat(rot));
 	}
 
 	

@@ -1,12 +1,12 @@
 package com.billstark001.riseui.base.shader;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.BaseTag;
-import com.billstark001.riseui.base.BaseTag.ApplicationReturn;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.TagBase;
+import com.billstark001.riseui.base.TagBase.ApplicationReturn;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class TagSelectionBase extends BaseTag {
+public abstract class TagSelectionBase extends TagBase {
 	
 	static enum Type {
 		VERTEX,
@@ -15,9 +15,9 @@ public abstract class TagSelectionBase extends BaseTag {
 	}
 	
 	private final Type type;
-	private BaseNode node;
+	private NodeBase node;
 	public Type getType() {return this.type;}
-	public BaseNode getNode() {return this.node;}
+	public NodeBase getNode() {return this.node;}
 	
 	public TagSelectionBase(int hierarchy, boolean activated, Type type) {
 		super(hierarchy, activated);
@@ -45,8 +45,8 @@ public abstract class TagSelectionBase extends BaseTag {
 	@Override
 	public boolean appliesOn(int phrase) {
 		switch (phrase) {
-		case BaseTag.TAG_PHRASE_ADDED:
-		case BaseTag.TAG_PHRASE_REMOVED:
+		case TagBase.TAG_PHRASE_ADDED:
+		case TagBase.TAG_PHRASE_REMOVED:
 			return true;
 		default:
 			return false;
@@ -54,18 +54,18 @@ public abstract class TagSelectionBase extends BaseTag {
 	}
 
 	@Override
-	public ApplicationReturn onAdded(BaseNode node) {
-		if (this.node != null) return new BaseTag.ApplicationReturn(false);
+	public ApplicationReturn onAdded(NodeBase node) {
+		if (this.node != null) return new TagBase.ApplicationReturn(false);
 		else {
 			this.node = node;
-			return new BaseTag.ApplicationReturn(true);
+			return new TagBase.ApplicationReturn(true);
 		}
 	}
 
 	@Override
-	public ApplicationReturn onRemoved(BaseNode node) {
+	public ApplicationReturn onRemoved(NodeBase node) {
 		this.node = null;
-		return new BaseTag.ApplicationReturn(true);
+		return new TagBase.ApplicationReturn(true);
 	}
 	
 	public abstract double getContainRate(int index);
@@ -75,61 +75,61 @@ public abstract class TagSelectionBase extends BaseTag {
 	// All functions below are useless, just to materialize abstract functions.
 	
 	@Override
-	public ApplicationReturn onGlobalUpdate(BaseNode state) {
+	public ApplicationReturn onGlobalUpdate(NodeBase state) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onLocalUpdate(BaseNode state) {
+	public ApplicationReturn onLocalUpdate(NodeBase state) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPre(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPost(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVerts(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdges(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFaces(BaseNode object, double ptick) {
+	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVert(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdge(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFace(BaseNode object, int index, double ptick) {
+	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
 		// TODO 自动生成的方法存根
 		return null;
 	}

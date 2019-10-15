@@ -1,12 +1,12 @@
 package com.billstark001.riseui.core.empty;
 
-import com.billstark001.riseui.base.BaseNode;
-import com.billstark001.riseui.base.states.StateStandard3D;
+import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
 
-public class EmptyNode extends BaseNode {
+public class EmptyNode extends NodeBase {
 
 	public EmptyNode(Vector pos, Quaternion rot, Vector scl, String name) {
 		super(pos, rot, scl, name);
@@ -67,11 +67,11 @@ public class EmptyNode extends BaseNode {
 		// TODO 自动生成的构造函数存根
 	}
 
-	public EmptyNode(StateStandard3D c, String name) {
+	public EmptyNode(State3DIntegrated c, String name) {
 		super(c, name);
 	}
 	
-	public EmptyNode(StateStandard3D c) {
+	public EmptyNode(State3DIntegrated c) {
 		super(c, null);
 	}
 

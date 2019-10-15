@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.billstark001.riseui.base.shader.BaseMaterial;
 import com.billstark001.riseui.base.shader.MaterialFace;
 import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shader.TagSelectionHardTable;
-import com.billstark001.riseui.base.shader.Texture2DFromRes;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Pair;

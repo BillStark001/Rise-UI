@@ -1,9 +1,6 @@
 package test;
 
 import com.billstark001.riseui.base.Layer;
-import com.billstark001.riseui.base.ObjectStatedBase;
-import com.billstark001.riseui.base.states.BaseState;
-import com.billstark001.riseui.base.states.BaseState.DataType;
 
 public class Yasi3 extends Yasi2 {
 	

@@ -1,14 +1,14 @@
-package com.billstark001.riseui.base.states;
+package com.billstark001.riseui.base.states.simple3d;
 
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public class StateScl extends GenerativeState<Vector>{
+public class State3DScl extends State3DGenerative<Vector>{
 
-	public StateScl(StateScl state) {super(state);}
-	public StateScl(Vector repr) {super(repr);}
-	public StateScl() {super();}
+	public State3DScl(State3DScl state) {super(state);}
+	public State3DScl(Vector repr) {super(repr);}
+	public State3DScl() {super();}
 	
 	@Override
 	public Vector getDefaultRepr() {
