@@ -37,7 +37,7 @@ public class State3DIntegrated extends State3DSimple{
 	
 	public Vector getPos() {return p.getStateRepr();}
 	public Quaternion getRot() {return r.getStateRepr();}
-	public Vector getScale() {return s.getStateRepr();}
+	public Vector getScl() {return s.getStateRepr();}
 	
 	public void setPos(Vector pos) {
 		this.p.setStateRepr(pos);
@@ -62,8 +62,8 @@ public class State3DIntegrated extends State3DSimple{
 	
 	public Matrix calcState() {
 		Matrix ans = CALC_BASE;
-		State3DSimple[] state_tmp = {s, r, p};
-		for (State3DSimple t: state_tmp) {
+		State3DBase[] state_tmp = {s, r, p};
+		for (State3DBase t: state_tmp) {
 			ans = State3DBase.stateCompose(ans, t.get());
 		}
 		return ans;

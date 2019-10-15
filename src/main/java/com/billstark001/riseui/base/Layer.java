@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import scala.actors.threadpool.Arrays;
 
-public class Layer extends NamedObject{
+public class Layer extends BaseObject{
 
 	protected String name;
 	
@@ -24,12 +24,12 @@ public class Layer extends NamedObject{
 	STATE_GENERATOR = 6,
 	STATE_EFFECTOR = 7;
 	
-	private ArrayList<NamedObject> objs;
+	private ArrayList<BaseObject> objs;
 	
 	public Layer() {this(DEFAULT_NAME);}
 	public Layer(String name) {
 		setName(name);
-		this.objs = new ArrayList<NamedObject>();
+		this.objs = new ArrayList<BaseObject>();
 	}
 	
 	public String getName() {return this.name;}
@@ -63,7 +63,7 @@ public class Layer extends NamedObject{
 	@Override
 	public boolean getLayerState(int state) {return false;}
 	
-	public boolean addMember(NamedObject member) {
+	public boolean addMember(BaseObject member) {
 		if (member == null || member instanceof Layer) return false;
 		if (member.layer == this) return true;
 		if (member.layer != null) member.layer.removeMember(member);
@@ -72,7 +72,7 @@ public class Layer extends NamedObject{
 		return true;
 	}
 	
-	public boolean removeMember(NamedObject member) {
+	public boolean removeMember(BaseObject member) {
 		if (member == null || member instanceof Layer) return false;
 		if (member.layer == this) {
 			if (objs.contains(member)) objs.remove(member);
@@ -82,13 +82,18 @@ public class Layer extends NamedObject{
 	}
 	
 	public boolean removeAllMembers() {
-		for (NamedObject obj: objs) obj.layer = null;
-		objs = new ArrayList<NamedObject>();
+		for (BaseObject obj: objs) obj.layer = null;
+		objs = new ArrayList<BaseObject>();
 		return true;
 	}
 	
-	public NamedObject[] getMembers() {
-		return this.objs.toArray(new NamedObject[0]);
+	public BaseObject[] getMembers() {
+		return this.objs.toArray(new BaseObject[0]);
+	}
+	
+	public void setMembersFrameTime(double ftime) {
+		this.setFrameTime(ftime);
+		for (BaseObject t: this.objs) t.setFrameTime(ftime);
 	}
 
 	// Display

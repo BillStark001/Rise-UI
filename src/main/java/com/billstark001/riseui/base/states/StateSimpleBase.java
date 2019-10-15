@@ -1,6 +1,6 @@
 package com.billstark001.riseui.base.states;
 
-public class StateSimpleBase<T> extends StateBase<T> {
+public abstract class StateSimpleBase<T> extends StateBase<T> {
 
 	private T state = this.getDefault();
 	
@@ -33,7 +33,7 @@ public class StateSimpleBase<T> extends StateBase<T> {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " " + this.getName() + ": " + this.get();
+		return String.format("%s<%s>: %s", this.getClass().getSimpleName(), this.getDataType().getSimpleName(), this.get());
 	}
 
 	@Override()

@@ -7,7 +7,13 @@ import com.billstark001.riseui.math.Matrix;
 
 public abstract class Track3DBase extends StateTrackedBase<Matrix> {
 
-
+	@Override
+	public Class getDataType() {
+		return Matrix.class;
+	}
+	
+	public abstract State3DBase getSimpleState(double time);
+	
 	// Static Methods
 
 	public static State3DSimple stateCompose(double time, Track3DBase A, Track3DBase B) {

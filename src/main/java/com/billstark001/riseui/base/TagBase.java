@@ -16,9 +16,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class TagBase extends NamedObject {
+public abstract class TagBase extends BaseObject {
 	protected int hierarchy;
 	protected boolean activated;
+	
 	
 	public TagBase() {this(0, true);}
 	public TagBase(boolean activated) {this(0, activated);}

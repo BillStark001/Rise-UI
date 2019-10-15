@@ -10,12 +10,12 @@ import com.dddviewr.collada.content.animation.LibraryAnimations;
 
 public class animation extends State {
 	protected Animation theAnimation;
+	protected LibraryAnimations library = null;
 
 	public void init(String name, Attributes attrs, StateManager mngr) {
 		super.init(name, attrs, mngr);
-		this.theAnimation = new Animation(attrs.getValue("id"));
+		this.theAnimation = new Animation();
 
-		LibraryAnimations library = null;
 		State cache = this;
 		boolean flag = false;
 		while (!flag) {
@@ -27,7 +27,6 @@ public class animation extends State {
 				flag = false;
 			}
 		}
-		library.addElement(this.theAnimation);
 	}
 
 	public void addSource(Source src) {
@@ -36,5 +35,13 @@ public class animation extends State {
 
 	public Animation getAnimation() {
 		return this.theAnimation;
+	}
+	
+	public void setAnimation(Animation ani) {
+		this.theAnimation = ani;
+	}
+	
+	public void addToLibrary() {
+		library.addElement(this.theAnimation);
 	}
 }

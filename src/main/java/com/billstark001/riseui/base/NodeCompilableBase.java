@@ -2,7 +2,9 @@ package com.billstark001.riseui.base;
 
 import org.lwjgl.opengl.GL11;
 
+import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.math.Matrix;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,7 +21,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 	}
 	
 	@Override
-	public void setLocalState(State3DSimple state) {
+	public void setLocalState(StateBase<Matrix> state) {
 		this.markRecompile();
 		super.setLocalState(state);
 	}

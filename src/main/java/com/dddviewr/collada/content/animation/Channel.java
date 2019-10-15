@@ -5,20 +5,16 @@ import java.io.PrintStream;
 import com.dddviewr.collada.format.Base;
 
 public class Channel extends Base {
-	protected String source;
+
 	protected String target;
 
 	public Channel(String source, String target) {
-		this.source = source;
+		super(source);
 		this.target = target;
 	}
 
-	public String getSource() {
-		return this.source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
+	public int getSource() {
+		return this.getId();
 	}
 
 	public String getTarget() {
@@ -30,6 +26,6 @@ public class Channel extends Base {
 	}
 
 	public String toString() {
-		return "Channel (source: " + this.source + ", target: " + this.target + ")";
+		return "Channel (source: " + this.getId() + ", target: " + this.target + ")";
 	}
 }

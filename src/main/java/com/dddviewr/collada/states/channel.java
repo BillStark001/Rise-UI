@@ -14,7 +14,11 @@ public class channel extends State {
 		super.init(name, attrs, mngr);
 		this.theChannel = new Channel(attrs.getValue("source"), attrs
 				.getValue("target"));
-		Animation anim = ((animation) getParent()).getAnimation();
+		animation parent = (animation) getParent();
+		Animation anim = parent.getAnimation();
+		anim = new Animation(anim, this.theChannel.getId());
 		anim.setChannel(this.theChannel);
+		parent.setAnimation(anim);
+		parent.addToLibrary();
 	}
 }

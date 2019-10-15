@@ -86,6 +86,12 @@ public class StateTrackedDouble extends StateTrackedBase<Double> {
 		this.frames = frames;
 	}
 	
+	public StateTrackedDouble(double vals) {
+		KeyFrame[] frames = new KeyFrame[1];
+		frames[0] = new KeyFrame(0, vals);
+		this.frames = frames;
+	}
+	
 	@Override
 	public boolean containsFrames() {return this.frames.length > 0;}
 	
@@ -145,6 +151,11 @@ public class StateTrackedDouble extends StateTrackedBase<Double> {
 	public double getEndTime() {
 		if (!this.containsFrames()) return 0;
 		else return this.frames[this.frames.length - 1].time;
+	}
+
+	@Override
+	public Class getDataType() {
+		return Double.class;
 	}
 	
 

@@ -1,21 +1,31 @@
 package com.billstark001.riseui.base.states.tracked3d;
 
+import com.billstark001.riseui.base.states.simple3d.State3DBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DPos;
+import com.billstark001.riseui.base.states.simple3d.State3DRot;
+import com.billstark001.riseui.base.states.simple3d.State3DScl;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.math.Matrix;
+import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.math.Vector;
 
 public class Track3DIntegrated extends Track3DBase {
 
 	public static final Matrix DEFAULT_MAT = Matrix.I4;
-	public final Track3DBase r1, s, r2, p;
+	public final Track3DRot r1, r2;
+	public final Track3DPos p;
+	public final Track3DScl s;
 	
-	public Track3DIntegrated(Track3DBase r1, Track3DBase s, Track3DBase r2, Track3DBase p) {
+	public Track3DIntegrated(Track3DRot r1, Track3DScl s, Track3DRot r2, Track3DPos p) {
 		this.r1 = r1;
 		this.s = s;
 		this.r2 = r2;
 		this.p = p;
 	}
 	
-	public Track3DIntegrated(Track3DPos p, Track3DRotEuler r, Track3DScl s) {this(null, s, r, p);}
-	public Track3DIntegrated(Track3DScl s, Track3DRotEuler r, Track3DPos p) {this(null, s, r, p);}
+	public Track3DIntegrated(Track3DPos p, Track3DRot r, Track3DScl s) {this(null, s, r, p);}
+	public Track3DIntegrated(Track3DScl s, Track3DRot r, Track3DPos p) {this(null, s, r, p);}
 	
 	@Override
 	public Matrix get(double time) {
@@ -57,6 +67,22 @@ public class Track3DIntegrated extends Track3DBase {
 		if (r2 != null) ans = Math.max(ans, r2.getStartTime());
 		if (p != null) ans = Math.max(ans, p.getStartTime());
 		return ans;
+	}
+	
+	@Override
+	public State3DBase getSimpleState(double time) {
+		if (r1 != null) return new State3DSimple(this.get(time));
+		else {
+			Vector sp = Vector.UNIT0_D3;
+			Quaternion sr = Quaternion.UNIT;
+			Vector ss = Vector.UNIT1_D3;
+			if (s != null) ss = s.getStateRepr(time);
+			if (r2 != null) {
+				if (r2 instanceof Track3DRotEuler) sr = Quaternion.eulerToQuat(((Track3DRotEuler) r2).getStateRepr(time));
+			}
+			if (p != null) sp = p.getStateRepr(time);
+			return new State3DIntegrated(sp, sr, ss);
+		}
 	}
 
 }

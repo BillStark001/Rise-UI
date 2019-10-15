@@ -96,9 +96,14 @@ public abstract class State3DBase extends StateSimpleBase<Matrix> {
 	}
 	
 	public String toString() {
-		return this.getClass().getSimpleName() + " " + this.getName() + ": " + Arrays.deepToString(this.get().toVecArray());
+		return String.format("%s<%s>: %s", this.getClass().getSimpleName(), this.getDataType().getSimpleName(), Arrays.deepToString(this.get().toVecArray()));
 		//String str_tmp = "ORIGIN: %s, X: %s, Y: %s, Z: %s";
 		//return String.format(str_tmp, state.getLine(3).get(0, 3).toString(), state.getLine(0).get(0, 3).toString(), state.getLine(1).get(0, 3).toString(), state.getLine(2).get(0, 3).toString());
+	}
+	
+	@Override
+	public Class getDataType() {
+		return Matrix.class;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.billstark001.riseui.io;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,15 @@ import com.billstark001.riseui.base.shader.MaterialFace;
 import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shader.TagSelectionHardTable;
 import com.billstark001.riseui.base.shader.Texture2DFromRes;
+import com.billstark001.riseui.base.states.StateTrackedDouble;
+import com.billstark001.riseui.base.states.StateTrackedDouble.Interpolation;
+import com.billstark001.riseui.base.states.StateTrackedVec3;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.tracked3d.Track3DIntegrated;
+import com.billstark001.riseui.base.states.tracked3d.Track3DPos;
+import com.billstark001.riseui.base.states.tracked3d.Track3DRot;
+import com.billstark001.riseui.base.states.tracked3d.Track3DRotEuler;
+import com.billstark001.riseui.base.states.tracked3d.Track3DScl;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
@@ -17,8 +26,15 @@ import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Quaternion;
 import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Vector;
+import com.dddviewr.collada.Accessor;
 import com.dddviewr.collada.Collada;
+import com.dddviewr.collada.FloatArray;
+import com.dddviewr.collada.Input;
+import com.dddviewr.collada.Source;
+import com.dddviewr.collada.content.animation.Animation;
+import com.dddviewr.collada.content.animation.Channel;
 import com.dddviewr.collada.content.animation.LibraryAnimations;
+import com.dddviewr.collada.content.animation.Sampler;
 import com.dddviewr.collada.content.controller.Controller;
 import com.dddviewr.collada.content.controller.LibraryControllers;
 import com.dddviewr.collada.content.effects.Effect;
@@ -39,6 +55,7 @@ import com.dddviewr.collada.content.visualscene.Rotate;
 import com.dddviewr.collada.content.visualscene.Scale;
 import com.dddviewr.collada.content.visualscene.Translate;
 import com.dddviewr.collada.content.visualscene.VisualScene;
+import com.dddviewr.collada.format.Base;
 
 public class ColladaFile {
 	
@@ -53,8 +70,10 @@ public class ColladaFile {
 	private LibraryImages limg = null;
 	
 	private Map<Integer, MaterialFace> material = null;
-	
 	private Map<String, NodeBase> parsed = new HashMap<String, NodeBase>();
+	
+	private Map<Integer, HashMap<String, Integer>> target_channel_sampler = new HashMap<Integer, HashMap<String, Integer>>();
+	private Map<Integer, StateTrackedDouble> sampler_tracks = new HashMap<Integer, StateTrackedDouble>();
 	
 	public NodeBase getNodeByName(String name) {
 		if (name == null) return null;
@@ -77,6 +96,7 @@ public class ColladaFile {
 		return file.getScene().getInstanceVisualScene().getUrl();
 	}
 	
+	
 	public void parse() {
 		scene = file.getLibraryVisualScenes().getElement(file.getScene().getInstanceVisualScene().getUrl());
 		lgeo = file.getLibraryGeometries();
@@ -86,10 +106,103 @@ public class ColladaFile {
 		lani = file.getLibraryAnimations();
 		limg = file.getLibraryImages();
 		
+		// Animations - DB Establishment
+		
+		if (lani != null) {
+			for (Animation m: lani.getElements()) {
+				ArrayList<Source> src_list = (ArrayList<Source>) m.getSources();
+				Sampler smpl = m.getSampler();
+				Channel chnl = m.getChannel();
+				
+				//Channel
+				int channel_sampler_id = chnl.getId();
+				int channel_target_id = new Base(chnl.getTarget().split("/")[0]).getId();
+				String target_name = chnl.getTarget().split("/")[1];
+				
+				if (!target_channel_sampler.containsKey(channel_target_id)) {
+					target_channel_sampler.put(channel_target_id, new HashMap<String, Integer>());
+				}
+				HashMap<String, Integer> chn_smpl = (HashMap<String, Integer>) target_channel_sampler.get(channel_target_id);
+				chn_smpl.put(target_name, channel_sampler_id);
+				
+				//Sampler & Sources
+				int id_time = 0, id_val = 0, id_tanin = 0, id_tanout = 0, id_interp = 0;
+				for (Input i: smpl.getInputs()) {
+					String sem = i.getSemantic();
+					int src = i.getSource();
+					if (sem.equals("INPUT")) id_time = src;
+					if (sem.equals("INTERPOLATION")) id_interp = src;
+					if (sem.equals("IN_TANGENT")) id_tanin = src;
+					if (sem.equals("OUT_TANGENT")) id_tanout = src;
+					if (sem.equals("OUTPUT")) id_val = src;
+				}
+				
+				double[] t_time = null, t_val = null;
+				StateTrackedDouble.Interpolation[] t_interp = null;
+				Vector[] t_tanin = null, t_tanout = null;
+				for (Source s: src_list) {
+					Accessor acc = s.getAccessor();
+					if (s.getId() == id_interp) {
+						t_interp = new StateTrackedDouble.Interpolation[acc.getCount()];
+						for (int i = 0; i < acc.getCount(); ++i) {
+							String erp = s.getNameArray().getData()[i];
+							if (erp.equals("BEZIER")) t_interp[i] = Interpolation.BEZIER3;
+							else if (erp.equals("LINEAR")) t_interp[i] = Interpolation.LINEAR;
+							else t_interp[i] = Interpolation.STEP;
+						}
+					} else if (s.getId() == id_time) {
+						t_time = new double[acc.getCount()];
+						float[] t_time_t = s.getFloatArray().getData();
+						for (int i = 0; i < acc.getCount(); ++i) {
+							t_time[i] = t_time_t[i];
+						}
+					} else if (s.getId() == id_val) {
+						t_val = new double[acc.getCount()];
+						float[] t_val_t = s.getFloatArray().getData();
+						for (int i = 0; i < acc.getCount(); ++i) {
+							t_val[i] = t_val_t[i];
+						}
+					} else if (s.getId() == id_tanin) {
+						t_tanin = new Vector[acc.getCount()];
+						boolean reverse_vec = acc.getParam(0).getName().equals("Y");
+						float[] t_tanin_orig = s.getFloatArray().getData();
+						for (int i = 0; i < acc.getCount(); ++i) {
+							int val_0, val_1;
+							if (reverse_vec) {
+								val_0 = 2 * i + 1;
+								val_1 = 2 * i;
+							} else {
+								val_0 = 2 * i;
+								val_1 = 2 * i + 1;
+							}
+							t_tanin[i] = new Vector(t_tanin_orig[val_0], t_tanin_orig[val_1]);
+						}
+					} else if (s.getId() == id_tanout) {
+						t_tanout = new Vector[acc.getCount()];
+						boolean reverse_vec = acc.getParam(0).getName().equals("Y");
+						float[] t_tanout_orig = s.getFloatArray().getData();
+						for (int i = 0; i < acc.getCount(); ++i) {
+							int val_0, val_1;
+							if (reverse_vec) {
+								val_0 = 2 * i + 1;
+								val_1 = 2 * i;
+							} else {
+								val_0 = 2 * i;
+								val_1 = 2 * i + 1;
+							}
+							t_tanout[i] = new Vector(t_tanout_orig[val_0], t_tanout_orig[val_1]);
+						}
+					}
+				}
+				StateTrackedDouble std_tmp = new StateTrackedDouble(t_time, t_val, t_interp, t_tanin, t_tanout);
+				sampler_tracks.put(smpl.getId(), std_tmp);
+				
+			}
+		} else {
+			
+		}
+		
 		// Materials
-		
-		
-		
 		material = new HashMap<Integer, MaterialFace>();
 		for (Material m: lmat.getElements()) {
 			String name = m.getName();
@@ -137,6 +250,32 @@ public class ColladaFile {
 		Vector vr = new Vector(rx, ry, rz).mult(Math.PI / 180);
 		Quaternion r = Quaternion.eulerToQuat(vr);
 		ans = new State3DIntegrated(p, r, s);
+		return ans;
+	}
+	
+	public double[] parseStateToArray(BaseXform[] xf) {
+		double[] ans = null;
+		Vector p = null;
+		double ry = 0, rx = 0, rz = 0;
+		Vector s = null;
+		for (BaseXform xft: xf) {
+			if (xft instanceof Translate) p = new Vector(((Translate) xft).getData());
+			else if (xft instanceof Scale) s = new Vector(((Scale) xft).getData());
+			else if (xft instanceof Rotate) {
+				float[] d = ((Rotate) xft).getData();
+				if (d[0] > 0.999) rx = d[3];
+				else if (d[1] > 0.999) ry = d[3];
+				else if (d[2] > 0.999) rz = d[3];
+			}
+		}
+		ans = new double[9];
+		if (p != null) {
+			ans[0] = p.get(0); ans[1] = p.get(1); ans[2] = p.get(2);
+		}
+		if (s != null) {
+			ans[6] = s.get(0); ans[7] = s.get(1); ans[8] = s.get(2);
+		}
+		ans[3] = rx; ans[4] = ry; ans[5] = rz;
 		return ans;
 	}
 	
@@ -203,9 +342,44 @@ public class ColladaFile {
 		return ans;
 	}
 	
+	public Track3DIntegrated parseStateTrack(double[] static_state, int id) {
+		HashMap<String, Integer> map_channel_sampler = target_channel_sampler.get(id);
+		if (map_channel_sampler == null) return null;
+		else {
+			StateTrackedVec3 p = new StateTrackedVec3();
+			StateTrackedVec3 r = new StateTrackedVec3();
+			StateTrackedVec3 s = new StateTrackedVec3();
+			StateTrackedDouble std_tmp = null;
+			
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.X", 0));
+			if (std_tmp != null) p.setX(std_tmp); else p.setX(new StateTrackedDouble(static_state[0]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.Y", 0));
+			if (std_tmp != null) p.setY(std_tmp); else p.setY(new StateTrackedDouble(static_state[1]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.Z", 0));
+			if (std_tmp != null) p.setZ(std_tmp); else p.setZ(new StateTrackedDouble(static_state[2]));
+		
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateX.ANGLE", 0));
+			if (std_tmp != null) r.setX(std_tmp); else r.setX(new StateTrackedDouble(static_state[3]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateY.ANGLE", 0));
+			if (std_tmp != null) r.setY(std_tmp); else r.setY(new StateTrackedDouble(static_state[4]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateZ.ANGLE", 0));
+			if (std_tmp != null) r.setZ(std_tmp); else r.setZ(new StateTrackedDouble(static_state[5]));
+			
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.X", 0));
+			if (std_tmp != null) s.setX(std_tmp); else s.setX(new StateTrackedDouble(static_state[6]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.Y", 0));
+			if (std_tmp != null) s.setY(std_tmp); else s.setY(new StateTrackedDouble(static_state[7]));
+			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.Z", 0));
+			if (std_tmp != null) s.setZ(std_tmp); else s.setZ(new StateTrackedDouble(static_state[8]));
+			
+			return new Track3DIntegrated(new Track3DPos(p), new Track3DRotEuler(r), new Track3DScl(s));
+		}
+	}
+	
 	public NodeBase parseNode(Node n) {
 		//System.out.println(n);
 		State3DIntegrated c = parseState(n.getXforms());
+		Track3DIntegrated t = parseStateTrack(parseStateToArray(n.getXforms()), n.getId());
 		NodeBase ans = null;
 		if (n.isJoint()) ans = new Joint(c, n.getName());
 		else if (n.getInstanceGeometry() != null && n.getInstanceGeometry().size() > 0) {
@@ -216,6 +390,7 @@ public class ColladaFile {
 		} else {
 			ans = new EmptyNode(c, n.getName());
 		}
+		if (t != null && t.containsFrames()) ans.setLocalState(t);
 		
 		// TODO InstanceCamera & InstanceLight
 		if (n.getInstanceController() != null) {

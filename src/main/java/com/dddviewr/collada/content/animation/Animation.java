@@ -9,13 +9,28 @@ import com.dddviewr.collada.Source;
 import com.dddviewr.collada.format.Base;
 
 public class Animation extends Base {
-	protected String id;
 	protected List<Source> sources = new ArrayList<Source>();
 	protected Sampler sampler;
 	protected Channel channel;
 
+	public Animation() {}
+	
+	public Animation(Animation ani, String id) {
+		super(id);
+		this.sources.addAll(ani.sources);
+		this.sampler = ani.sampler;
+		this.channel = ani.channel;
+	}
+	
+	public Animation(Animation ani, int id) {
+		super(id);
+		this.sources.addAll(ani.sources);
+		this.sampler = ani.sampler;
+		this.channel = ani.channel;
+	}
+	
 	public Animation(String id) {
-		this.id = id;
+		super(id);
 	}
 
 	public void dump(PrintStream out, int indent) {

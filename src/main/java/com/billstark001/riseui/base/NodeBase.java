@@ -4,10 +4,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
 import com.billstark001.riseui.client.GlRenderHelper;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.math.Matrix;
@@ -17,13 +20,26 @@ import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
 
-public abstract class NodeBase extends NamedObject{
-
-	protected State3DSimple local_state;
+public abstract class NodeBase extends BaseObject{
+	
+	protected StateBase<Matrix> local_state;
 	protected State3DSimple global_state; 
 	// 4*4 homogeneous matrix
 	// computation order: M=S*R*P
 	// SVD order: M=R1*S*R2*P
+	
+	@Override
+	public boolean setFrameTime(double ftime) {
+		boolean flag = super.setFrameTime(ftime);
+		this.markGlobalDirty();
+		return flag;
+	}
+	
+	public void setChildrenFrameTime(double ftime) {
+		this.setFrameTime(ftime);
+		for (TagBase t: this.tags) t.setFrameTime(ftime);
+		for (NodeBase n: this.children) n.setChildrenFrameTime(ftime);
+	}
 
 	protected List<TagBase> tags = new ArrayList<TagBase>();
 	protected List<NodeBase> children = new ArrayList<NodeBase>();
@@ -252,8 +268,8 @@ public abstract class NodeBase extends NamedObject{
 	 */
 	protected void updateLocalState() {this.updateLocalStateWithoutTag(); this.applyTags(TagBase.TAG_PHRASE_LOCAL_UPDATE);}
 	protected void updateLocalStateWithoutTag() {
-		State3DSimple A = this.getParentGlobalStateSimplified();
-		State3DSimple C = this.getGlobalStateSimplified();
+		State3DSimple A = this.getParentGlobalState();
+		State3DSimple C = this.getGlobalState();
 		State3DSimple B = State3DBase.stateDecomposeB(C, A);
 		this.local_state = B;
 	}
@@ -267,11 +283,21 @@ public abstract class NodeBase extends NamedObject{
 			this.parent.updateGlobalStateCheckDirty();
 			parent = this.parent;
 		}
-		this.global_state = State3DBase.stateCompose(this.getLocalState(), parent.getGlobalStateSimplified());
+		this.global_state = State3DBase.stateCompose(this.getLocalState(), parent.getGlobalState());
 	}
 	//Local Info. Getter & Setter
+	
+	public boolean isLocalStateTracked() {
+		return this.local_state.isTracked();
+	}
 
-	public State3DSimple getLocalState() {return this.local_state;}
+	public State3DBase getLocalState() {
+		if (!this.isLocalStateTracked()) return ((State3DBase) this.local_state);
+		else return ((Track3DBase) this.local_state).getSimpleState(this.getFrameTime());
+	}
+	public StateBase<Matrix> getLocalStateRaw() {
+		return this.local_state;
+	}
 	public boolean isLocalStateStandardized() {return (this.local_state instanceof State3DIntegrated);}
 	public State3DSimple getLocalStateStandardized() {
 		if (this.local_state instanceof State3DIntegrated)
@@ -279,25 +305,25 @@ public abstract class NodeBase extends NamedObject{
 		else return null;
 	}
 	
-	public void setLocalState(State3DSimple state) {
+	public void setLocalState(StateBase<Matrix> state) {
 		this.local_state = state;
 		markGlobalDirty();
 	}
 	
 	public Vector getLocalPos() {
-		if (this.local_state instanceof State3DIntegrated) return ((State3DIntegrated) this.local_state).getPos();
-		else return this.local_state.get().getLine(4).get(0, 3);
+		State3DBase state_temp = this.getLocalState();
+		if (state_temp instanceof State3DIntegrated) return ((State3DIntegrated) state_temp).getPos();
+		else if (state_temp instanceof State3DPos) return ((State3DPos) state_temp).getStateRepr();
+		else return state_temp.get().getLine(4).get(0, 3);
 	}
 
 	// Global Info. Getter & Setter
 
 	public State3DSimple getGlobalState() {this.updateGlobalStateCheckDirty(); return this.global_state;}
-	public State3DSimple getGlobalStateSimplified() {this.updateGlobalStateCheckDirty(); return this.global_state;}
 	public State3DSimple getParentGlobalState() {
 		if (this.getParent() == null) return State3DSimple.DEFAULT_STATE;
 		else return this.getParent().getGlobalState();
 	}
-	public State3DSimple getParentGlobalStateSimplified() {return getParentGlobalState();}
 	
 	public Vector getGlobalPos() {
 		return this.global_state.get().getLine(4).get(0, 3);
@@ -468,8 +494,8 @@ public abstract class NodeBase extends NamedObject{
 	
 	@Override
 	public String toString() {
-		String ans = "%s %s(STATE:%s)";
-		ans = String.format(ans, this.getClass().getSimpleName(), this.getName(), this.getLocalState().toString());
+		String ans = "%s STATE:%s";
+		ans = String.format(ans, super.toString(), this.getLocalState().toString());
 		return ans;
 	}
 	
@@ -491,11 +517,11 @@ public abstract class NodeBase extends NamedObject{
 	public void dump() {dump(System.out, 0);}
 	public void dump(PrintStream out) {dump(out, 0);}
 	public void dump(PrintStream out, int level){
-		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
+		println(out, super.toString(), level); 
 		println(out, String.format("STATE_LOCAL%s: %s", (this.getLocalState() instanceof State3DIntegrated ? "*" : " "), this.getLocalState()), level + 1);
 		println(out, "STATE_GLOBAL: " + this.getGlobalState(), level + 1);
 		if (this.children.size() == 0) return;
-		println(out, "", level + 1);
+		//println(out, "", level + 1);
 		println(out, "CHILDREN:", level + 1);
 		for (NodeBase i: this.children) {
 			i.dump(out, level + 2);

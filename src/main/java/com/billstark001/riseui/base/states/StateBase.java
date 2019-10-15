@@ -30,13 +30,17 @@ public abstract class StateBase<T> {
 	
 	public abstract T get(double time);
 	public abstract boolean containsFrames();
+	public abstract Class getDataType();
 	
+	/*
 	private String name = this.getClass().getSimpleName();
 	public void setName(String name) {this.name = name;}
 	public String getName() {return name;}
 	public void resetName() {setName(this.getClass().getSimpleName());}
+	*/
 	
 	public abstract double getStartTime();
 	public abstract double getEndTime();
 	
+	public boolean isTracked() {return this instanceof StateTrackedBase;}
 }

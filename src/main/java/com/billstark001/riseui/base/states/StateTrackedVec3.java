@@ -21,6 +21,8 @@ public class StateTrackedVec3 extends StateTrackedBase<Vector> {
 		this.setZ(z);
 	}
 
+	public StateTrackedVec3() {this(null, null, null);}
+	
 	@Override
 	public Vector get(double time) {
 		return new Vector(x.get(time), y.get(time), z.get(time));
@@ -43,6 +45,10 @@ public class StateTrackedVec3 extends StateTrackedBase<Vector> {
 	public double getEndTime() {
 		if (!this.containsFrames()) return 0;
 		else return Math.max(Math.max(this.getX().getEndTime(), this.getY().getEndTime()), this.getZ().getEndTime());
+	}
+	@Override
+	public Class getDataType() {
+		return Vector.class;
 	}
 
 }

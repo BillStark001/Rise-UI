@@ -82,7 +82,7 @@ public class DevelopProxy {
    		World world=Minecraft.getMinecraft().world;
    		if(TEST.isPressed()){
    			mark1 += 1;
-   			mark1 %= 3;
+   			mark1 %= 2;
    			speakToPlayer(player, Integer.toString(this.mark1));
    		}
    	}

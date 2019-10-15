@@ -3,6 +3,8 @@ package com.billstark001.riseui.base.states.tracked3d;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.billstark001.riseui.base.states.simple3d.State3DBase;
+import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.math.Matrix;
 import com.billstark001.riseui.math.Utils;
 
@@ -141,6 +143,11 @@ public class Track3DSimple extends Track3DBase {
 	public double getEndTime() {
 		if (!this.containsFrames()) return 0;
 		else return this.frames[this.frames.length - 1].time;
+	}
+	
+	@Override
+	public State3DBase getSimpleState(double time) {
+		return new State3DSimple(this.get(time));
 	}
 
 }

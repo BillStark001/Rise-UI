@@ -37,7 +37,6 @@ public class RenderTestObject{
 	private static long tstart = System.currentTimeMillis();
 	private static long tend;
 	
-	
 	private static CharResourceLoader res = CharResourceLoader.getInstance();
 	private static GlRenderHelper render = GlRenderHelper.getInstance();
 	private static EntityPlayer player = Minecraft.getMinecraft().player;
@@ -174,6 +173,8 @@ public class RenderTestObject{
 		render.setDebugState(true);
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
+		double cur_time = ((tend - tstart) % 1000) / 1000;
+		spider.setChildrenFrameTime(cur_time);
 		NodeBase spider_body = spider.getChild(0).getChild(0);
 		render.renderObject(spider, delta);
 		/*

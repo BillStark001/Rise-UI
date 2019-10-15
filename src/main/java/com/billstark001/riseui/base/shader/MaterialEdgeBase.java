@@ -1,9 +1,9 @@
 package com.billstark001.riseui.base.shader;
 
-import com.billstark001.riseui.base.NamedObject;
+import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.Layer;
 
-public abstract class MaterialEdgeBase extends NamedObject {
+public abstract class MaterialEdgeBase extends BaseObject {
 
 	public MaterialEdgeBase(String name, Layer layer) {super(name, layer);}
 	public MaterialEdgeBase(String name) {this(name, null);}
