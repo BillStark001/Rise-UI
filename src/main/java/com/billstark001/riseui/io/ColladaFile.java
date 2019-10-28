@@ -275,7 +275,8 @@ public class ColladaFile {
 		if (s != null) {
 			ans[6] = s.get(0); ans[7] = s.get(1); ans[8] = s.get(2);
 		}
-		ans[3] = rx; ans[4] = ry; ans[5] = rz;
+		double mult_fac = 1;//Math.PI / 180;
+		ans[3] = rx * mult_fac; ans[4] = ry * mult_fac; ans[5] = rz * mult_fac;
 		return ans;
 	}
 	
@@ -358,12 +359,13 @@ public class ColladaFile {
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.Z", 0));
 			if (std_tmp != null) p.setZ(std_tmp); else p.setZ(new StateTrackedDouble(static_state[2]));
 		
+			double mult_fac = 1;//Math.PI / 180;
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateX.ANGLE", 0));
-			if (std_tmp != null) r.setX(std_tmp); else r.setX(new StateTrackedDouble(static_state[3]));
+			if (std_tmp != null) r.setX(std_tmp); else r.setX(new StateTrackedDouble(static_state[3] * mult_fac));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateY.ANGLE", 0));
-			if (std_tmp != null) r.setY(std_tmp); else r.setY(new StateTrackedDouble(static_state[4]));
+			if (std_tmp != null) r.setY(std_tmp); else r.setY(new StateTrackedDouble(static_state[4] * mult_fac));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateZ.ANGLE", 0));
-			if (std_tmp != null) r.setZ(std_tmp); else r.setZ(new StateTrackedDouble(static_state[5]));
+			if (std_tmp != null) r.setZ(std_tmp); else r.setZ(new StateTrackedDouble(static_state[5] * mult_fac));
 			
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.X", 0));
 			if (std_tmp != null) s.setX(std_tmp); else s.setX(new StateTrackedDouble(static_state[6]));

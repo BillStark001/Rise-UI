@@ -14,6 +14,11 @@ public class Track3DRotEuler extends Track3DRot<Vector> {
 	public Track3DRotEuler(StateTrackedBase<Vector> repr) {super(repr);}
 
 	@Override
+	public Vector getStateRepr(double time) {
+		return super.getStateRepr(time).mult(Math.PI / 180);
+	}
+	
+	@Override
 	public Matrix getMatFromRepr(double time) {
 		return Utils.rotToHomoState(getStateRepr(time));
 	}

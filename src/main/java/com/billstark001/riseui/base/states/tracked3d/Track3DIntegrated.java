@@ -62,10 +62,10 @@ public class Track3DIntegrated extends Track3DBase {
 	public double getEndTime() {
 		if (!this.containsFrames()) return 0;
 		double ans = Double.MIN_VALUE;
-		if (r1 != null) ans = Math.max(ans, r1.getStartTime());
-		if (s != null) ans = Math.max(ans, s.getStartTime());
-		if (r2 != null) ans = Math.max(ans, r2.getStartTime());
-		if (p != null) ans = Math.max(ans, p.getStartTime());
+		if (r1 != null) ans = Math.max(ans, r1.getEndTime());
+		if (s != null) ans = Math.max(ans, s.getEndTime());
+		if (r2 != null) ans = Math.max(ans, r2.getEndTime());
+		if (p != null) ans = Math.max(ans, p.getEndTime());
 		return ans;
 	}
 	

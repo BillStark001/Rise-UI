@@ -38,6 +38,12 @@ public class StateTrackedDouble extends StateTrackedBase<Double> {
 			else if (this.time < o.time) return -1;
 			else return 0;
 	    }
+		
+		@Override
+		public String toString() {
+			String template = "F(%s INTERP, T=%g, VAL=%g, TAN=%s, %s)";
+			return String.format(template, this.interp, this.time, this.val, this.tanIn, this.tanOut);
+		}
 	
 	}
 	
@@ -127,14 +133,14 @@ public class StateTrackedDouble extends StateTrackedBase<Double> {
 		else {
 			KeyFrame f0 = this.frames[index];
 			KeyFrame f1 = this.frames[index + 1];
-			double interp_t = (time = f0.time) / (f1.time - f0.time);
+			double interp_t = (time - f0.time) / (f1.time - f0.time);
 			Vector p0 = new Vector(f0.time, f0.val);
 			Vector p1 = f0.tanOut;
 			Vector p2 = f1.tanIn;
 			Vector p3 = new Vector(f1.time, f1.val);
-			if (f0.interp == Interpolation.BEZIER3)
+			if (f0.interp.equals(Interpolation.BEZIER3))
 				return Utils.bezier3(interp_t, p0, p1, p2, p3).get(1);
-			else if (f0.interp == Interpolation.LINEAR)
+			else if (f0.interp.equals(Interpolation.LINEAR))
 				return Utils.linear(interp_t, p0, p3).get(1);
 			else
 				return f0.val;

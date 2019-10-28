@@ -9,16 +9,24 @@ public final class Utils {
 	public static Vector bezier3(double t, Vector p0, Vector p1, Vector p2, Vector p3) {
 		double t_ = 1 - t;
 		Vector ans = p0.mult(t_ * t_ * t_);
-		ans.add(p1.mult(t * t_ * t_));
-		ans.add(p2.mult(t * t * t_));
-		ans.add(p3.mult(t * t * t));
+		ans = ans.add(p1.mult(3 * t * t_ * t_));
+		ans = ans.add(p2.mult(3 * t * t * t_));
+		ans = ans.add(p3.mult(t * t * t));
+		return ans;
+	}
+	
+	public static Vector bezier2(double t, Vector p0, Vector p1, Vector p2) {
+		double t_ = 1 - t;
+		Vector ans = p0.mult(t_ * t_);
+		ans = ans.add(p1.mult(2 * t * t_));
+		ans = ans.add(p2.mult(t * t));
 		return ans;
 	}
 	
 	public static Vector linear(double t, Vector p0, Vector p1) {
 		double t_ = 1 - t;
 		Vector ans = p0.mult(t_);
-		ans.add(p1.mult(t));
+		ans = ans.add(p1.mult(t));
 		return ans;
 	}
 	

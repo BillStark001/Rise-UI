@@ -21,12 +21,15 @@ import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.states.StateBase;
+import com.billstark001.riseui.base.states.StateTrackedDouble;
+import com.billstark001.riseui.base.states.StateTrackedVec3;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
 import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DScl;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
+import com.billstark001.riseui.base.states.tracked3d.Track3DIntegrated;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.io.ColladaFile;
@@ -59,58 +62,12 @@ public class Test {
 		tstart = System.currentTimeMillis();
 	}
 
+	private static void prpr(Object...objects) {
+		String ans = Arrays.deepToString(objects);
+		System.out.println(ans.substring(1, ans.length() - 1));
+	}
+	
 	public static void main(String[] args) {
-		
-		double[][] a = {
-				{1, 2},
-				{3, 4},
-				{5, 6}
-		};
-		Matrix m = new Matrix(a);
-		Matrix[] m_ = LinalgUtils.SVD(m);
-		System.out.println(m_[0]);
-		System.out.println(m_[1]);
-		System.out.println(m_[2]);
-		
-		//Matrix r = Quaternion.quatToRotate(Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 2));
-		//System.out.println(LinalgUtils.eigen(r));
-		
-		
-		Vector p = new Vector(0, 0, 0);
-		Quaternion r = Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 6);
-		Vector s = new Vector(2, 1.5, 3);
-		
-		Matrix state = Utils.compStateMat(p, r, s);
-		System.out.println(state);
-		System.out.println(Matrix.inverse(Matrix.inverse(state)));
-		
-		System.out.println(LinalgUtils.eigen(Quaternion.quatToRotate(r).mult(Utils.sclToHomoState(s).get(0, 0, 3, 3)), 200));
-		
-		State3DBase s1 = new State3DPos(new Vector(1, 2, 3));
-		State3DBase s2 = new State3DRot(Quaternion.getQuatByAA(new Vector(1, 1, 1), 1));
-		State3DBase s3 = new State3DScl(new Vector(1, 4, 9));
-		
-		
-		/*
-		long t = System.currentTimeMillis();
-		double[][] a = {
-				{5, 11, 17, 0}, 
-				{11, 25, 39, 0}, 
-				{17, 39, 61, 0},
-				{0, 0, 0, 1}
-		};
-		Matrix M = new Matrix(a);
-		//System.out.println(M);
-		System.out.println(System.currentTimeMillis() - t);
-		
-		t = System.currentTimeMillis();
-		LinalgUtils.qrDecomp(M);
-		System.out.println(System.currentTimeMillis() - t);
-		
-		t = System.currentTimeMillis();
-		System.out.println(LinalgUtils.eigen(M));
-		System.out.println(System.currentTimeMillis() - t);
-		 */
 		
 		Collada file = null;
 		try {
@@ -140,9 +97,77 @@ public class Test {
 		NodeBase j0 = f.getNodeByName("spider");
 		j0.setChildrenFrameTime(5);
 		j0.dump();
-
-		StateBase ssssss = ((Track3DBase) j0.getChild(0).getLocalStateRaw());
-		System.out.println(((Track3DBase) j0.getChild(0).getLocalStateRaw()).getEndTime());
+		
+		Track3DIntegrated ttest = (Track3DIntegrated) (j0.getChild(0).getLocalStateRaw());
+		StateTrackedDouble tpr = ((StateTrackedVec3) (ttest.p.getStateRepr())).getY();
+		//StateTrackedVec3 tpr = (StateTrackedVec3) (ttest.p.getStateRepr());
+		//Track3DIntegrated tpr = ttest;
+		
+		//prpr(tpr.containsFrames());
+		//prpr(tpr.getStartTime());
+		//prpr(tpr.getEndTime());
+		
+		double smpl = 1. / 30.;
+		for (double i = tpr.getStartTime(); i <= tpr.getEndTime(); i += smpl) {
+			prpr(tpr.get(i), " ");
+		}
+		
+		int a = 1;
+		a = 2;
+		
+		
+		
+		/*
+		double[][] a = {
+				{1, 2},
+				{3, 4},
+				{5, 6}
+		};
+		Matrix m = new Matrix(a);
+		Matrix[] m_ = LinalgUtils.SVD(m);
+		System.out.println(m_[0]);
+		System.out.println(m_[1]);
+		System.out.println(m_[2]);
+		
+		//Matrix r = Quaternion.quatToRotate(Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 2));
+		//System.out.println(LinalgUtils.eigen(r));
+		
+		
+		Vector p = new Vector(0, 0, 0);
+		Quaternion r = Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 6);
+		Vector s = new Vector(2, 1.5, 3);
+		
+		Matrix state = Utils.compStateMat(p, r, s);
+		System.out.println(state);
+		System.out.println(Matrix.inverse(Matrix.inverse(state)));
+		
+		System.out.println(LinalgUtils.eigen(Quaternion.quatToRotate(r).mult(Utils.sclToHomoState(s).get(0, 0, 3, 3)), 200));
+		
+		State3DBase s1 = new State3DPos(new Vector(1, 2, 3));
+		State3DBase s2 = new State3DRot(Quaternion.getQuatByAA(new Vector(1, 1, 1), 1));
+		State3DBase s3 = new State3DScl(new Vector(1, 4, 9));
+		*/
+		
+		/*
+		long t = System.currentTimeMillis();
+		double[][] a = {
+				{5, 11, 17, 0}, 
+				{11, 25, 39, 0}, 
+				{17, 39, 61, 0},
+				{0, 0, 0, 1}
+		};
+		Matrix M = new Matrix(a);
+		//System.out.println(M);
+		System.out.println(System.currentTimeMillis() - t);
+		
+		t = System.currentTimeMillis();
+		LinalgUtils.qrDecomp(M);
+		System.out.println(System.currentTimeMillis() - t);
+		
+		t = System.currentTimeMillis();
+		System.out.println(LinalgUtils.eigen(M));
+		System.out.println(System.currentTimeMillis() - t);
+		 */
 		
 		/*
 		String s = "# WaveFront *.mtl file (generated by CINEMA 4D)\n\nnewmtl m4\nKa 1 1 1\nKd 0.80000001192093 0.80000001192093 0.79215687513351\nmap_Kd riseui:tex/crafting_table_front.png\nKs 1 1 1\nNs 50\nillum 7\n\nnewmtl m1\nKa 1 1 1\nKd 0.80000001192093 0.80000001192093 0.79215687513351\nmap_Kd riseui:tex/crafting_table_side.png\nKs 1 1 1\nNs 50\nillum 7\n\nnewmtl m2\nKa 1 1 1\nKd 0.80000001192093 0.80000001192093 0.79215687513351\nmap_Kd riseui:tex/crafting_table_top.png\nKs 1 1 1\nNs 50\nillum 7\n\nnewmtl m3\nKa 1 1 1\nKd 0.80000001192093 0.80000001192093 0.80000001192093\nmap_Kd riseui:tex/planks_oak.png\nKs 1 1 1\nNs 50\nillum 7\n\n";

@@ -36,6 +36,7 @@ public class RenderTestObject{
 	
 	private static long tstart = System.currentTimeMillis();
 	private static long tend;
+	private static double anim_cycle = 10;
 	
 	private static CharResourceLoader res = CharResourceLoader.getInstance();
 	private static GlRenderHelper render = GlRenderHelper.getInstance();
@@ -156,6 +157,8 @@ public class RenderTestObject{
 	
 	public static void doRender(double delta) {
 		
+		tend = System.currentTimeMillis();
+		
 		//GlStateManager.pushMatrix();
 		
 		//tend = System.currentTimeMillis() - tstart;
@@ -171,9 +174,13 @@ public class RenderTestObject{
 		//GL11.glTranslated(0, 5, 0);
 		//render.renderGrid(cube_);
 		render.setDebugState(true);
+		double cur_time = ((tend - tstart) / 1000.) % anim_cycle;
+		System.out.println(cur_time);
+		
+		horse.setLocalState(new State3DIntegrated(new Vector(0, cur_time, 0)));
 		render.renderObject(horse, delta);
 		//System.out.println(horse.getUVMap(0));
-		double cur_time = ((tend - tstart) % 1000) / 1000;
+
 		spider.setChildrenFrameTime(cur_time);
 		NodeBase spider_body = spider.getChild(0).getChild(0);
 		render.renderObject(spider, delta);
