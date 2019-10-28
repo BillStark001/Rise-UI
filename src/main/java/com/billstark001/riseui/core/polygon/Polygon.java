@@ -12,7 +12,7 @@ import com.billstark001.riseui.math.Triad;
 import com.billstark001.riseui.math.Utils;
 import com.billstark001.riseui.math.Vector;
 
-public class Polygon extends NodeBase{
+public class Polygon extends NodeCompilableBase{
 	
 	private Triad[][] face_ind;
 	private int[][] edge_ind;
@@ -39,7 +39,7 @@ public class Polygon extends NodeBase{
 		this.render_state = new State3DIntegrated();
 		
 		this.genEdges();
-		//this.markRecompile();
+		this.markRecompile();
 	}
 	
 	public Polygon(Polygon m) {
@@ -58,7 +58,7 @@ public class Polygon extends NodeBase{
 	
 	@Override
 	public boolean setParentRemainGlobalState(NodeBase obj) {
-		//this.markRecompile();
+		this.markRecompile();
 		return super.setParentRemainGlobalState(obj);
 	}
 	
@@ -95,13 +95,13 @@ public class Polygon extends NodeBase{
 			this.pos_r = Utils.applyStateMat(this.pos, this.render_state.get());
 		if (this.nrm != null)
 			this.nrm_r = Utils.applyStateMat(this.nrm, this.render_state.get());
-		//this.markRecompile();
+		this.markRecompile();
 	}
 	
 	public void rasterize() {
-		//if (!this.isCompiled()) {
-		//	this.compileList();
-		//}
+		if (!this.isCompiled()) {
+			this.compileList();
+		}
 		this.pos = this.pos_r;
 		this.nrm = this.nrm_r;
 		this.render_state = new State3DIntegrated();

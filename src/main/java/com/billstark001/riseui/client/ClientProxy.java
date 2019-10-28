@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy {
 		DevelopProxy.getInstance().CallInit(event);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void postRenderTileOverlayEvent(RenderWorldLastEvent e) {
 		GlStateManager.pushMatrix();
 		EntityPlayer player = Minecraft.getMinecraft().player;

@@ -36,7 +36,6 @@ public final class GlRenderHelper {
 	public void setDebugState(boolean s) {this.render_debug = s;}
 	public boolean isDebugging() {return this.render_debug;}
 
-	private MtlFile mtl;
 	private int r, g, b, a;
 
 	private final static GlRenderHelper INSTANCE = new GlRenderHelper(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), Minecraft.getMinecraft().renderEngine);
@@ -47,7 +46,6 @@ public final class GlRenderHelper {
 		this.M = M;
 		setColor(DEFAULT_COLOR);
 		setAlpha(0.5);
-		mtl = MtlFile.getDefault();
 	}
 	public static GlRenderHelper getInstance() {return INSTANCE;}
 
@@ -65,9 +63,6 @@ public final class GlRenderHelper {
 	public void addVertex(Vector pos, Vector nrm, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).normal((float) nrm.get(0), (float) nrm.get(1), (float) nrm.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
 	public void addVertex(Vector pos, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
 	public void addVertex(Vector pos){R.pos(pos.get(0), pos.get(1), pos.get(2)).color(r, g, b, a).endVertex();}
-
-	public void assignMtlFile(MtlFile mtl) {if (mtl == null)this.mtl = MtlFile.getDefault(); else this.mtl = mtl;}
-	public MtlFile getMtlFile() {return mtl;}
 
 	//Color Assignment
 

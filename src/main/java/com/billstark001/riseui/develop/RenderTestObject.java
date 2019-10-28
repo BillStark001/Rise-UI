@@ -133,18 +133,6 @@ public class RenderTestObject{
 		spider.setLocalState(new State3DIntegrated(new Vector(2, 1, 2), null, 0.01));
 		spider.setVisEdge(NodeBase.Visibility.TRUE);
 		
-		spider.dump();
-		
-		GlStateManager.pushMatrix();
-		GlStateManager.multMatrix(spider.getGlobalState().get().storeBufferF());
-		System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
-		GlStateManager.popMatrix();
-		
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(2, 1, 2);
-		GlStateManager.scale(0.01, 0.01, 0.01);
-		System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
-		GlStateManager.popMatrix();
 	}
 	
 	public static Matrix getGlMatrix(int mat) {
