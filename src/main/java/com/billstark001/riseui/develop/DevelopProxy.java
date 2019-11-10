@@ -2,7 +2,7 @@ package com.billstark001.riseui.develop;
 
 import org.lwjgl.input.Keyboard;
 
-import com.billstark001.riseui.events.RenderTileOverlayEvent;
+import com.billstark001.riseui.client.events.RenderTileOverlayEvent;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;

@@ -1,4 +1,4 @@
-package com.billstark001.riseui.events;
+package com.billstark001.riseui.client.events;
 
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
