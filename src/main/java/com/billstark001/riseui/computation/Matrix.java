@@ -1,4 +1,4 @@
-package com.billstark001.riseui.math;
+package com.billstark001.riseui.computation;
 
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -157,9 +157,15 @@ public final class Matrix {
 	}
 	
 	//Math functions
-	public final Matrix multScalar(double lambda) {
+	public final Matrix mult(double lambda) {
 		Vector[] temp = new Vector[x];
 		for(int i = 0; i < x; ++i) temp[i] = elements[i].mult(lambda);
+		return new Matrix(temp);
+	}
+	
+	public final Matrix power(double lambda) {
+		Vector[] temp = new Vector[x];
+		for(int i = 0; i < x; ++i) temp[i] = elements[i].power(lambda);
 		return new Matrix(temp);
 	}
 	
@@ -187,7 +193,9 @@ public final class Matrix {
 	}
 	
 	public final Vector[] toVecArray() {
-		return elements;
+		Vector[] e = new Vector[elements.length];
+		for (int i = 0; i < e.length; ++i) e[i] = elements[i];
+		return e;
 	}
 	
 	public final double[][] to2DArray() {
@@ -233,6 +241,15 @@ public final class Matrix {
 			dtemp[i][i] = 1;
 		}
 		return new Matrix(dtemp);
+	}
+	
+	public static Matrix identityExtend(Vector v) {
+		int dim = v.getDimension();
+		double[][] ans = new double[dim][dim];
+		for (int i = 0; i < dim; ++i) {
+			ans[i][i] = v.get(i);
+		}
+		return new Matrix(ans);
 	}
 	
 	public static Matrix homoExtend(Matrix m, int dimension) {

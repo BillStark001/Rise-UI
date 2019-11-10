@@ -6,11 +6,11 @@ import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.NodeCompilableBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Utils3D;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.io.ObjFile;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Utils;
-import com.billstark001.riseui.math.Vector;
 
 public class Polygon extends NodeCompilableBase{
 	
@@ -92,19 +92,18 @@ public class Polygon extends NodeCompilableBase{
 	
 	public void calcRender() {
 		if (this.pos != null)
-			this.pos_r = Utils.applyStateMat(this.pos, this.render_state.get());
+			this.pos_r = Utils3D.applyStateMat(this.pos, this.render_state.get());
 		if (this.nrm != null)
-			this.nrm_r = Utils.applyStateMat(this.nrm, this.render_state.get());
+			this.nrm_r = Utils3D.applyStateMat(this.nrm, this.render_state.get());
 		this.markRecompile();
 	}
 	
 	public void rasterize() {
-		if (!this.isCompiled()) {
-			this.compileList();
-		}
+		this.calcRender();
 		this.pos = this.pos_r;
 		this.nrm = this.nrm_r;
 		this.render_state = new State3DIntegrated();
+		this.markRecompile();
 	}
 
 	

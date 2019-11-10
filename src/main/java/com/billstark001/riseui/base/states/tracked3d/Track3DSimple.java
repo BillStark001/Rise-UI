@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Utils;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Utils3D;
 
 public class Track3DSimple extends Track3DBase {
 
@@ -127,7 +127,7 @@ public class Track3DSimple extends Track3DBase {
 			KeyFrame f1 = this.frames[index + 1];
 			double interp_t = (time = f0.time) / (f1.time - f0.time);
 			if (this.isLinearInterp())
-				return Utils.linear(interp_t, f0.val, f1.val);
+				return Utils3D.linear(interp_t, f0.val, f1.val);
 			else
 				return f0.val;
 		}

@@ -2,7 +2,6 @@ package com.billstark001.riseui.base.shader;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
-import com.billstark001.riseui.base.TagBase.ApplicationReturn;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 

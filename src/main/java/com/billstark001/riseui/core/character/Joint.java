@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Vector;
 
 public class Joint extends NodeBase {
 

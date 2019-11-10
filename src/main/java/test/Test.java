@@ -24,23 +24,24 @@ import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.StateTrackedDouble;
 import com.billstark001.riseui.base.states.StateTrackedVec3;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
+import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DScl;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
 import com.billstark001.riseui.base.states.tracked3d.Track3DIntegrated;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Utils3D;
+import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.UtilsLinalg;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
-import com.billstark001.riseui.math.InteractUtils;
-import com.billstark001.riseui.math.LinalgUtils;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Utils;
-import com.billstark001.riseui.math.Vector;
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.content.geometry.Geometry;
 import com.dddviewr.collada.content.geometry.Mesh;
@@ -98,36 +99,38 @@ public class Test {
 		j0.setChildrenFrameTime(5);
 		j0.dump();
 		
-		Track3DIntegrated ttest = (Track3DIntegrated) (j0.getChild(0).getLocalStateRaw());
-		StateTrackedDouble tpr = ((StateTrackedVec3) (ttest.p.getStateRepr())).getY();
-		//StateTrackedVec3 tpr = (StateTrackedVec3) (ttest.p.getStateRepr());
-		//Track3DIntegrated tpr = ttest;
+		Quaternion q1 = Quaternion.getQuatByAA(Vector.UNIT1_D3, 30);
+		Quaternion q2 = Quaternion.rotMatToQuat(Quaternion.quatToRotMat(q1));
+		System.out.println(q1);
+		System.out.println(q2);
 		
-		//prpr(tpr.containsFrames());
-		//prpr(tpr.getStartTime());
-		//prpr(tpr.getEndTime());
+		State3DIntegrated s1 = new State3DIntegrated(
+				new State3DRot(Quaternion.getQuatByAA(Vector.UNIT1_D3, 30)), 
+				new State3DScl(new Vector(7, 5, 13)), 
+				new State3DRot(Quaternion.getQuatByAA(Vector.UNIT1_D3, 30)), 
+				new State3DPos(Vector.UNIT1_D3));
 		
-		double smpl = 1. / 30.;
-		for (double i = tpr.getStartTime(); i <= tpr.getEndTime(); i += smpl) {
-			prpr(tpr.get(i), " ");
-		}
+		State3DIntegrated s2 = Utils3D.decompStateMat(s1.get());
+		System.out.println(s1);
+		System.out.println(s2);
 		
-		int a = 1;
-		a = 2;
-		
-		
+		Vector v1 = Quaternion.quatToEuler(q1);
+		Quaternion q3 = Quaternion.eulerToQuat(v1);
+		System.out.println(v1);
+		System.out.println(q3);
+		System.out.println(Quaternion.quatToEuler(q3));
 		
 		/*
-		double[][] a = {
-				{1, 2},
-				{3, 4},
-				{5, 6}
-		};
-		Matrix m = new Matrix(a);
-		Matrix[] m_ = LinalgUtils.SVD(m);
+		
+		Matrix m1 = s1.calcState();//.get(0, 0, 3, 3);
+		Matrix[] m_ = LinalgUtils.SVD(m1);
 		System.out.println(m_[0]);
 		System.out.println(m_[1]);
 		System.out.println(m_[2]);
+
+		System.out.println(m1);
+		System.out.println(m_[0].mult(m_[1]).mult(m_[2]));
+		
 		
 		//Matrix r = Quaternion.quatToRotate(Quaternion.getQuatByAA(new Vector(1, 1, 1), Math.PI / 2));
 		//System.out.println(LinalgUtils.eigen(r));

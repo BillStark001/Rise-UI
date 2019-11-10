@@ -1,9 +1,9 @@
 package com.billstark001.riseui.base.states.simple3d;
 
 import com.billstark001.riseui.base.states.StateSimpleBase;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Pair;
-import com.billstark001.riseui.math.ShapeMismatchException;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Pair;
+import com.billstark001.riseui.computation.ShapeMismatchException;
 
 import scala.actors.threadpool.Arrays;
 

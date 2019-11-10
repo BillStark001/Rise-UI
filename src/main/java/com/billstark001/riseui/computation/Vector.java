@@ -1,4 +1,4 @@
-package com.billstark001.riseui.math;
+package com.billstark001.riseui.computation;
 
 import java.util.Arrays;
 
@@ -113,10 +113,10 @@ public final class Vector {
 		return true;
 	}
 	
-	public final double get(int position) {return elements[position];}
-	public final Vector get(int start, int end) {return new Vector(Arrays.copyOfRange(elements, start, end));}
+	public double get(int position) {return elements[position];}
+	public Vector get(int start, int end) {return new Vector(Arrays.copyOfRange(elements, start, end));}
 	
-	public final Vector concatenate(Vector v) {
+	public Vector concatenate(Vector v) {
 		double[] temp = new double[dim + v.dim];
 		for(int i = 0; i < temp.length; ++i) {
 			if(i < dim) temp[i] = elements[i];
@@ -125,7 +125,7 @@ public final class Vector {
 		return new Vector(temp);
 	}
 	
-	public final Vector concatenate(double[] d) {
+	public Vector concatenate(double[] d) {
 		double[] temp = new double[dim + d.length];
 		for(int i = 0; i < temp.length; ++i) {
 			if(i < dim) temp[i] = elements[i];
@@ -134,21 +134,21 @@ public final class Vector {
 		return new Vector(temp);
 	}
 	
-	public final Vector set(int start, int end, Vector vals) {
+	public Vector set(int start, int end, Vector vals) {
 		Vector v1 = this.get(0, start);
 		Vector v3 = this.get(end, dim);
 		Vector v2 = v1.concatenate(vals).concatenate(v3);
 		return v2;
 	}
-	public final Vector set(int start, int end, double[] vals) {return set(start, end, new Vector(vals));}
-	public final Vector set(int position, double val) {return set(position, position + 1, new Vector(val));}
+	public Vector set(int start, int end, double[] vals) {return set(start, end, new Vector(vals));}
+	public Vector set(int position, double val) {return set(position, position + 1, new Vector(val));}
 	
-	public final Vector insert(int position, Vector vals) {return set(position, position, vals);}
-	public final Vector insert(int position, double[] vals) {return set(position, position, vals);}
-	public final Vector insert(int position, double val) {return set(position, val);}
+	public Vector insert(int position, Vector vals) {return set(position, position, vals);}
+	public Vector insert(int position, double[] vals) {return set(position, position, vals);}
+	public Vector insert(int position, double val) {return set(position, val);}
 	
 	//Math functions
-	public final Vector addElementWise(Vector v) {
+	public Vector addElementWise(Vector v) {
 		double[] temp = new double[Math.max(dim, v.dim)];
 		for(int i = 0; i < temp.length; ++i) {
 			int res = 0;
@@ -159,7 +159,7 @@ public final class Vector {
 		return new Vector(temp);
 	}
 	
-	public final Vector add(Vector v) {
+	public Vector add(Vector v) {
 		if(dim != v.dim)
 			try {
 				throw new Exception(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
@@ -171,7 +171,7 @@ public final class Vector {
 		for(int i = 0; i < dim; ++i) temp[i] = elements[i] + v.get(i);
 		return new Vector(temp);
 	}
-	public final Vector subtract(Vector v) {
+	public Vector subtract(Vector v) {
 		if(dim != v.dim)
 			try {
 				throw new Exception(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
@@ -184,31 +184,36 @@ public final class Vector {
 		return new Vector(temp);
 	}
 	
-	public final Vector mult(double x) {
+	public Vector mult(double x) {
 		double[] temp = elements.clone();
 		for(int i = 0; i < dim; ++i) temp[i] *= x;
 		return new Vector(temp);
 	}
-	public final Vector normalize() {if (this.getLength() == 0)return this; return this.mult(1 / this.getLength());}
+	public Vector power(double x) {
+		double[] temp = elements.clone();
+		for(int i = 0; i < dim; ++i) temp[i] = Math.pow(temp[i], x);
+		return new Vector(temp);
+	}
+	public Vector normalize() {if (this.getLength() == 0)return this; return this.mult(1 / this.getLength());}
 	
-	public final Vector minusElementWise(Vector v) {return this.addElementWise(v.mult(-1));}
-	public final Vector minus(Vector v) {return this.add(v.mult(-1));}
+	public Vector minusElementWise(Vector v) {return this.addElementWise(v.mult(-1));}
+	public Vector minus(Vector v) {return this.add(v.mult(-1));}
 	
-	public final Vector mult(Vector v) {
+	public Vector mult(Vector v) {
 		int dim = Math.min(getDimension(), v.getDimension());
 		double[] d = new double[dim];
 		for(int i = 0; i < dim; ++i) d[i] = elements[i] * v.elements[i];
 		return new Vector(d);
 	}
 	
-	public final Vector div(Vector v) {
+	public Vector div(Vector v) {
 		int dim = Math.min(getDimension(), v.getDimension());
 		double[] d = new double[dim];
 		for(int i = 0; i < dim; ++i) d[i] = elements[i] / v.elements[i];
 		return new Vector(d);
 	}
 	
-	public final double dot(Vector v) {
+	public double dot(Vector v) {
 		if(dim != v.dim)
 			try {
 				throw new LengthMismatchException(String.format("Unexpected vector dimension(expect %d, got %d)", dim, v.dim));
@@ -221,7 +226,7 @@ public final class Vector {
 		return ans;
 	}
 	
-	public final Vector cross(Vector v) {
+	public Vector cross(Vector v) {
 		if(dim == v.dim && dim == 2) return new Vector(elements[0] * v.get(1), elements[1] * v.get(0));
 		else if(dim == v.dim && dim == 3) {
 			double x = this.get(1) * v.get(2) - this.get(2) * v.get(1);
@@ -238,16 +243,25 @@ public final class Vector {
 		return null;
 	}
 	
+	public Vector inverse() {
+		int dim = this.getDimension();
+		double[] ans = new double[dim];
+		for (int i = 0; i < dim; ++i) {
+			ans[i] = this.get(dim - i - 1);
+		}
+		return new Vector(ans);
+	}
+	
 	//Utils
-	public static final int maxDim(Vector[] v) {
+	public static int maxDim(Vector[] v) {
 		int temp = 0;
 		for(int i = 0; i < v.length; ++i) temp = Math.max(temp, v[i].getDimension());
 		return temp;
 	}
 	
-	public static final Vector expand0(Vector v, int l) {return expand(v, l, 0);}
-	public static final Vector expand1(Vector v, int l) {return expand(v, l, 1);}
-	public static final Vector expand(Vector v, int l, double def) {
+	public static Vector expand0(Vector v, int l) {return expand(v, l, 0);}
+	public static Vector expand1(Vector v, int l) {return expand(v, l, 1);}
+	public static Vector expand(Vector v, int l, double def) {
 		if (l < v.getDimension()) return null;
 		if (l == v.getDimension()) return v;
 		double[] dans = new double[l];
@@ -257,19 +271,19 @@ public final class Vector {
 	}
 	
 	// Private Utils
-	private static final double calcLength(double[] d) {
+	private static double calcLength(double[] d) {
 		double ans = 0;
 		for (int i = 0; i < d.length; ++i) ans += d[i] * d[i];
 		return Math.sqrt(ans);
 	}
 	
-	private static final double calcMahattanDis(double[] d) {
+	private static double calcMahattanDis(double[] d) {
 		double ans = 0;
 		for (int i = 0; i < d.length; ++i) ans += Math.abs(d[i]);
 		return ans;
 	}
 	
-	private static final double calcSum(double[] d) {
+	private static double calcSum(double[] d) {
 		double ans = 0;
 		for (int i = 0; i < d.length; ++i) ans += d[i];
 		return ans;

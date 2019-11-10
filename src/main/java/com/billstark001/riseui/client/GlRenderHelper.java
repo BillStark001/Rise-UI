@@ -7,10 +7,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.io.MtlFile;
-import com.billstark001.riseui.math.InteractUtils;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -177,7 +177,7 @@ public final class GlRenderHelper {
 		GL11.glGetFloat(mat, mdata);
 		Matrix4f m = new Matrix4f();
 		m.load(mdata);
-		return InteractUtils.transMat(m);
+		return UtilsInteract.transMat(m);
 	}
 	
 	public void bindTexture(int tex) {

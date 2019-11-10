@@ -3,7 +3,7 @@ package com.billstark001.wdcs.algorithm;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 
-import com.billstark001.riseui.math.InteractUtils;
+import com.billstark001.riseui.computation.UtilsInteract;
 
 import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
@@ -38,7 +38,7 @@ public class AnalyzedBlockPos
      */
     public Block getBlock(int dx, int dy, int dz)
     {
-    	return InteractUtils.getBlock(x + dx, y + dy, z + dz);
+    	return UtilsInteract.getBlock(x + dx, y + dy, z + dz);
     }
 
     /**
@@ -115,7 +115,7 @@ public class AnalyzedBlockPos
                 || block instanceof BlockPistonMoving
                 || block instanceof BlockSlab
                 || block instanceof BlockSlime
-                || (block instanceof BlockSnow && block.getMetaFromState(InteractUtils.getBlockState(x+dx, y+dy, z+dz)) > 0)	//has 1 out of 8 snow layers
+                || (block instanceof BlockSnow && block.getMetaFromState(UtilsInteract.getBlockState(x+dx, y+dy, z+dz)) > 0)	//has 1 out of 8 snow layers
                 || block instanceof BlockStainedGlass
                 || block instanceof BlockStairs
                 || block instanceof BlockWall

@@ -12,11 +12,11 @@ import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.empty.EmptyNode;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Vector;
 
 import scala.actors.threadpool.Arrays;
 

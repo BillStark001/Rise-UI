@@ -1,19 +1,17 @@
-package com.billstark001.riseui.math;
+package com.billstark001.riseui.computation;
 
 import java.util.Arrays;
 
-public class LinalgUtils {
+public class UtilsLinalg {
 
-	/*
+	/**
 	 * Solve the Determinant.
-	 * Parameters:
-	 *   M: Matrix
-	 * Returns:
-	 *   double, the solution of the determinant.
-	 *   * M must be square, otherwise return 1137833.
+	 * @param M Matrix
+	 * @return double, the solution of the determinant.
+	 *   * M must be square, otherwise return NAN.
 	 */
 	public static double solveDeterminant(Matrix M) {
-		if (!M.isSquare()) return 1137833;
+		if (!M.isSquare()) return Math.sqrt(-1);
 		boolean sym_swi_mark = false;
 		int dim = M.getShape().getX();
 		Vector[] src = M.toVecArray();
@@ -59,15 +57,31 @@ public class LinalgUtils {
 		
 	}
 	
-	/*
+	/**
 	 * Solve a homogeneous equation.
-	 * Parameters:
-	 *   M: Matrix
-	 * Returns:
-	 *   Vector, a normalized linear-independent solution of the equation.
+	 * @param M Matrix
+	 * @return Vector, a normalized linear-independent solution of the equation.
 	 *   * M must be square, otherwise return null.
 	 */
 	public static Vector solveHomoEq(Matrix M) {
+		double zero_threshold = 1e-15;
+		Vector ans = Vector.UNIT0_D2;
+		while (ans.getLength() == 0 && zero_threshold < 1e-7) {
+			ans = solveHomoEq(M, zero_threshold);
+			zero_threshold *= 10;
+		}
+		return ans;
+	}
+	
+	/**
+	 * Solve a homogeneous equation.
+	 * @param M Matrix
+	 * @param zero_threshold double less than this value will be proceed as 0. 
+	 * @return Vector, a normalized linear-independent solution of the equation.
+	 *   * M must be square, otherwise return null.
+	 */
+	public static Vector solveHomoEq(Matrix M, double zero_threshold) {
+		
 		if (!M.isSquare()) return null;
 		int dim = M.getShape().getX();
 		Vector[] src = M.toVecArray();
@@ -104,33 +118,31 @@ public class LinalgUtils {
 			}
 		}
 		
-		//for (Vector v: src) System.out.println(v);System.out.println();
+		// for (Vector v: src) System.out.println(v);System.out.println();
 		
 		// Calculate value
 		double srci;
-		for (int i = dim - 1; i >= 0; --i) {
+		for (int i = dim - 1; i > -1; --i) {
 			srci = src[i].get(i);
-			if (Math.abs(srci) < 1e-13) cst[i] = srci = 1;
+			if (Math.abs(srci) < zero_threshold) cst[i] = srci = 1;
 			else cst[i] *= 1 / srci;
 			for (int j = 0; j < i; ++j) {
 				cst[j] -= cst[i] * src[j].get(i);
 			}
 		}
 		
-		//System.out.println(new Vector(cst));
+		// System.out.println(new Vector(cst));
 		
 		return new Vector(cst).normalize();
 		
 	}
 	
-	/*
+	/**
 	 * Solve a linear equation using Gaussian elimination method.
-	 * Parameters:
-	 *   A: (n, n)-like matrix, the coefficient matrix of a linear equation.
-	 *   b: (n)-like vector, the constant series of the same equation.
+	 * @param A (n, n)-like matrix, the coefficient matrix of a linear equation.
+	 * @param b (n)-like vector, the constant series of the same equation. 
 	 *   * each dimension's length must be the same. 
-	 * Returns:
-	 *   Vector, the solution of the equation.
+	 * @return Vector, the solution of the equation.
 	 *   * null will be returned if inputs are problematic.
 	 *   * null will be returned if the equation consists of zero or multiple solutions.
 	 */
@@ -193,12 +205,10 @@ public class LinalgUtils {
 		
 	}
 	
-	/*
+	/**
 	 * Solve a linear equation using Gaussian elimination method.
-	 * Parameters:
-	 *   M: (n, n+1)-like matrix, the coefficient-constant matrix of a linear equation.
-	 * Returns:
-	 *   Vector, the solution of the equation.
+	 * @param M: (n, n+1)-like matrix, the coefficient-constant matrix of a linear equation.
+	 * @return Vector, the solution of the equation.
 	 *   * null will be returned if inputs are problematic.
 	 *   * null will be returned if the equation consists of zero or multiple solutions.
 	 */
@@ -206,67 +216,14 @@ public class LinalgUtils {
 		Pair shape = M.getShape();
 		if (shape.getY() - shape.getX() != 1) return null;
 		if (shape.getX() == 0) return null;
-
-		int dim = M.getShape().getX();
-		Vector[] src = M.toVecArray();
-		
-		double cur_val, tmp_val;
-		
-		// process i-th line
-		// use Gaussian elimination to transfer to a down triangle matrix
-		for (int i = 0; i < dim; ++i) {
-			
-			
-			//for (Vector v: src) System.out.println(v);System.out.println();
-			
-			cur_val = src[i].get(i);
-			// if cur_val == 0 find the first != 0 if can't find return 0
-			if (cur_val == 0) {
-				int row_not0 = -1;
-				for (int k = i + 1; k < dim; ++k) {
-					if (src[k].get(i) != 0) {
-						cur_val = src[k].get(i);
-						Vector tmp = src[i];
-						src[i] = src[k];
-						src[k] = tmp;
-						row_not0 = k;
-						break;
-					}
-				}
-				if (row_not0 == -1) return null;
-			}
-			
-			//for (Vector v: src) System.out.println(v);System.out.println();
-			
-			// Gaussian elimination
-			for (int j = i + 1; j < dim; ++j) {
-				if (i == j) continue;
-				tmp_val = src[j].get(i);
-				if (tmp_val == 0) continue;
-				src[j] = src[j].add(src[i].mult(-tmp_val / cur_val)); // eliminate
-			}
-			
-		}
-		
-		
-		// Calculate value
-		double[] cst = new double[dim];
-		for (int i = 0; i < dim; ++i) cst[i] = src[i].get(dim);
-		for (int i = dim - 1; i >= 0; --i) {
-			cst[i] *= 1 / src[i].get(i);
-			for (int j = 0; j < i; ++j) {
-				cst[j] -= cst[i] * src[j].get(i);
-			}
-		}
-		return new Vector(cst);
-		
+		return solveLineEq(M.get(0, 0, shape.getX(), shape.getX()), M.getColumn(shape.getX()));
 	}
 	
-	/*
+	/**
 	 * QR Decomposition
+	 * @param Matrix M
+	 * @return Matrix[Q, R]
 	 */
-	
-	
 	public static Matrix[] qrDecomp(Matrix M) {
 		if (!M.isSquare()) return null;
 		
@@ -358,7 +315,7 @@ public class LinalgUtils {
 		return M.getDiag();
 	}
 	
-	public static Matrix eigenMatrix(Matrix M, Vector eigen) {
+	public static Matrix getEigenVectors(Matrix M, Vector eigen) {
 		if (!M.isSquare()) return null;
 		if (M.getShape().getX() != eigen.getDimension()) return null;
 		if (M.getShape().getX() == 0) return null;
@@ -366,41 +323,60 @@ public class LinalgUtils {
 		int dim = eigen.getDimension();
 		Matrix ismpl = Matrix.identity(dim);
 		double[] eigens = eigen.toArray();
-		Arrays.parallelSort(eigens);
+		// Arrays.parallelSort(eigens);
 		Vector[] ans = new Vector[dim];
 		
 		for (int i = 0; i < dim; ++i) {
-			Matrix tmp = ismpl.multScalar(-eigens[i]).add(M);
-			//System.out.println(tmp);
-			//System.out.println(solveHomoEq(tmp));
+			Matrix tmp = ismpl.mult(-eigens[i]).add(M);
+			// System.out.println("tmp");
+			// System.out.println(tmp);
+			// System.out.println(solveHomoEq(tmp));
 			ans[i] = solveHomoEq(tmp);
 		}
 		
 		return new Matrix(ans);
 	}
 	
+	/**
+	 * Singular value decomposition of a Matrix.
+	 * SVD: Find 3 Matrices U, E, V satisfying M=U@E@V.T().
+	 * @param M the Matrix to be decomposed.
+	 * @return 3 Matrices U, E, V.
+	 */
 	public static Matrix[] SVD(Matrix M) {
+		if (M.getShape().getX() < M.getShape().getY()) M = M.T();
+		
 		Matrix u = null, e = null, v = null;
-		Matrix mmt = M.mult(M.T());
-		Matrix mtm = M.T().mult(M);
-		Vector emmt = eigen(mmt);
-		Vector emtm = eigen(mtm);
-		Matrix memmt = eigenMatrix(mmt, emmt);
-		Matrix memtm = eigenMatrix(mtm, emtm);
-		/*
-		System.out.println(mmt);
-		System.out.println(mtm);
-		System.out.println(emmt);
-		System.out.println(emtm);
-		System.out.println(memmt);
-		System.out.println(memtm);
-		*/
-		//double[][] _e = new double[M.getShape().getX()][M.getShape().getY()];
-		double[] v_ = new double[emtm.getDimension()];
-		for (int i = 0; i < v_.length; ++i) v_[i] = Math.sqrt(emtm.get(i));
+		
+		Matrix mmt = M.mult(M.T()); // x*x
+		Matrix mtm = M.T().mult(M); // y*y
+		Vector emmt = eigen(mmt); // x
+		Vector emtm = eigen(mtm); // y
+		Matrix memmt = getEigenVectors(mmt, emmt);
+		Matrix memtm = getEigenVectors(mtm, emtm);
+		
+		boolean e_rev_flag = false;
+		if (solveDeterminant(memmt) < 0) {
+			Vector[] vt = memmt.toVecArray();
+			vt[0] = vt[0].mult(-1);
+			memmt = new Matrix(vt);
+			e_rev_flag = !e_rev_flag;
+		}
+		if (solveDeterminant(memtm) < 0) {
+			Vector[] vt = memtm.toVecArray();
+			vt[0] = vt[0].mult(-1);
+			memtm = new Matrix(vt);
+			e_rev_flag = !e_rev_flag;
+		}
+		if (e_rev_flag) {
+			double[] et = emtm.toArray();
+			et[0] = -et[0];
+			emtm = new Vector(et);
+		}
+		
 		u = memmt.T();
-		e = new Matrix(new Vector(v_));
-		v = memtm.T();
+		e = Matrix.identityExtend(emtm).power(0.5);
+		v = memtm;
 		
 		Matrix[] ans = {u, e, v};
 		return ans;

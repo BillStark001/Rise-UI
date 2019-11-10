@@ -12,6 +12,9 @@ import org.xml.sax.SAXException;
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
 import com.billstark001.riseui.core.polygon.Polygon;
@@ -21,9 +24,6 @@ import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.IOUtils;
 import com.billstark001.riseui.io.MtlFile;
 import com.billstark001.riseui.io.ObjFile;
-import com.billstark001.riseui.math.InteractUtils;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Vector;
 import com.dddviewr.collada.Collada;
 
 import net.minecraft.client.Minecraft;
@@ -140,7 +140,7 @@ public class RenderTestObject{
 		GL11.glGetFloat(mat, mdata);
 		Matrix4f m = new Matrix4f();
 		m.load(mdata);
-		return InteractUtils.transMat(m);
+		return UtilsInteract.transMat(m);
 	}
 	
 	public static void doRender(double delta) {
@@ -163,7 +163,7 @@ public class RenderTestObject{
 		//render.renderGrid(cube_);
 		render.setDebugState(true);
 		double cur_time = ((tend - tstart) / 1000.) % anim_cycle;
-		System.out.println(cur_time);
+		//System.out.println(cur_time);
 		
 		horse.setLocalState(new State3DIntegrated(new Vector(0, cur_time, 0)));
 		render.renderObject(horse, delta);

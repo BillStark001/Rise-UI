@@ -6,9 +6,9 @@ import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DScl;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Vector;
 
 public class Track3DIntegrated extends Track3DBase {
 

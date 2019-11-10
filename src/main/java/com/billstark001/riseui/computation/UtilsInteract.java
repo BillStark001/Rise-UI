@@ -1,4 +1,4 @@
-package com.billstark001.riseui.math;
+package com.billstark001.riseui.computation;
 
 import java.nio.FloatBuffer;
 
@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
-public final class InteractUtils {
+public final class UtilsInteract {
 	
 	private static Minecraft mc = Minecraft.getMinecraft();
 	
@@ -57,9 +57,6 @@ public final class InteractUtils {
 		x = q.getF(1); y = q.getF(2); z = q.getF(3);
 		return new org.lwjgl.util.vector.Quaternion(x, y, z, w);
     }
-	
-	public static final Vector getAirOrderAngle(Vector v, double roll) {return Utils.getAirOrderAngle(v, roll);}
-	public static final Matrix getRotateAffine(Vector v, double roll) {return Utils.getRotateAffine(v, roll);}
 	
 	@Deprecated
 	public static Vec3d numMult(Vec3d v, double n) {

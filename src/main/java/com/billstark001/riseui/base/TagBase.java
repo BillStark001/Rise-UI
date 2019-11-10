@@ -7,9 +7,9 @@ import java.util.List;
 import com.billstark001.riseui.base.TagBase.ApplicationExtra;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.math.Pair;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Pair;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Vector;
 
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;

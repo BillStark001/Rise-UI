@@ -1,8 +1,8 @@
 package com.billstark001.riseui.base.states.simple3d;
 
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Utils;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Utils3D;
+import com.billstark001.riseui.computation.Vector;
 
 public class State3DScl extends State3DGenerative<Vector>{
 
@@ -17,7 +17,7 @@ public class State3DScl extends State3DGenerative<Vector>{
 
 	@Override
 	public Matrix getMatFromRepr() {
-		return Utils.sclToHomoState(getStateRepr());
+		return Utils3D.sclToHomoState(getStateRepr());
 	}
 
 }

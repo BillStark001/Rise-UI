@@ -1,6 +1,6 @@
 package com.billstark001.riseui.base.states;
 
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Vector;
 
 public class StateTrackedVec3 extends StateTrackedBase<Vector> {
 

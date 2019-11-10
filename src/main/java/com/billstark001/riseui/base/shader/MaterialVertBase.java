@@ -2,7 +2,7 @@ package com.billstark001.riseui.base.shader;
 
 import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.Layer;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Vector;
 
 public abstract class MaterialVertBase extends BaseObject {
 

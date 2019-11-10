@@ -2,8 +2,8 @@ package com.billstark001.riseui.base.states;
 
 import java.util.Arrays;
 
-import com.billstark001.riseui.math.Utils;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Utils3D;
+import com.billstark001.riseui.computation.Vector;
 
 public class StateTrackedDouble extends StateTrackedBase<Double> {
 
@@ -139,9 +139,9 @@ public class StateTrackedDouble extends StateTrackedBase<Double> {
 			Vector p2 = f1.tanIn;
 			Vector p3 = new Vector(f1.time, f1.val);
 			if (f0.interp.equals(Interpolation.BEZIER3))
-				return Utils.bezier3(interp_t, p0, p1, p2, p3).get(1);
+				return Utils3D.bezier3(interp_t, p0, p1, p2, p3).get(1);
 			else if (f0.interp.equals(Interpolation.LINEAR))
-				return Utils.linear(interp_t, p0, p3).get(1);
+				return Utils3D.linear(interp_t, p0, p3).get(1);
 			else
 				return f0.val;
 		}

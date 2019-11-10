@@ -9,11 +9,11 @@ import java.util.Map;
 import com.billstark001.riseui.base.shader.MaterialFace;
 import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shader.TagSelectionHardTable;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Pair;
+import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.polygon.Polygon;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Pair;
-import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Vector;
 
 import net.minecraft.util.ResourceLocation;
 

@@ -84,6 +84,9 @@ public class DevelopProxy {
    			mark1 += 1;
    			mark1 %= 2;
    			speakToPlayer(player, Integer.toString(this.mark1));
+   			
+   			RenderTestObject.horse.markRecompile();
+   			RenderTestObject.table.markRecompile();
    		}
    	}
 	

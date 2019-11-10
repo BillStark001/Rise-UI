@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.client.ClientProxy;
 import com.billstark001.riseui.client.GlRenderHelper;
-import com.billstark001.riseui.math.InteractUtils;
+import com.billstark001.riseui.computation.UtilsInteract;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -35,7 +35,7 @@ public class RenderHUD {
 		double Pitch = player.rotationPitch;
 		Vec3d MotionPos = new Vec3d(player.motionX, player.motionY, player.motionZ);
 		Vec3d CurrentBlockPos = new Vec3d(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
-		Vec3d Bias = InteractUtils.numMult(CurrentPos.subtract(LastTickPos), delta);
+		Vec3d Bias = UtilsInteract.numMult(CurrentPos.subtract(LastTickPos), delta);
 		Vec3d RenderPos = LastTickPos.add(Bias);
 
 		Chunk CurrentChunk = world.getChunkFromBlockCoords(player.getPosition());

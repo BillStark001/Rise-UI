@@ -1,8 +1,8 @@
 package com.billstark001.riseui.base.states.tracked3d;
 
 import com.billstark001.riseui.base.states.StateTrackedBase;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.ShapeMismatchException;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.ShapeMismatchException;
 
 public abstract class Track3DGenerative<T> extends Track3DBase {
 

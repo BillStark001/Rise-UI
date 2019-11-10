@@ -1,7 +1,7 @@
 package com.billstark001.riseui.base.states.simple3d;
 
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.ShapeMismatchException;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.ShapeMismatchException;
 
 public abstract class State3DGenerative<T> extends State3DBase {
 

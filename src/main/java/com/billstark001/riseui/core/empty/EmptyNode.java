@@ -2,9 +2,9 @@ package com.billstark001.riseui.core.empty;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.math.Quaternion;
-import com.billstark001.riseui.math.Triad;
-import com.billstark001.riseui.math.Vector;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Vector;
 
 public class EmptyNode extends NodeBase {
 

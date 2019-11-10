@@ -3,10 +3,10 @@ package com.billstark001.riseui.client;
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.common.CommonProxy;
+import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.core.polygon.Presets;
 import com.billstark001.riseui.develop.DevelopProxy;
 import com.billstark001.riseui.events.RenderTileOverlayEvent;
-import com.billstark001.riseui.math.InteractUtils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -49,7 +49,7 @@ public class ClientProxy extends CommonProxy {
 
 		Vec3d CurrentPos = player.getPositionVector();
 		Vec3d LastTickPos = new Vec3d(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ);
-		Vec3d Bias = InteractUtils.numMult(CurrentPos.subtract(LastTickPos), e.getPartialTicks());
+		Vec3d Bias = UtilsInteract.numMult(CurrentPos.subtract(LastTickPos), e.getPartialTicks());
 		Vec3d RenderPos = LastTickPos.add(Bias);
 		GL11.glTranslated(-RenderPos.x + 0.5, -RenderPos.y + 0.5, -RenderPos.z + 0.5);
 

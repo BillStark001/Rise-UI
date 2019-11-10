@@ -1,4 +1,4 @@
-package com.billstark001.riseui.math;
+package com.billstark001.riseui.computation;
 
 public class ShapeMismatchException extends Exception {
 

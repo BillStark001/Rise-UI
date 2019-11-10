@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.math.Matrix;
+import com.billstark001.riseui.computation.Matrix;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;

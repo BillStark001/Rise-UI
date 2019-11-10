@@ -1,8 +1,8 @@
 package com.billstark001.riseui.base.states.simple3d;
 
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Utils;
-import com.billstark001.riseui.math.Quaternion;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Quaternion;
+import com.billstark001.riseui.computation.Utils3D;
 
 public class State3DRot extends State3DGenerative<Quaternion>{
 
@@ -17,7 +17,7 @@ public class State3DRot extends State3DGenerative<Quaternion>{
 
 	@Override
 	public Matrix getMatFromRepr() {
-		return Utils.rotToHomoState(getStateRepr());
+		return Utils3D.rotToHomoState(getStateRepr());
 	}
 
 }

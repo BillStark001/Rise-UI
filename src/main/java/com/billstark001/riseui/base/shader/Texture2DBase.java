@@ -3,12 +3,10 @@ package com.billstark001.riseui.base.shader;
 import java.awt.image.BufferedImage;
 
 import com.billstark001.riseui.client.GlRenderHelper;
-import com.billstark001.riseui.math.Matrix;
-import com.billstark001.riseui.math.Pair;
+import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Pair;
 
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.data.TextureMetadataSection;
 
 public abstract class Texture2DBase {
 
