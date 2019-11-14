@@ -45,6 +45,7 @@ public class TagApplyMaterialFace extends TagBase {
 		switch (phrase) {
 		case TagBase.TAG_PHRASE_RENDER_PRE:
 		case TagBase.TAG_PHRASE_RENDER_POST:
+		case TagBase.TAG_PHRASE_RENDER_FACES:
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			return true;
 		default:
@@ -85,7 +86,13 @@ public class TagApplyMaterialFace extends TagBase {
 
 	@Override
 	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
-		// TODO 自动生成的方法存根
+		boolean flag = false;
+		if (this.selection == null) flag = true;
+		if (this.material == null) flag = false;
+		if (flag) {
+			Texture2DBase albedo = this.material.getAlbedo();
+			if (albedo != null) albedo.bindTexture();
+		}
 		return null;
 	}
 
@@ -103,6 +110,8 @@ public class TagApplyMaterialFace extends TagBase {
 	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.FACE) flag = this.selection.contains(index);
+		if (this.selection == null) flag = true;
+		if (this.material == null) flag = false;
 		if (flag) {
 			Texture2DBase albedo = this.material.getAlbedo();
 			if (albedo != null) albedo.bindTexture();

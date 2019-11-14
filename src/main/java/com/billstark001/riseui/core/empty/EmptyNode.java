@@ -76,24 +76,6 @@ public class EmptyNode extends NodeBase {
 	}
 
 	@Override
-	public void renderVert(double ptick) {
-		// TODO 自动生成的方法存根
-
-	}
-
-	@Override
-	public void renderEdge(double ptick) {
-		// TODO 自动生成的方法存根
-
-	}
-
-	@Override
-	public void renderFace(double ptick) {
-		// TODO 自动生成的方法存根
-
-	}
-
-	@Override
 	public int getVertCount() {
 		// TODO 自动生成的方法存根
 		return 0;
@@ -145,6 +127,18 @@ public class EmptyNode extends NodeBase {
 	public Triad[] getFaceIndices(int index) {
 		// TODO 自动生成的方法存根
 		return null;
+	}
+
+	@Override
+	public int getEdgeIndicesLength(int index) {
+		// TODO 自动生成的方法存根
+		return 0;
+	}
+
+	@Override
+	public int getFaceIndicesLength(int index) {
+		// TODO 自动生成的方法存根
+		return 0;
 	}
 
 }

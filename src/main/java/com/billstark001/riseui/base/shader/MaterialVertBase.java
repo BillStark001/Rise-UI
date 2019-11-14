@@ -13,5 +13,9 @@ public abstract class MaterialVertBase extends BaseObject {
 	
 	public abstract int getColor(Vector pos);
 	public abstract double getSize(Vector pos);
+	
+	public boolean needsPos() {
+		return true;
+	}
 
 }

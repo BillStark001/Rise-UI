@@ -143,6 +143,16 @@ public class Joint extends NodeBase {
 	public Triad[] getFaceIndices(int index) {
 		return null;
 	}
+	@Override
+	public int getEdgeIndicesLength(int index) {
+		// TODO 自动生成的方法存根
+		return 0;
+	}
+	@Override
+	public int getFaceIndicesLength(int index) {
+		// TODO 自动生成的方法存根
+		return 0;
+	}
 
 
 }

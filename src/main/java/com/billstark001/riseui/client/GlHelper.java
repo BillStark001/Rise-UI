@@ -1,6 +1,9 @@
 package com.billstark001.riseui.client;
 
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -9,8 +12,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.io.MtlFile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,32 +27,37 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public final class GlRenderHelper {
+public final class GlHelper {
 
 	private final Tessellator T;
 	private final BufferBuilder R;
 	private final TextureManager M;
 	
-	public static final int DEFAULT_COLOR = 0x00FFFF;
+	public static final int DEFAULT_COLOR = 0xFFFFFFFF;
+	public static final double DEFAULT_WIDTH = 1;
+	public static final double DEFAULT_SIZE = 2;
 	
 	private boolean render_debug = false;
 	public void setDebugState(boolean s) {this.render_debug = s;}
 	public boolean isDebugging() {return this.render_debug;}
 
 	private int r, g, b, a;
+	private Queue<Integer> color_cache;
+	private Queue<Double> width_cache;
+	private Queue<Double> size_cache;
 
-	private final static GlRenderHelper INSTANCE = new GlRenderHelper(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), Minecraft.getMinecraft().renderEngine);
+	private final static GlHelper INSTANCE = new GlHelper(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), Minecraft.getMinecraft().renderEngine);
 
-	private GlRenderHelper(Tessellator T, BufferBuilder R, TextureManager M) {
+	private GlHelper(Tessellator T, BufferBuilder R, TextureManager M) {
 		this.T = T;
 		this.R = R;
 		this.M = M;
-		setColor(DEFAULT_COLOR);
-		setAlpha(0.5);
+		this.resetVertRender();
 	}
-	public static GlRenderHelper getInstance() {return INSTANCE;}
+	
+	public static GlHelper getInstance() {return INSTANCE;}
 
-	//Base Functions
+	// Basic Functions
 
 	public void startDrawing(int type, VertexFormat format) {R.begin(type, format);}
 	public void startDrawingFace() {R.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION_TEX);}
@@ -60,35 +68,96 @@ public final class GlRenderHelper {
 	}
 	public void endDrawing() {T.draw();}
 
-	public void addVertex(Vector pos, Vector nrm, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).normal((float) nrm.get(0), (float) nrm.get(1), (float) nrm.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
-	public void addVertex(Vector pos, Vector uv) {R.pos(pos.get(0), pos.get(1), pos.get(2)).tex(uv.get(0), uv.get(1)).endVertex();}
-	public void addVertex(Vector pos){R.pos(pos.get(0), pos.get(1), pos.get(2)).color(r, g, b, a).endVertex();}
+	public void addVertex(Vector pos, Vector nrm, Vector uv) {
+		R.pos(pos.get(0), pos.get(1), pos.get(2)).normal((float) nrm.get(0), (float) nrm.get(1), (float) nrm.get(2))
+				.tex(uv.get(0), uv.get(1)).endVertex();
+	}
 
-	//Color Assignment
+	public void addVertex(Vector pos, Vector uv) {
+		R.pos(pos.get(0), pos.get(1), pos.get(2)).tex(uv.get(0), uv.get(1)).endVertex();
+	}
 
-	public void setColor(double r, double g, double b) {this.r =(int)(r * 255); this.g =(int)(g * 255); this.b =(int)(b * 255);}
-	public void setColor(int r, int g, int b) {this.r = r; this.g = g; this.b = b;}
-	public void setColor(float r, float g, float b) {this.r =(int)(r * 255); this.g =(int)(g * 255); this.b =(int)(b * 255);}
+	public void addVertex(Vector pos) {
+		int[] colors = this.popColorRGBA();
+		double width = this.popWidth();
+		double size = this.popSize();
+		if (width >= 0) this.setLineWidth(width);
+		if (size >= 0) this.setPointSize(size);
+		R.pos(pos.get(0), pos.get(1), pos.get(2)).color(colors[0], colors[1], colors[2], colors[3]).endVertex();
+	}
+
+	// Color and Width Assignment
 	public void setColor(int c) {this.r = c >> 16 & 255; this.g = c >> 8 & 255; this.b = c & 255;}	
-
+	public void setColor(int r, int g, int b) {this.r = r; this.g = g; this.b = b;}
+	public void setColor(double r, double g, double b) {setColor(UtilsTex.color(r, g, b));}
+	public void setColor(float r, float g, float b) {setColor(UtilsTex.color(r, g, b));}
+	
 	public void setAlpha(int a) {this.a = a;}
 	public void setAlpha(double a) {this.a = (int) (a * 255);}
-	public void setAlpha(float a) {this.a = (int) (a * 255F);}
+	public void setAlpha(float a) {this.a = (int) (a * 255);}
+	
+	public void setColorAndAlpha(double r, double g, double b, double a) {setColor(UtilsTex.color(r, g, b, a));}
+	public void setColorAndAlpha(float r, float g, float b, float a) {setColor(UtilsTex.color(r, g, b, a));}
+	public void setColorAndAlpha(int r, int g, int b, int a) {this.r = r; this.g = g; this.b = b; this.a = a;}
 
-	public void setColor(int color, int alpha) {setColor(color); setAlpha(alpha);}
-	public void setColor(int color, double alpha) {setColor(color); setAlpha(alpha);}
-	public void setColor(int color, float alpha) {setColor(color); setAlpha(alpha);}
+	public void setColorAndAlpha(int c) {this.a = c >> 24 & 255; this.r = c >> 16 & 255; this.g = c >> 8 & 255; this.b = c & 255;}	
+	public void setColorAndAlpha(int c, int a) {setColor(c & 0xFFFFFF); setAlpha(a);}
+	public void setColorAndAlpha(int c, double a) {setColor(c & 0xFFFFFF); setAlpha(a);}
+	public void setColorAndAlpha(int c, float a) {setColor(c & 0xFFFFFF); setAlpha(a);}
 	
-	public void setLineWidth(double width) {GlStateManager.glLineWidth((float) width);}
+	public void setLineWidth(double width) {GL11.glLineWidth((float) width);}
+	public void setPointSize(double size) {GL11.glPointSize((float) size);}
 	
-	//State Management
-	public void dumpState() {
-		// TODO
+	public void pushColors(int[] colors) {
+		for (int color: colors)
+			this.color_cache.add(color);
 	}
 	
-	public void resetState() {
-		// TODO
+	public int[] popColorRGBA() {
+		int[] ans = {r, g, b, a};
+		if (!this.color_cache.isEmpty()) ans = UtilsTex.colorToRGBA(this.color_cache.poll());
+		return ans;
 	}
+	
+	public int[] popColorARGB() {
+		int[] ans = {a, r, g, b};
+		Integer ans_ = this.color_cache.poll();
+		if (ans_ != null) ans = UtilsTex.colorToARGB(ans_);
+		return ans;
+	}
+	
+	public void pushWidths(double[] widths) {
+		for (double color: widths)
+			this.width_cache.add(color);
+	}
+	
+	public double popWidth() {
+		double ans = -1;
+		if (!this.width_cache.isEmpty()) ans = this.width_cache.poll();
+		return ans;
+	}
+	
+	public void pushSizes(double[] widths) {
+		for (double color: widths)
+			this.size_cache.add(color);
+	}
+	
+	public double popSize() {
+		double ans = -1;
+		if (!this.size_cache.isEmpty()) ans = this.size_cache.poll();
+		return ans;
+	}
+	
+	public void resetVertRender() {
+		this.color_cache = new LinkedList<Integer>();
+		this.width_cache = new LinkedList<Double>();
+		this.size_cache = new LinkedList<Double>();
+		this.setColorAndAlpha(DEFAULT_COLOR);
+		this.setLineWidth(DEFAULT_WIDTH);
+		this.setPointSize(DEFAULT_SIZE);
+	}
+	
+	// State Management
 	
 	public void setVertState() {
 		GlStateManager.disableLighting();
@@ -125,9 +194,10 @@ public final class GlRenderHelper {
 		GlStateManager.enableDepth();
 	}
 
-	//Render
-
-	public void renderSurface(Matrix vertpos, Matrix normal, Matrix uvmap) {
+	// Render
+	
+	@Deprecated
+	public void renderFace(Matrix vertpos, Matrix normal, Matrix uvmap) {
 		Vector[] vpos = vertpos.toVecArray();
 		Vector[] vuv = uvmap.toVecArray();
 		startDrawingFace();
@@ -143,8 +213,8 @@ public final class GlRenderHelper {
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
 		GlStateManager.multMatrix(obj.getLocalState().get().storeBufferF());
-		for (NodeBase o: obj.getChildren()) renderObjectLocal(o, ptick);
 		obj.render(ptick);
+		for (NodeBase o: obj.getChildren()) renderObjectLocal(o, ptick);
 		GlStateManager.popMatrix();
 	}
 	
@@ -159,15 +229,11 @@ public final class GlRenderHelper {
 	
 	public void renderWithoutGl(NodeBase obj, double ptick) {
 		if (obj == null) return;
-		//System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		//obj.render(ptick);
 		Matrix render_matrix = obj.getGlobalState().get();
-		//System.out.println(render_matrix);
 		GlStateManager.multMatrix(render_matrix.storeBufferF());
 		obj.render(ptick);
-		//System.out.println(getGlMatrix(GL11.GL_MODELVIEW_MATRIX));
 		GlStateManager.popMatrix();
 		for (NodeBase o: obj.getChildren()) renderWithoutGl(o, ptick);
 	}

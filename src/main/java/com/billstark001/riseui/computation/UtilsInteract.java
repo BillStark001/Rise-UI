@@ -58,7 +58,6 @@ public final class UtilsInteract {
 		return new org.lwjgl.util.vector.Quaternion(x, y, z, w);
     }
 	
-	@Deprecated
 	public static Vec3d numMult(Vec3d v, double n) {
 		return new Vec3d(v.x * n, v.y * n, v.z * n);
 	}

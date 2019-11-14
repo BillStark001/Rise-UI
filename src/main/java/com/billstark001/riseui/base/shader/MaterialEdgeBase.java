@@ -2,6 +2,7 @@ package com.billstark001.riseui.base.shader;
 
 import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.Layer;
+import com.billstark001.riseui.computation.Vector;
 
 public abstract class MaterialEdgeBase extends BaseObject {
 
@@ -10,7 +11,9 @@ public abstract class MaterialEdgeBase extends BaseObject {
 	public MaterialEdgeBase(Layer layer) {this(null, layer);}
 	public MaterialEdgeBase() {this(null, null);}
 	
-	public abstract int[] getColor(int pcount);
-	public abstract double[] getThickness(int pcount);
+	public abstract int[] getColor(Vector[] pos);
+	public abstract double[] getWidth(Vector[] pos);
+	
+	public boolean needsPos() {return true;}
 
 }

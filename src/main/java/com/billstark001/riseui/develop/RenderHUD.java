@@ -3,7 +3,7 @@ package com.billstark001.riseui.develop;
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.client.ClientProxy;
-import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.UtilsInteract;
 
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class RenderHUD {
 	
-	private static GlRenderHelper me = GlRenderHelper.getInstance();
+	private static GlHelper me = GlHelper.getInstance();
 	private static EntityPlayer player = Minecraft.getMinecraft().player;
 	private static World world = Minecraft.getMinecraft().world;
 	

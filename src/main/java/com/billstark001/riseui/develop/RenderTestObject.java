@@ -3,6 +3,7 @@ package com.billstark001.riseui.develop;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.util.Iterator;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -10,10 +11,15 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.shader.MaterialEdgeSimple;
+import com.billstark001.riseui.base.shader.MaterialVertSimple;
+import com.billstark001.riseui.base.shader.TagApplyMaterialEdge;
+import com.billstark001.riseui.base.shader.TagApplyMaterialVert;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.empty.TagTowardsTarget;
@@ -39,7 +45,7 @@ public class RenderTestObject{
 	private static double anim_cycle = 10;
 	
 	private static CharResourceLoader res = CharResourceLoader.getInstance();
-	private static GlRenderHelper render = GlRenderHelper.getInstance();
+	private static GlHelper render = GlHelper.getInstance();
 	private static EntityPlayer player = Minecraft.getMinecraft().player;
 	private static World world = Minecraft.getMinecraft().world;
 	
@@ -132,6 +138,15 @@ public class RenderTestObject{
 		spider = (EmptyNode) sp_dae.getNodeByName("spider");
 		spider.setLocalState(new State3DIntegrated(new Vector(2, 1, 2), null, 0.01));
 		spider.setVisEdge(NodeBase.Visibility.TRUE);
+		spider.setVisVert(NodeBase.Visibility.TRUE);
+		TagApplyMaterialEdge tme = new TagApplyMaterialEdge(new MaterialEdgeSimple(UtilsTex.color(0.8, 0, 1, 0.3), 1));
+		TagApplyMaterialVert tmv = new TagApplyMaterialVert(new MaterialVertSimple(UtilsTex.color(1, 0, 0.8, 0.6), 2));
+		NodeBase sppppp = spider;
+		for (Iterator<NodeBase> it = spider.getTreeIteratorBreadthFirst(); it.hasNext();) {
+			NodeBase nb = it.next();
+			nb.addTag(tme);
+			nb.addTag(tmv);
+		}
 		
 	}
 	

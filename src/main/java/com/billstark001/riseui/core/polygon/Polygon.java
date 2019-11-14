@@ -66,14 +66,20 @@ public class Polygon extends NodeCompilableBase{
 	public Vector getVertNrm(int index) {if (nrm != null) return nrm_r.getLine(index); else return null;}
 	public Vector getVertUVM(int index) {if (uvm != null) return uvm_r.getLine(index); else return new Vector(0, 0, 0);}
 	
+	@Override
 	public Triad[] getFaceIndices(int index) {
 		if (index < 0 || index >= this.face_ind.length) return null;
 		else return this.face_ind[index];
 	}
+	
+	@Override
+	public int getFaceIndicesLength(int index) {
+		if (index < 0 || index >= this.face_ind.length) return 0;
+		else return this.face_ind[index].length;
+	}
 
 	@Override
 	public boolean isEdgeLooped(int index) {
-		// TODO 自动生成的方法存根
 		return false;
 	}
 
@@ -81,6 +87,12 @@ public class Polygon extends NodeCompilableBase{
 	public int[] getEdgeIndices(int index) {
 		if (index < 0 || index >= this.edge_ind.length) return null;
 		else return this.edge_ind[index];
+	}
+	
+	@Override
+	public int getEdgeIndicesLength(int index) {
+		if (index < 0 || index >= this.edge_ind.length) return 0;
+		else return this.edge_ind[index].length;
 	}
 		
 	public void setRenderState(State3DSimple state) {

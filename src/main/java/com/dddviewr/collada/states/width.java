@@ -7,7 +7,7 @@ import com.dddviewr.collada.State;
 import com.dddviewr.collada.StateManager;
 import com.dddviewr.collada.content.effects.EffectAttribute;
 
-public class color extends State {
+public class width extends State {
 	public void init(String name, Attributes attrs, StateManager mngr) {
 		super.init(name, attrs, mngr);
 		setContentNeeded(true);

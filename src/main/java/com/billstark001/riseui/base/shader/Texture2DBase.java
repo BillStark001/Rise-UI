@@ -2,7 +2,7 @@ package com.billstark001.riseui.base.shader;
 
 import java.awt.image.BufferedImage;
 
-import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Pair;
 
@@ -39,8 +39,8 @@ public abstract class Texture2DBase {
 	public Texture2DBase(int l) {this(l, l);}
 	public Texture2DBase() {this(16, 16);}
 	
-	public abstract Matrix render(double time);
-	public Matrix render() {return render(0);}
+	public abstract int render(double time);
+	public int render() {return render(0);}
 	
 	public int checkAndRender() {
 		if (!this.isRendered()) {
@@ -52,6 +52,6 @@ public abstract class Texture2DBase {
 	}
 	
 	public void bindTexture() {
-		GlRenderHelper.getInstance().bindTexture(this.checkAndRender());
+		GlHelper.getInstance().bindTexture(this.checkAndRender());
 	}
 }

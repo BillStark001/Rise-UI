@@ -2,7 +2,12 @@ package com.billstark001.riseui.base;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.Stack;
 
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
@@ -11,7 +16,7 @@ import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
-import com.billstark001.riseui.client.GlRenderHelper;
+import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
@@ -25,6 +30,7 @@ public abstract class NodeBase extends BaseObject{
 	protected StateBase<Matrix> local_state;
 	protected State3DSimple global_state; 
 	// 4*4 homogeneous matrix
+	// V'=V*M
 	// computation order: M=S*R*P
 	// SVD order: M=R1*S*R2*P
 	
@@ -138,7 +144,61 @@ public abstract class NodeBase extends BaseObject{
 		return ans;
 	}
 	
-	// Tree Node Related
+	private class TreeIteratorDF implements Iterator<NodeBase> {
+		
+		private Stack<NodeBase> nodes;
+		
+		public TreeIteratorDF(NodeBase root) {
+			this.nodes = new Stack<NodeBase>();
+			this.nodes.push(root);
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return !nodes.empty();
+		}
+
+		@Override
+		public NodeBase next() {
+			if (!this.hasNext()) throw new NoSuchElementException();
+			NodeBase current_node = nodes.pop();
+			for (NodeBase node: current_node.getChildren()) this.nodes.push(node);
+			return current_node;
+		}
+		
+	}
+	
+	private class TreeIteratorBF implements Iterator<NodeBase> {
+		
+		private Queue<NodeBase> nodes;
+		
+		public TreeIteratorBF(NodeBase root) {
+			this.nodes = new LinkedList<NodeBase>();
+			this.nodes.add(root);
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return !nodes.isEmpty();
+		}
+
+		@Override
+		public NodeBase next() {
+			if (!this.hasNext()) throw new NoSuchElementException();
+			NodeBase current_node = nodes.poll();
+			for (NodeBase node: current_node.getChildren()) this.nodes.add(node);
+			return current_node;
+		}
+		
+	}
+	
+	public TreeIteratorDF getTreeIteratorDepthFirst() {
+		return new TreeIteratorDF(this);
+	}
+	
+	public TreeIteratorBF getTreeIteratorBreadthFirst() {
+		return new TreeIteratorBF(this);
+	}
 	
 	public boolean isDescendant(NodeBase obj) {return obj.isAncestor(this);}
 	public boolean isAncestor(NodeBase obj) {
@@ -354,10 +414,9 @@ public abstract class NodeBase extends BaseObject{
 	// Render
 	
 	public void render(double ptick) {
-		GlRenderHelper renderer = GlRenderHelper.getInstance();
-		renderer.dumpState();
+		GlHelper renderer = GlHelper.getInstance();
+		// renderer.dumpState();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_PRE);
-		if (renderer.isDebugging()) this.renderDebug(ptick);
 		if (this.vertsVisible()) {
 			renderer.setVertState();
 			this.renderVert(ptick);
@@ -370,9 +429,9 @@ public abstract class NodeBase extends BaseObject{
 			renderer.setFaceState();
 			this.renderFace(ptick);
 		}
-		
+		if (renderer.isDebugging()) this.renderDebug(ptick);
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_POST);
-		renderer.resetState();
+		// renderer.resetState();
 	}
 	
 	// Abstract Methods
@@ -388,8 +447,18 @@ public abstract class NodeBase extends BaseObject{
 	public abstract int[] getEdgeIndices(int index);
 	public abstract Triad[] getFaceIndices(int index);
 	
+	public abstract int getEdgeIndicesLength(int index);
+	public abstract int getFaceIndicesLength(int index);
+	
+	public Vector[] getEdges(int index) {
+		int[] indices = this.getEdgeIndices(index);
+		Vector[] ans = new Vector[indices.length];
+		for (int i = 0; i < ans.length; ++i) ans[i] = getVertPos(indices[i]);
+		return ans;
+	}
+	
 	public void renderVert(double ptick) {
-		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		GlHelper renderer = GlHelper.getInstance();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES, new TagBase.ApplicationExtra(ptick));
 		for (int i = 0; i < this.getVertCount(); ++i) {
 			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX, new TagBase.ApplicationExtra(ptick, i));
@@ -400,7 +469,7 @@ public abstract class NodeBase extends BaseObject{
 		}
 	}
 	public void renderEdge(double ptick) {
-		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		GlHelper renderer = GlHelper.getInstance();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES, new TagBase.ApplicationExtra(ptick));
 		for (int i = 0; i < this.getEdgeCount(); ++i) {
 			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE, new TagBase.ApplicationExtra(ptick, i));
@@ -414,7 +483,7 @@ public abstract class NodeBase extends BaseObject{
 	}
 
 	public void renderFace(double ptick) {
-		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		GlHelper renderer = GlHelper.getInstance();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES, new TagBase.ApplicationExtra(ptick));
 		for (int i = 0; i < this.getFaceCount(); ++i) {
 			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, new TagBase.ApplicationExtra(ptick, i));
@@ -432,7 +501,7 @@ public abstract class NodeBase extends BaseObject{
 	
 	public void renderDebug(double ptick) {
 		
-		GlRenderHelper renderer = GlRenderHelper.getInstance();
+		GlHelper renderer = GlHelper.getInstance();
 		
 		renderer.disableDepth();
 		renderer.setEdgeState();

@@ -1,7 +1,6 @@
 package com.billstark001.riseui.base.shader;
 
-import com.billstark001.riseui.client.GlRenderHelper;
-import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.client.GlHelper;
 
 import net.minecraft.util.ResourceLocation;
 
@@ -35,13 +34,13 @@ public class Texture2DFromRes extends Texture2DBase {
 	}
 	
 	@Override
-	public Matrix render(double time) {
-		return null;
+	public int render(double time) {
+		return this.getRenderedId();
 	}
 	
 	@Override
 	public void bindTexture() {
-		GlRenderHelper.getInstance().bindTexture(this.getLocation());
+		GlHelper.getInstance().bindTexture(this.getLocation());
 	}
 
 }
