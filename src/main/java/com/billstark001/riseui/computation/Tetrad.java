@@ -18,60 +18,67 @@ public final class Tetrad {
 		zi = p.zi;
 	}
 	
-	public final Tetrad add(Tetrad p) {
+	public Tetrad add(Tetrad p) {
 		return new Tetrad(wi + p.wi, xi + p.xi, yi + p.yi, zi + p.zi);
 	}
 	
-	public final Tetrad minus(Tetrad p) {
+	public Tetrad minus(Tetrad p) {
 		return new Tetrad(wi - p.wi, xi - p.xi, yi - p.yi, zi - p.zi);
 	}
 	
-	public final Tetrad reverse() {
+	public Tetrad reverse() {
 		return new Tetrad(-wi, -xi, -yi, -zi);
 	}
 	
-	public final Tetrad wOnly() {
+	public Tetrad wOnly() {
 		return new Tetrad(wi, 0, 0, 0);
 	}
 	
-	public final Tetrad xOnly() {
+	public Tetrad xOnly() {
 		return new Tetrad(0, xi, 0, 0);
 	}
 	
-	public final Tetrad yOnly() {
+	public Tetrad yOnly() {
 		return new Tetrad(0, 0, yi, 0);
 	}
 	
-	public final Tetrad zOnly() {
+	public Tetrad zOnly() {
 		return new Tetrad(0, 0, 0, zi);
 	}
 	
-	public final Tetrad reverseW() {return new Tetrad(-wi, xi, yi, zi);}
-	public final Tetrad reverseX() {return new Tetrad(wi, -xi, yi, zi);}
-	public final Tetrad reverseY() {return new Tetrad(wi, xi, -yi, zi);}
-	public final Tetrad reverseZ() {return new Tetrad(wi, xi, yi, -zi);}
-	
-	public final boolean equals(Tetrad p) {
-		return wi == p.wi && xi == p.xi && yi == p.yi && zi == p.zi;
+	public Tetrad reverseW() {return new Tetrad(-wi, xi, yi, zi);}
+	public Tetrad reverseX() {return new Tetrad(wi, -xi, yi, zi);}
+	public Tetrad reverseY() {return new Tetrad(wi, xi, -yi, zi);}
+	public Tetrad reverseZ() {return new Tetrad(wi, xi, yi, -zi);}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		} else if (!(o instanceof Tetrad)) {
+			return false;
+		} else {
+			Tetrad p = (Tetrad) o;
+			return wi == p.wi && xi == p.xi && yi == p.yi && zi == p.zi;
+		}
 	}
 	
-	public final String toString() {
+	public String toString() {
 		return String.format("(%d, %d, %d, %d)", wi, xi, yi, zi);
 	}
 	
-	public final int getW() {
+	public int getW() {
 		return wi;
 	}
 	
-	public final int getX() {
+	public int getX() {
 		return xi;
 	}
 	
-	public final int getY() {
+	public int getY() {
 		return yi;
 	}
 	
-	public final int getZ() {
+	public int getZ() {
 		return zi;
 	}
 }

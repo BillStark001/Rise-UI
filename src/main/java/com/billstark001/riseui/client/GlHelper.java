@@ -10,6 +10,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.shader.Texture2DBase;
+import com.billstark001.riseui.base.shader.Texture2DFromRes;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.computation.UtilsTex;
@@ -246,11 +248,20 @@ public final class GlHelper {
 		return UtilsInteract.transMat(m);
 	}
 	
-	public void bindTexture(int tex) {
-		GlStateManager.bindTexture(tex);
-	}
+	// Texture Related
 	
-	public void bindTexture(ResourceLocation loc) {
-		this.M.bindTexture(loc);
+	public boolean applyTexture(Texture2DBase tex) {
+		if (tex instanceof Texture2DFromRes) {
+			this.M.bindTexture(((Texture2DFromRes) tex).getLocation());
+			return true;
+		}
+		
+		boolean ans = false;
+		if (tex.hasTexId()) {
+			UtilsTex.bindTexture(tex.getTexId());
+		} else {
+			ans = tex.render();
+		}
+		return ans;
 	}
 }

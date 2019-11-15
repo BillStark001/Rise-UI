@@ -1,7 +1,5 @@
 package com.billstark001.riseui.base.shader;
 
-import com.billstark001.riseui.client.GlHelper;
-
 import net.minecraft.util.ResourceLocation;
 
 public class Texture2DFromRes extends Texture2DBase {
@@ -21,26 +19,32 @@ public class Texture2DFromRes extends Texture2DBase {
 	
 	public Texture2DFromRes(ResourceLocation loc) {this.setLocation(loc);}
 	public Texture2DFromRes(String loc) {this(new ResourceLocation(loc));}
-	public Texture2DFromRes() {}
+	public Texture2DFromRes() {this(Texture2DBase.MISSING.getLocation());}
 	
 	@Override
-	public int checkAndRender() {
+	public int allocNewTexId() {
 		return -1;
 	}
 	
 	@Override
-	public int getRenderedId() {
-		return -1;
+	public boolean getTextureARGB(int y_start, int y_length, int[] cache, int offset) {
+		return true;
 	}
 	
 	@Override
-	public int render(double time) {
-		return this.getRenderedId();
+	public boolean render() {
+		return true;
 	}
 	
 	@Override
-	public void bindTexture() {
-		GlHelper.getInstance().bindTexture(this.getLocation());
+	public boolean equals(Object t) {
+		if (this == t) {
+			return true;
+		} else if (!(t instanceof Texture2DFromRes)) {
+			return false;
+		} else {
+			return this.getLocation().equals(((Texture2DFromRes) t).getLocation());
+		}
 	}
 
 }

@@ -44,8 +44,16 @@ public final class Triad {
 	public final Triad reverseY() {return new Triad(xi, -yi, zi);}
 	public final Triad reverseZ() {return new Triad(xi, yi, -zi);}
 	
-	public final boolean equals(Triad p) {
-		return xi == p.xi && yi == p.yi && zi == p.zi;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		} else if (!(o instanceof Triad)) {
+			return false;
+		} else {
+			Triad p = (Triad) o;
+			return xi == p.xi && yi == p.yi && zi == p.zi;
+		}
 	}
 	
 	public final String toString() {

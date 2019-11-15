@@ -3,6 +3,7 @@ package com.billstark001.riseui.base.shader;
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shader.TagSelectionBase.Type;
+import com.billstark001.riseui.client.GlHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -91,7 +92,7 @@ public class TagApplyMaterialFace extends TagBase {
 		if (this.material == null) flag = false;
 		if (flag) {
 			Texture2DBase albedo = this.material.getAlbedo();
-			if (albedo != null) albedo.bindTexture();
+			if (albedo != null) GlHelper.getInstance().applyTexture(albedo);
 		}
 		return null;
 	}
@@ -114,7 +115,7 @@ public class TagApplyMaterialFace extends TagBase {
 		if (this.material == null) flag = false;
 		if (flag) {
 			Texture2DBase albedo = this.material.getAlbedo();
-			if (albedo != null) albedo.bindTexture();
+			if (albedo != null) GlHelper.getInstance().applyTexture(albedo);
 		}
 		return null;
 	}

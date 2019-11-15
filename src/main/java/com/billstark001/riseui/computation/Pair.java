@@ -1,65 +1,85 @@
 package com.billstark001.riseui.computation;
 
+import com.billstark001.riseui.base.shader.Texture2DFromRes;
+
 public final class Pair {
 	
 	private final int xi, yi;
+	
+	public static final Pair PAIR_0_0 = new Pair(0);
+	public static final Pair PAIR_1_1 = new Pair(1);
+	public static final Pair PAIR_2_2 = new Pair(2);
+	public static final Pair PAIR_3_3 = new Pair(3);
+	public static final Pair PAIR_4_4 = new Pair(4);
+	public static final Pair PAIR_8_8 = new Pair(8);
+	public static final Pair PAIR_16_16 = new Pair(16);
 	
 	public Pair(int x, int y) {
 		xi = x;
 		yi = y;
 	}
 	
+	public Pair(int x) {this(x, x);}
+	
 	public Pair(Pair p) {
 		xi = p.xi;
 		yi = p.yi;
 	}
 	
-	public final Pair reverse() {
+	public Pair reverse() {
 		return new Pair(-xi, -yi);
 	}
 	
-	public final Pair add(Pair p) {
+	public Pair add(Pair p) {
 		return new Pair(xi + p.xi, yi + p.yi);
 	}
 	
-	public final Pair minus(Pair p) {
+	public Pair minus(Pair p) {
 		return new Pair(xi - p.xi, yi - p.yi);
 	}
 	
-	public final Pair xOnly() {
+	public Pair xOnly() {
 		return new Pair(xi, 0);
 	}
 	
-	public final Pair yOnly() {
+	public Pair yOnly() {
 		return new Pair(0, yi);
 	}
 	
-	public final Pair reverseX() {return new Pair(-xi, yi);}
-	public final Pair reverseY() {return new Pair(xi, -yi);}
-	
-	public final boolean equals(Pair p) {
-		return xi == p.xi && yi == p.yi;
+	public Pair reverseX() {return new Pair(-xi, yi);}
+	public Pair reverseY() {return new Pair(xi, -yi);}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		} else if (!(o instanceof Pair)) {
+			return false;
+		} else {
+			Pair p = (Pair) o;
+			return xi == p.xi && yi == p.yi;
+		}
 	}
 	
-	public final String toString() {
+	public String toString() {
 		return String.format("(%d, %d)", xi, yi);
 	}
 	
-	public final int[] toIntArray() {
+	public int[] toIntArray() {
 		int[] ans = {xi, yi};
 		return ans;
 	}
 	
-	public final Integer[] toIntegerArray() {
+	public Integer[] toIntegerArray() {
 		Integer[] ans = {xi, yi};
 		return ans;
 	}
 	
-	public final int getX() {
+	public int getX() {
 		return xi;
 	}
 	
-	public final int getY() {
+	public int getY() {
 		return yi;
 	}
 	
