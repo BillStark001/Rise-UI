@@ -1,7 +1,5 @@
 package com.billstark001.riseui.computation;
 
-import java.util.Arrays;
-
 public class UtilsLinalg {
 
 	/**
@@ -380,6 +378,69 @@ public class UtilsLinalg {
 		
 		Matrix[] ans = {u, e, v};
 		return ans;
+	}
+	
+	/**
+	 * Solve a Tridiagnoal Matrix Equation.
+	 * Tridiagnoal matrices are square matrices which only consist of elements on their diagonal and two adjacent lines.
+	 * e. g. a 6*6 Tridiagonal Matrix looks like this:
+	 * [[b0, c0,  0,  0,  0,  0]
+	 *  [a1, b1, c1,  0,  0,  0] 
+	 *  [ 0, a2, b2, c2,  0,  0] 
+	 *  [ 0,  0, a3, b3, c3,  0] 
+	 *  [ 0,  0,  0, a4, b4, c4] 
+	 *  [ 0,  0,  0,  0, a5, b5]]
+	 * The equation looks like TX=Y, where T is the Tridiagonal Matrix(N*N).
+	 * @param a_ Vector(N-1) of [a1, a2, ...., a[n-1]].
+	 * @param b_ Vector(N) of [b0, b1, ...., b[n-1]].
+	 * @param c_ Vector(N-1) of [c0, c1, ...., c[n-2]].
+	 * @param Y Vector(N) of the Y in the equation above.
+	 * @return Vector(N) of the X in the equation above.
+	 */
+	public static Vector solveTridiagnoal(Vector a_, Vector b_, Vector c_, Vector Y) {
+		int n = b_.getDimension();
+		if (a_.getDimension() != n - 1) {
+			try {
+				throw new LengthMismatchException(n - 1, a_.getDimension());
+			} catch (LengthMismatchException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else if (c_.getDimension() != n - 1) {
+			try {
+				throw new LengthMismatchException(n - 1, c_.getDimension());
+			} catch (LengthMismatchException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else if (Y.getDimension() != n) {
+			try {
+				throw new LengthMismatchException(n - 1, Y.getDimension());
+			} catch (LengthMismatchException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		a_ = a_.insert(0, 0);
+		double[] a = a_.toArray();
+		double[] b = b_.toArray();
+		double[] c = c_.toArray();
+		double[] y = Y.toArray();
+		double[] r = new double[n - 1];
+		double[] p = new double[n];
+		r[0] = c_.get(0) / b_.get(0);
+		p[0] = Y.get(0) / b_.get(0);
+		for (int i = 1; i < n; ++i) {
+			if (i != n - 1) 
+				r[i] = c[i] / (b[i] - a[i] * r[i-1]);
+			p[i] = (y[i] - a[i] * p[i-1]) / (b[i] - a[i] * r[i-1]);
+		}
+		double[] x = new double[n];
+		x[n-1] = p[n-1];
+		for (int i = n - 2; i > -1; --i) {
+			x[i] = p[i] - r[i] * x[i+1];
+		}
+		return new Vector(x);
 	}
 
 }

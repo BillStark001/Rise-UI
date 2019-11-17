@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;

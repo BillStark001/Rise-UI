@@ -113,8 +113,19 @@ public final class Vector {
 		return true;
 	}
 	
+	public int findPos(int pos) {
+		if (pos < 0) return this.getDimension() + pos;
+		else return pos;
+	}
+	
 	public double get(int position) {return elements[position];}
-	public Vector get(int start, int end) {return new Vector(Arrays.copyOfRange(elements, start, end));}
+	/**
+	 * Gets the [start, end) part of the Vector.
+	 * @param start int.
+	 * @param end int.
+	 * @return Vector of the [start, end) part of the original Vector.
+	 */
+	public Vector get(int start, int end) {return new Vector(Arrays.copyOfRange(elements, this.findPos(start), this.findPos(end)));}
 	
 	public Vector concatenate(Vector v) {
 		double[] temp = new double[dim + v.dim];
@@ -135,8 +146,8 @@ public final class Vector {
 	}
 	
 	public Vector set(int start, int end, Vector vals) {
-		Vector v1 = this.get(0, start);
-		Vector v3 = this.get(end, dim);
+		Vector v1 = this.get(0, this.findPos(start));
+		Vector v3 = this.get(this.findPos(end), dim);
 		Vector v2 = v1.concatenate(vals).concatenate(v3);
 		return v2;
 	}
@@ -248,6 +259,15 @@ public final class Vector {
 		double[] ans = new double[dim];
 		for (int i = 0; i < dim; ++i) {
 			ans[i] = this.get(dim - i - 1);
+		}
+		return new Vector(ans);
+	}
+	
+	public Vector reciprocal() {
+		int dim = this.getDimension();
+		double[] ans = new double[dim];
+		for (int i = 0; i < dim; ++i) {
+			ans[i] = 1 / this.get(i);
 		}
 		return new Vector(ans);
 	}

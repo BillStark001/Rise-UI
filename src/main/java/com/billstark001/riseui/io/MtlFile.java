@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.billstark001.riseui.base.shader.MaterialFace;
-import com.billstark001.riseui.base.shader.Texture2DBase;
-import com.billstark001.riseui.base.shader.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.MaterialFace;
+import com.billstark001.riseui.base.shading.Texture2DBase;
+import com.billstark001.riseui.base.shading.Texture2DFromRes;
 
 import net.minecraft.client.resources.IResourceManager;
 

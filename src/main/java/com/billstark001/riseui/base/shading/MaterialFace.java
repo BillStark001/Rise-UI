@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.Layer;
@@ -32,44 +32,51 @@ public class MaterialFace extends BaseObject{
 	public Texture2DBase getAlbedo() {
 		return albedo;
 	}
-	public void setAlbedo(Texture2DBase albedo) {
+	public MaterialFace setAlbedo(Texture2DBase albedo) {
 		this.albedo = albedo;
+		return this;
 	}
 	public Texture2DBase getEmission() {
 		return emission;
 	}
-	public void setEmission(Texture2DBase emission) {
+	public MaterialFace setEmission(Texture2DBase emission) {
 		this.emission = emission;
+		return this;
 	}
 	public Texture2DBase getTransparency() {
 		return transparency;
 	}
-	public void setTransparency(Texture2DBase transparency) {
+	public MaterialFace setTransparency(Texture2DBase transparency) {
 		this.transparency = transparency;
+		return this;
 	}
 	public Texture2DBase getSpecular() {
 		return specular;
 	}
-	public void setSpecular(Texture2DBase specular) {
+	public MaterialFace setSpecular(Texture2DBase specular) {
 		this.specular = specular;
+		return this;
 	}
 	public Texture2DBase getShininess() {
 		return shininess;
 	}
-	public void setShininess(Texture2DBase shininess) {
+	public MaterialFace setShininess(Texture2DBase shininess) {
 		this.shininess = shininess;
+		return this;
 	}
 	public Texture2DBase getNormal() {
 		return normal;
 	}
-	public void setNormal(Texture2DBase normal) {
+	public MaterialFace setNormal(Texture2DBase normal) {
 		this.normal = normal;
+		return this;
 	}
 	public Texture2DBase getDisplacement() {
 		return displacement;
 	}
-	public void setDisplacement(Texture2DBase displacement) {
+	public MaterialFace setDisplacement(Texture2DBase displacement) {
 		this.displacement = displacement;
+		return this;
 	}
 
 }

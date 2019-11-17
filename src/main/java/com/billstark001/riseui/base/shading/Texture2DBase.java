@@ -1,7 +1,9 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import com.billstark001.riseui.computation.Pair;
 import com.billstark001.riseui.computation.UtilsTex;
+
+import net.minecraft.client.renderer.GlStateManager;
 
 public abstract class Texture2DBase {
 
@@ -9,6 +11,7 @@ public abstract class Texture2DBase {
 	public static final Texture2DFromRes MISSING = new Texture2DFromRes("riseui:missing_texture");
 	
 	public static final Pair DEFAULT_SOLUTION = Pair.PAIR_16_16;
+	public static final int DEFAULT_COLOR = UtilsTex.color(1., 0, 1, 1);
 	// Init
 	
 	public Texture2DBase(int h, int w, boolean blur, boolean mipmap, boolean clamp) {this(new Pair(h, w), blur, mipmap, clamp);}
@@ -17,6 +20,7 @@ public abstract class Texture2DBase {
 		this.blur = this.blurLast = blur;
 		this.clamp = this.clampLast = clamp;
 		this.mipmap = this.mipmapLast = mipmap;
+		this.mipmap_level = 1;
 	}
 	
 	public Texture2DBase(boolean blur, boolean mipmap, boolean clamp) {this(DEFAULT_SOLUTION, blur, mipmap, clamp);}
@@ -44,7 +48,11 @@ public abstract class Texture2DBase {
 	
 	private int glTextureId = -1;
 	public boolean hasTexId() {return this.glTextureId >= 0;}
-	public void resetTexId() {this.glTextureId = -1;}
+	public void resetTexId() {
+		if (this.glTextureId != -1)
+			GlStateManager.deleteTexture(this.glTextureId);
+		this.glTextureId = -1;
+	}
 	public int getTexId() {return this.glTextureId;}
 	public int allocNewTexId() {
 		this.glTextureId = UtilsTex.getGlTextureId();
@@ -95,6 +103,11 @@ public abstract class Texture2DBase {
 		this.setBlurMipmapDirect(this.blurLast, this.mipmapLast);
 	}
 	
+	protected int mipmap_level;
+	public int getMipmapLevelRaw() {return mipmap_level;}
+	public int getMipmapLevel() {return this.isMipmap() ? this.getMipmapLevelRaw() : 0;}
+	public void setMipmapLevel(int mipmap_level) {this.mipmap_level = mipmap_level;}
+	
 	// Render
 	
 	public abstract boolean getTextureARGB(int y_start, int y_length, int[] cache, int offset);
@@ -102,6 +115,7 @@ public abstract class Texture2DBase {
 	public boolean render() {
 		if (!this.hasTexId()) this.allocNewTexId();
 		UtilsTex.bindTexture(this.getTexId());
+		UtilsTex.allocateTecture2D(this);
 		return UtilsTex.uploadTexture2D(this);
 	}
 }

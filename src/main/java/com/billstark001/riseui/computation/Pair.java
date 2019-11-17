@@ -1,6 +1,6 @@
 package com.billstark001.riseui.computation;
 
-import com.billstark001.riseui.base.shader.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.Texture2DFromRes;
 
 public final class Pair {
 	
@@ -13,6 +13,7 @@ public final class Pair {
 	public static final Pair PAIR_4_4 = new Pair(4);
 	public static final Pair PAIR_8_8 = new Pair(8);
 	public static final Pair PAIR_16_16 = new Pair(16);
+	public static final Pair PAIR_32_32 = new Pair(32);
 	
 	public Pair(int x, int y) {
 		xi = x;

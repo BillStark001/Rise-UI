@@ -435,8 +435,20 @@ public abstract class NodeBase extends BaseObject{
 	}
 	
 	// Abstract Methods
+	/**
+	 * Returns the number of vertices of this Node.
+	 * @return int, the number
+	 */
 	public abstract int getVertCount();
+	/**
+	 * Returns the number of edges of this Node.
+	 * @return int, the number
+	 */
 	public abstract int getEdgeCount();
+	/**
+	 * Returns the number of faces of this Node.
+	 * @return int, the number
+	 */
 	public abstract int getFaceCount();
 
 	public abstract Vector getVertPos(int index);

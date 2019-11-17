@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import net.minecraft.util.ResourceLocation;
 

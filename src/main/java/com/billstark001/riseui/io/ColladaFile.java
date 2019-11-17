@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.shader.MaterialFace;
-import com.billstark001.riseui.base.shader.TagApplyMaterialFace;
-import com.billstark001.riseui.base.shader.TagSelectionHardTable;
-import com.billstark001.riseui.base.shader.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.MaterialFace;
+import com.billstark001.riseui.base.shading.TagApplyMaterialFace;
+import com.billstark001.riseui.base.shading.TagSelectionHardTable;
+import com.billstark001.riseui.base.shading.Texture2DFromRes;
 import com.billstark001.riseui.base.states.StateTrackedDouble;
 import com.billstark001.riseui.base.states.StateTrackedDouble.Interpolation;
 import com.billstark001.riseui.base.states.StateTrackedVec3;

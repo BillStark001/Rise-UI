@@ -1,8 +1,8 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
-import com.billstark001.riseui.base.shader.TagSelectionBase.Type;
+import com.billstark001.riseui.base.shading.TagSelectionBase.Type;
 import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Vector;
 

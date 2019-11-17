@@ -1,8 +1,8 @@
-package com.billstark001.riseui.base.shader;
+package com.billstark001.riseui.base.shading;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
-import com.billstark001.riseui.base.shader.TagSelectionBase.Type;
+import com.billstark001.riseui.base.shading.TagSelectionBase.Type;
 import com.billstark001.riseui.client.GlHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -46,7 +46,7 @@ public class TagApplyMaterialFace extends TagBase {
 		switch (phrase) {
 		case TagBase.TAG_PHRASE_RENDER_PRE:
 		case TagBase.TAG_PHRASE_RENDER_POST:
-		case TagBase.TAG_PHRASE_RENDER_FACES:
+		//case TagBase.TAG_PHRASE_RENDER_FACES:
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			return true;
 		default:

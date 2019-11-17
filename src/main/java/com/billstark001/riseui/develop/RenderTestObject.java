@@ -11,12 +11,17 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.shader.MaterialEdgeSimple;
-import com.billstark001.riseui.base.shader.MaterialVertSimple;
-import com.billstark001.riseui.base.shader.TagApplyMaterialEdge;
-import com.billstark001.riseui.base.shader.TagApplyMaterialVert;
+import com.billstark001.riseui.base.shading.MaterialEdgeSimple;
+import com.billstark001.riseui.base.shading.MaterialFace;
+import com.billstark001.riseui.base.shading.MaterialVertSimple;
+import com.billstark001.riseui.base.shading.TagApplyMaterialEdge;
+import com.billstark001.riseui.base.shading.TagApplyMaterialFace;
+import com.billstark001.riseui.base.shading.TagApplyMaterialVert;
+import com.billstark001.riseui.base.shading.Texture2DGrayGen;
+import com.billstark001.riseui.base.shading.Texture2DPureColor;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.client.GlHelper;
+import com.billstark001.riseui.computation.ColorGradient;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.computation.UtilsTex;
@@ -64,8 +69,6 @@ public class RenderTestObject{
 	
 	public static void prepareRender() {
 		
-		TagTowardsTarget t = new TagTowardsTarget();
-		
 		render.setDebugState(true);
 		
 		res.loadRes(lobj);
@@ -83,41 +86,26 @@ public class RenderTestObject{
 		horse.setRenderState(new State3DIntegrated(null, null, 0.01));
 		horse.rasterize();
 		horse.setLocalState(new State3DIntegrated(new Vector(0, 0.5, 0)));
-		//horse.rasterize();
-		//horse.compileList();
-		//System.out.println(horse);
-		
+
 		table = t_obj.genPoly("table");
 		table.setRenderState(new State3DIntegrated(null, null, 0.01));
 		table.rasterize();
 		table.setLocalState(new State3DIntegrated(new Vector(0, 2.5, 0)));
-		//cube.rasterize();
-		//table.compileList();
-		//System.out.println(cube);
-		
+
 		hgrid = h_obj.genPoly("skh");
 		hgrid.setRenderState(new State3DIntegrated(null, null, 0.005));
 		hgrid.rasterize();
 		hgrid.setLocalState(new State3DIntegrated(new Vector(0, 3.5, 0)));
-		//cube_.rasterize();
-		//hgrid.compileList();
-		
+
 		sphere = Presets.getPolygon("sphere_high_lod");
 		sphere.setRenderState(new State3DIntegrated(null, null, new Vector(3, 1, 3)));
-		//cube.setRot(Quaternion.axisRotate(new Vector(0, 0, 1), Math.PI * 0.25));
-		//terrain.rasterize();
-		//cube.setPos(new Vector(0, 0.5, 0));
-		//terrain.rasterize();
-		//sphere.compileList();
-		//System.out.println(terrain);
-		
-		//hgrid.setParent(horse);
+		sphere.addTag(new TagApplyMaterialFace(1, true, new MaterialFace().setAlbedo(new Texture2DGrayGen(Texture2DGrayGen::polar, ColorGradient.getDefaultTransparent()))));
+
 		table.setParentRemainGlobalState(sphere);
 		sphere.setParentRemainGlobalState(horse);
 
 		horse.dump();
-		
-		
+
 		// Spider
 		Collada stemp = null;
 		try {
@@ -141,7 +129,6 @@ public class RenderTestObject{
 		spider.setVisVert(NodeBase.Visibility.TRUE);
 		TagApplyMaterialEdge tme = new TagApplyMaterialEdge(new MaterialEdgeSimple(UtilsTex.color(0.8, 0, 1, 0.3), 1));
 		TagApplyMaterialVert tmv = new TagApplyMaterialVert(new MaterialVertSimple(UtilsTex.color(1, 0, 0.8, 0.6), 2));
-		NodeBase sppppp = spider;
 		for (Iterator<NodeBase> it = spider.getTreeIteratorBreadthFirst(); it.hasNext();) {
 			NodeBase nb = it.next();
 			nb.addTag(tme);
