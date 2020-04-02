@@ -2,7 +2,7 @@ package com.billstark001.riseui.client;
 
 import org.lwjgl.opengl.GL11;
 
-import com.billstark001.riseui.client.events.RenderTileOverlayEvent;
+import com.billstark001.riseui.client.events.RenderAdvancedEvent;
 import com.billstark001.riseui.common.CommonProxy;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.core.polygon.Presets;
@@ -56,7 +56,7 @@ public class ClientProxy extends CommonProxy {
 		Vec3d RenderPos = LastTickPos.add(Bias);
 		GL11.glTranslated(-RenderPos.x + 0.5, -RenderPos.y + 0.5, -RenderPos.z + 0.5);
 
-		MinecraftForge.EVENT_BUS.post(new RenderTileOverlayEvent(e.getContext(), e.getPartialTicks()));
+		MinecraftForge.EVENT_BUS.post(new RenderAdvancedEvent(e.getContext(), e.getPartialTicks()));
 
 		GlStateManager.popMatrix();
 	}

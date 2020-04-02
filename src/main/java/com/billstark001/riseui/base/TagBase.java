@@ -1,17 +1,9 @@
 package com.billstark001.riseui.base;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
-import com.billstark001.riseui.base.TagBase.ApplicationExtra;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.computation.Pair;
-import com.billstark001.riseui.computation.Quaternion;
-import com.billstark001.riseui.computation.Vector;
-
-import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -44,9 +36,13 @@ public abstract class TagBase extends BaseObject {
 	public static final int TAG_PHRASE_RENDER_PRE = 0;
 	public static final int TAG_PHRASE_RENDER_POST = 4;
 	
-	public static final int TAG_PHRASE_RENDER_VERTICES = 1;
-	public static final int TAG_PHRASE_RENDER_EDGES = 2;
-	public static final int TAG_PHRASE_RENDER_FACES = 3;
+	public static final int TAG_PHRASE_RENDER_VERTICES_PRE = 1;
+	public static final int TAG_PHRASE_RENDER_EDGES_PRE = 2;
+	public static final int TAG_PHRASE_RENDER_FACES_PRE = 3;
+	
+	public static final int TAG_PHRASE_RENDER_VERTICES_POST = 12;
+	public static final int TAG_PHRASE_RENDER_EDGES_POST = 13;
+	public static final int TAG_PHRASE_RENDER_FACES_POST = 14;
 	
 	public static final int TAG_PHRASE_RENDER_PARTICULAR_VERTEX = 9;
 	public static final int TAG_PHRASE_RENDER_PARTICULAR_EDGE = 10;
@@ -58,28 +54,48 @@ public abstract class TagBase extends BaseObject {
 	public static final int TAG_PHRASE_GENERATOR_ACTIVATED = 8;
 	
 	public abstract boolean appliesOn(int phrase);
-	public ApplicationReturn applyOn(int phrase, NodeBase object) {return applyOn(phrase, object, new ApplicationExtra());}
-	public ApplicationReturn applyOn(int phrase, NodeBase object, ApplicationExtra extra) {
-		if (extra == null) extra = TagBase.getDummyExtra();
+	
+	public ApplyReturn applyOn(int phrase, NodeBase object, Object...args) {
+		if (!this.appliesOn(phrase)) return null;
+		double ptick = 0;
+		int index = 0;
 		switch (phrase) {
 		case TagBase.TAG_PHRASE_RENDER_PRE:
-			return this.onRenderPre(object, extra.patrial_ticks);
+			ptick = (Double) args[0];
+			return this.onRenderPre(object, ptick);
 		case TagBase.TAG_PHRASE_RENDER_POST:
-			return this.onRenderPost(object, extra.patrial_ticks);
+			ptick = (Double) args[0];
+			return this.onRenderPost(object, ptick);
 			
-		case TagBase.TAG_PHRASE_RENDER_VERTICES:
-			return this.onRenderVerts(object, extra.patrial_ticks);
-		case TagBase.TAG_PHRASE_RENDER_EDGES:
-			return this.onRenderEdges(object, extra.patrial_ticks);
-		case TagBase.TAG_PHRASE_RENDER_FACES:
-			return this.onRenderFaces(object, extra.patrial_ticks);
+		case TagBase.TAG_PHRASE_RENDER_VERTICES_PRE:
+			ptick = (Double) args[0];
+			return this.onRenderVertsPre(object, ptick);
+		case TagBase.TAG_PHRASE_RENDER_EDGES_PRE:
+			ptick = (Double) args[0];
+			return this.onRenderEdgesPre(object, ptick);
+		case TagBase.TAG_PHRASE_RENDER_FACES_PRE:
+			ptick = (Double) args[0];
+			return this.onRenderFacesPre(object, ptick);
+		
+		case TagBase.TAG_PHRASE_RENDER_VERTICES_POST:
+			return this.onRenderVertsPost(object);
+		case TagBase.TAG_PHRASE_RENDER_EDGES_POST:
+			return this.onRenderEdgesPost(object);
+		case TagBase.TAG_PHRASE_RENDER_FACES_POST:
+			return this.onRenderFacesPost(object);
 			
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX:
-			return this.onRenderVert(object, extra.element_index, extra.patrial_ticks);
+			index = (Integer) args[0];
+			ptick = (Double) args[1];
+			return this.onRenderVert(object, index, ptick);
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE:
-			return this.onRenderEdge(object, extra.element_index, extra.patrial_ticks);
+			index = (Integer) args[0];
+			ptick = (Double) args[1];
+			return this.onRenderEdge(object, index, ptick);
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
-			return this.onRenderFace(object, extra.element_index, extra.patrial_ticks);
+			index = (Integer) args[0];
+			ptick = (Double) args[1];
+			return this.onRenderFace(object, index, ptick);
 			
 		case TagBase.TAG_PHRASE_GLOBAL_UPDATE:
 			return this.onGlobalUpdate(object);
@@ -90,39 +106,121 @@ public abstract class TagBase extends BaseObject {
 		case TagBase.TAG_PHRASE_REMOVED:
 			return this.onRemoved(object);
 		default:
-			return new ApplicationReturn();
+			return new ApplyReturn();
 		}
 	}
-	public static class ApplicationExtra {
-		public double patrial_ticks;
-		public int element_index;
-		public ApplicationExtra() {}
-		public ApplicationExtra(double pt) {this.patrial_ticks = pt;}
-		public ApplicationExtra(int i) {this.element_index = i;}
-		public ApplicationExtra(double pt, int i) {
-			this.patrial_ticks = pt;
-			this.element_index = i;
+
+	public static class ApplyReturn {
+		public final boolean succeeded;
+		public final Object[] data;
+		public ApplyReturn(boolean succ, Object...datas) {
+			this.succeeded = succ;
+			this.data = datas;
 		}
-	}
-	public static class ApplicationReturn {
-		public boolean succeed = false;
-		public ApplicationReturn() {}
-		public ApplicationReturn(boolean succ) {this.succeed = succ;}
+		public ApplyReturn() {this(true);}
 	}
 	
-	
-	public abstract ApplicationReturn onAdded(NodeBase node);
-	public abstract ApplicationReturn onRemoved(NodeBase node);
-	public abstract ApplicationReturn onGlobalUpdate(NodeBase state);
-	public abstract ApplicationReturn onLocalUpdate(NodeBase state);
-	public abstract ApplicationReturn onRenderPre(NodeBase object, double ptick);
-	public abstract ApplicationReturn onRenderPost(NodeBase object, double ptick);
-	public abstract ApplicationReturn onRenderVerts(NodeBase object, double ptick);
-	public abstract ApplicationReturn onRenderEdges(NodeBase object, double ptick);
-	public abstract ApplicationReturn onRenderFaces(NodeBase object, double ptick);
-	public abstract ApplicationReturn onRenderVert(NodeBase object, int index, double ptick);
-	public abstract ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick);
-	public abstract ApplicationReturn onRenderFace(NodeBase object, int index, double ptick);
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public abstract ApplyReturn onAdded(NodeBase node);
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public abstract ApplyReturn onRemoved(NodeBase node);
+	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public abstract ApplyReturn onGlobalUpdate(NodeBase state);
+	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public abstract ApplyReturn onLocalUpdate(NodeBase state);
+	/**
+	 * 
+	 * @param object
+	 * @param ptick
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderPre(NodeBase object, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param ptick
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderPost(NodeBase object, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param ptick
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderVertsPre(NodeBase object, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param ptick
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderEdgesPre(NodeBase object, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param ptick
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderFacesPre(NodeBase object, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderVertsPost(NodeBase object);
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderEdgesPost(NodeBase object);
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public abstract ApplyReturn onRenderFacesPost(NodeBase object);
+	/**
+	 * 
+	 * @param object
+	 * @param index
+	 * @param ptick
+	 * @return boolean succeeded, boolean cancelled, (if not cancelled) boolean altered, (if altered) Vector[3] pos, Vector[2] uv, Vector[3] normal
+	 */
+	public abstract ApplyReturn onRenderVert(NodeBase object, int index, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param index
+	 * @param ptick
+	 * @return boolean succeeded, boolean cancelled, (if not cancelled) boolean altered, (if altered) Vector[3] pos, Vector[2] uv, Vector[3] normal
+	 */
+	public abstract ApplyReturn onRenderEdge(NodeBase object, int index, double ptick);
+	/**
+	 * 
+	 * @param object
+	 * @param index
+	 * @param ptick
+	 * @return boolean succeeded, double alter_rate
+	 */
+	public abstract ApplyReturn onRenderFace(NodeBase object, int index, double ptick);
 	
 	public static void sortTags(List<TagBase> tags) {tags.sort(tagcomp);}
 	private static Comparator<TagBase> tagcomp = new Comparator<TagBase>() {
@@ -132,8 +230,6 @@ public abstract class TagBase extends BaseObject {
 		}
 	};
 
-	public static ApplicationExtra getDummyExtra() {return new ApplicationExtra();}
-	public static ApplicationExtra getExtraWithPTick(double ptick) {return new ApplicationExtra(ptick);}
-	public static ApplicationReturn getDummyReturn() {return new ApplicationReturn();}
+	public static ApplyReturn getDummyReturn() {return new ApplyReturn();}
 	
 }

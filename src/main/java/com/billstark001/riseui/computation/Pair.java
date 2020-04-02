@@ -1,6 +1,6 @@
 package com.billstark001.riseui.computation;
 
-import com.billstark001.riseui.base.shading.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.mat.Texture2DFromRes;
 
 public final class Pair {
 	

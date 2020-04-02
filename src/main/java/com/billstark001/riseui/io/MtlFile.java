@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.billstark001.riseui.base.shading.MaterialFace;
-import com.billstark001.riseui.base.shading.Texture2DBase;
-import com.billstark001.riseui.base.shading.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.mat.MaterialFace;
+import com.billstark001.riseui.base.shading.mat.Texture2DBase;
+import com.billstark001.riseui.base.shading.mat.Texture2DFromRes;
 
 import net.minecraft.client.resources.IResourceManager;
 
@@ -58,7 +58,7 @@ public class MtlFile {
 				String val = i.substring(7);
 				Texture2DFromRes tex = new Texture2DFromRes(val);
 				MaterialFace mat = new MaterialFace(name);
-				mat.setAlbedo(tex);
+				mat.setDiffuse(tex);
 				this.mats.put(name, mat);
 			}
 		}

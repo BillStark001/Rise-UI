@@ -3,8 +3,8 @@ package com.billstark001.riseui.develop;
 import org.lwjgl.opengl.GL11;
 
 import com.billstark001.riseui.client.ClientProxy;
-import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.render.GlHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -75,10 +75,10 @@ public class RenderHUD {
         r.startDrawing(GL11.GL_QUADS);
         //prepareColor(1,t);
         r.setNormal(0,0,1);
-        r.addVertexWithUV(-WIDTH, -LENGTH, SECOND, 0.0, 0.0); //вСио
-        r.addVertexWithUV(WIDTH, -LENGTH, SECOND, 1, 0); //вСоб
-        r.addVertexWithUV(WIDTH, LENGTH, SECOND, 1.0, 1.0); //сроб
-        r.addVertexWithUV(-WIDTH, LENGTH, SECOND, 0, 1); //срио
+        r.addVertexWithUV(-WIDTH, -LENGTH, SECOND, 0.0, 0.0); //О©╫О©╫О©╫О©╫
+        r.addVertexWithUV(WIDTH, -LENGTH, SECOND, 1, 0); //О©╫О©╫О©╫О©╫
+        r.addVertexWithUV(WIDTH, LENGTH, SECOND, 1.0, 1.0); //О©╫О©╫О©╫О©╫
+        r.addVertexWithUV(-WIDTH, LENGTH, SECOND, 0, 1); //О©╫О©╫О©╫О©╫
         t.draw(); 
         GL11.glPopMatrix();
         */

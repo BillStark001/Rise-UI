@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.shading.MaterialFace;
-import com.billstark001.riseui.base.shading.TagApplyMaterialFace;
-import com.billstark001.riseui.base.shading.TagSelectionHardTable;
-import com.billstark001.riseui.base.shading.Texture2DFromRes;
+import com.billstark001.riseui.base.shading.mat.MaterialFace;
+import com.billstark001.riseui.base.shading.mat.TagApplyMaterialFace;
+import com.billstark001.riseui.base.shading.mat.TagSelectionHardTable;
+import com.billstark001.riseui.base.shading.mat.Texture2DFromRes;
 import com.billstark001.riseui.base.states.StateTrackedDouble;
 import com.billstark001.riseui.base.states.StateTrackedDouble.Interpolation;
 import com.billstark001.riseui.base.states.StateTrackedVec3;
@@ -24,7 +24,7 @@ import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.character.Joint;
-import com.billstark001.riseui.core.empty.EmptyNode;
+import com.billstark001.riseui.core.empty.NodeEmpty;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.dddviewr.collada.Accessor;
 import com.dddviewr.collada.Collada;
@@ -216,9 +216,9 @@ public class ColladaFile {
 			emi = emat.getEmission();
 			tra = emat.getTransparency();
 			spe = emat.getSpecular();
-			if (dif != null) mat.setAlbedo(new Texture2DFromRes(limg.getElement(etemp.findNewParam(dif.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
-			if (emi != null) mat.setEmission(new Texture2DFromRes(limg.getElement(etemp.findNewParam(emi.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
-			if (tra != null) mat.setTransparency(new Texture2DFromRes(limg.getElement(etemp.findNewParam(tra.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (dif != null) mat.setDiffuse(new Texture2DFromRes(limg.getElement(etemp.findNewParam(dif.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (emi != null) mat.setLight(new Texture2DFromRes(limg.getElement(etemp.findNewParam(emi.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
+			if (tra != null) mat.setAlpha(new Texture2DFromRes(limg.getElement(etemp.findNewParam(tra.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
 			if (spe != null) mat.setSpecular(new Texture2DFromRes(limg.getElement(etemp.findNewParam(spe.getTexture().getTexture()).getSampler2D().getInstanceImage().getUrl()).getInitFrom()));
 			this.material.put(id, mat);
 		}
@@ -390,7 +390,7 @@ public class ColladaFile {
 			ans.setName(n.getName());
 			ans.setLocalState(c);
 		} else {
-			ans = new EmptyNode(c, n.getName());
+			ans = new NodeEmpty(c, n.getName());
 		}
 		if (t != null && t.containsFrames()) ans.setLocalState(t);
 		

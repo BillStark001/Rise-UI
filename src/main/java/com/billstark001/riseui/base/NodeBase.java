@@ -2,12 +2,16 @@ package com.billstark001.riseui.base;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Stack;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
@@ -16,12 +20,12 @@ import com.billstark001.riseui.base.states.simple3d.State3DPos;
 import com.billstark001.riseui.base.states.simple3d.State3DRot;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
-import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.core.empty.EmptyNode;
+import com.billstark001.riseui.core.empty.NodeEmpty;
+import com.billstark001.riseui.render.GlHelper;
 
 import scala.actors.threadpool.Arrays;
 
@@ -338,7 +342,7 @@ public abstract class NodeBase extends BaseObject{
 	protected void updateGlobalStateCheckDirtyWithoutTag() {if (isGlobalDirty()) updateGlobalStateWithoutTag();}
 	protected void updateGlobalState() {this.updateGlobalStateWithoutTag(); this.applyTags(TagBase.TAG_PHRASE_GLOBAL_UPDATE);}
 	protected void updateGlobalStateWithoutTag() {
-		NodeBase parent = new EmptyNode();
+		NodeBase parent = new NodeEmpty();
 		if (this.parent != null) {
 			this.parent.updateGlobalStateCheckDirty();
 			parent = this.parent;
@@ -390,19 +394,24 @@ public abstract class NodeBase extends BaseObject{
 	}
 
 	public boolean addTag(TagBase tag) {
-		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_ADDED)) || tag.onAdded(this).succeed;
-		if (flag) tags.add(tag);
+		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_ADDED)) || tag.onAdded(this).succeeded;
+		if (flag) {
+			tags.add(tag);
+			state_tag_cache = new HashMap<Integer, TagBase[]>();
+		}
 		return flag;
 	}
 	
 	public boolean removeTag(TagBase tag) {
-		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_REMOVED)) || (tag.onRemoved(this).succeed && tags.contains(tag));
-		if (flag) tags.remove(tag);
+		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_REMOVED)) || (tag.onRemoved(this).succeeded && tags.contains(tag));
+		if (flag) {
+			tags.remove(tag);
+			state_tag_cache = new HashMap<Integer, TagBase[]>();
+		}
 		return flag;
 	}
 	
-	public void applyTags(int phrase) {this.applyTags(phrase, TagBase.getDummyExtra());}
-	public void applyTags(int phrase, TagBase.ApplicationExtra extra) {
+	public void applyTags(int phrase, Object...extra) {
 		TagBase.sortTags(tags);
 		TagBase t;
 		for (int i = 0; i < tags.size(); ++i) {
@@ -411,12 +420,57 @@ public abstract class NodeBase extends BaseObject{
 		}
 	}
 	
+	public void applyTagsWithExclusion(int phrase, TagBase[] excluded, Object...extra) {
+		TagBase.sortTags(tags);
+		TagBase t;
+		for (int i = 0; i < tags.size(); ++i) {
+			t = tags.get(i);
+			if (t.isActivated() && t.appliesOn(phrase) && !ArrayUtils.contains(excluded, t)) t.applyOn(phrase, this, extra);
+		}
+	}
+	
+	public TagBase[] findTagsRaw(int phrase) {
+		ArrayList<TagBase> tags_ans = new ArrayList<TagBase>();
+		TagBase.sortTags(this.tags);
+		TagBase t;
+		for (int i = 0; i < this.tags.size(); ++i) {
+			t = this.tags.get(i);
+			if (t.appliesOn(phrase)) tags_ans.add(t);
+		}
+		return tags_ans.toArray(new TagBase[0]);
+	}
+	
+	private Map<Integer, TagBase[]> state_tag_cache = new HashMap<Integer, TagBase[]>();
+	
+	public TagBase[] findTags(int phrase) {
+		if (state_tag_cache == null) state_tag_cache = new HashMap<Integer, TagBase[]>();
+		TagBase[] ans = state_tag_cache.getOrDefault(phrase, null);
+		if (ans == null) {
+			ans = findTagsRaw(phrase);
+			state_tag_cache.put(phrase, ans);
+		}
+		return ans;
+	}
+	
+	public TagBase[] findTags(int[] phrases) {
+		ArrayList<TagBase> tags_ans = new ArrayList<TagBase>();
+		TagBase.sortTags(this.tags);
+		TagBase t;
+		for (int i = 0; i < this.tags.size(); ++i) {
+			t = this.tags.get(i);
+			boolean flag = t.isActivated();
+			for (int phrase: phrases) flag = flag && t.appliesOn(phrase);
+			if (flag) tags_ans.add(t);
+		}
+		return tags_ans.toArray(new TagBase[0]);
+	}
+	
 	// Render
 	
 	public void render(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
 		// renderer.dumpState();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_PRE);
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_PRE, ptick);
 		if (this.vertsVisible()) {
 			renderer.setVertState();
 			this.renderVert(ptick);
@@ -430,7 +484,7 @@ public abstract class NodeBase extends BaseObject{
 			this.renderFace(ptick);
 		}
 		if (renderer.isDebugging()) this.renderDebug(ptick);
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_POST);
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_POST, ptick);
 		// renderer.resetState();
 	}
 	
@@ -471,20 +525,21 @@ public abstract class NodeBase extends BaseObject{
 	
 	public void renderVert(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES, new TagBase.ApplicationExtra(ptick));
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES_PRE, ptick);
 		for (int i = 0; i < this.getVertCount(); ++i) {
-			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX, new TagBase.ApplicationExtra(ptick, i));
+			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX, i, ptick);
 			Vector v = this.getVertPos(i);
 			renderer.startDrawingVert();
 			renderer.addVertex(v);
 			renderer.endDrawing();
 		}
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES_POST, ptick);
 	}
 	public void renderEdge(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES, new TagBase.ApplicationExtra(ptick));
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_PRE, ptick);
 		for (int i = 0; i < this.getEdgeCount(); ++i) {
-			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE, new TagBase.ApplicationExtra(ptick, i));
+			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE, i, ptick);
 			int[] v_ = this.getEdgeIndices(i);
 			renderer.startDrawingEdge(this.isEdgeLooped(i));
 			for (int v: v_) {
@@ -492,14 +547,82 @@ public abstract class NodeBase extends BaseObject{
 			}
 			renderer.endDrawing();
 		}
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_POST, ptick);
 	}
-
+	/**
+	 * TODO
+	 * 
+	 * Face:
+	 * orig_points: (vec3, vec2)[]
+	 * mats: (shader[], double)[]
+	 * 
+	 * Faces Categorized by Materials:
+	 * deformed_points: (vec3[], vec2[])[k]
+	 * mats:(shader[], double)[k]
+	 * for i in range(k): load mats, render points.
+	 * 
+	 * pseudo code:
+	 * build a selection record, calc the ultimate selections of each face
+	 * categorize selection to several groups, for each group calc materials
+	 * for each gruop render by materials
+	 * 
+	 * Extendability Disaster!!!!!
+	 */
 	public void renderFace(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES, new TagBase.ApplicationExtra(ptick));
+		
+		int face_count = this.getFaceCount();
+		TagBase[] rpf_tags = this.findTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE);
+		double[][] final_apply_rate;
+		
+		final_apply_rate = new double[face_count][rpf_tags.length];
+		for (int i = 0; i < face_count; ++i) {
+			for (int j = 0; j < rpf_tags.length; ++j) {
+				if (!rpf_tags[j].isActivated()) continue;
+				TagBase.ApplyReturn ret = rpf_tags[j].applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, i, ptick);
+				if (ret.succeeded) {
+					double rate = (Double) ret.data[0];
+					if (rate > (1 - 1e-6)) rate = 1;
+					else if (rate < 1e-6) rate = 0;
+					final_apply_rate[i][j] = rate;
+					for (int k = 0; k < j; ++k) final_apply_rate[i][k] *= (1 - rate);
+				}
+			}
+		}
+		
+		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_PRE, rpf_tags, ptick);
+		
+		for (int it = 0; it < rpf_tags.length; ++it) {
+			TagBase t = rpf_tags[it];
+			if (!t.isActivated()) continue; 
+			t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_PRE, this, ptick);
+			for (int is = 0; is < face_count; ++is) {
+				if (final_apply_rate[is][it] < 1e-6) continue;
+				TagBase.ApplyReturn ret = t.applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, is, ptick);
+				
+				Triad[] t_ = this.getFaceIndices(is);
+				
+				renderer.startDrawingFace();
+				for (Triad t1 : t_) {
+					Vector v1, v2;
+					v1 = this.getVertPos(t1.getX());
+					v2 = this.getVertUVM(t1.getY());
+					renderer.addVertex(v1, v2);
+				}
+				renderer.endDrawing();
+			}
+			t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_POST, this, ptick);
+		}
+
+		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_POST, rpf_tags, ptick);
+	}
+	public void renderFace_(double ptick) {
+		GlHelper renderer = GlHelper.getInstance();
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_PRE, ptick);
 		for (int i = 0; i < this.getFaceCount(); ++i) {
-			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, new TagBase.ApplicationExtra(ptick, i));
+			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, i, ptick);
 			Triad[] t_ = this.getFaceIndices(i);
+			
 			renderer.startDrawingFace();
 			for (Triad t : t_) {
 				Vector v1, v2;
@@ -509,15 +632,18 @@ public abstract class NodeBase extends BaseObject{
 			}
 			renderer.endDrawing();
 		}
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_POST, ptick);
 	}
 	
 	public void renderDebug(double ptick) {
 		
 		GlHelper renderer = GlHelper.getInstance();
 		
+		
 		renderer.disableDepth();
 		renderer.setEdgeState();
-		renderer.setLineWidth(3);
+		renderer.setLineWidth(4);
+		renderer.setAlpha(1.);
 		
 		/*
 		Matrix mtemp = new Matrix(vtemp);
@@ -567,7 +693,6 @@ public abstract class NodeBase extends BaseObject{
 		renderer.addVertex(vtemp[3].subtract(vtemp[2].mult(0.5)));
 		renderer.endDrawing();
 		
-		renderer.setFaceState();
 		renderer.enableDepth();
 	}
 

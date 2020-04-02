@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.render.GlHelper;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -31,10 +32,11 @@ public abstract class NodeCompilableBase extends NodeBase {
 	
 	public void checkAndCompile() {if (!this.isCompiled()) this.compileList();}
 	public void compileList() {
-		if (this.displayList == -1) this.displayList = GLAllocation.generateDisplayLists(1);
-        GlStateManager.glNewList(this.displayList, GL11.GL_COMPILE);
+		GlHelper helper = GlHelper.getInstance();
+		if (this.displayList == -1) this.displayList = helper.genDispList();
+        helper.startCompileList(this.displayList);
         this.render(0);
-        GlStateManager.glEndList();
+        helper.endList();
         this.compiled = true;
 	}
 	

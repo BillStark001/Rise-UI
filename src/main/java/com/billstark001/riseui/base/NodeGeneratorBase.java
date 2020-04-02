@@ -2,10 +2,10 @@ package com.billstark001.riseui.base;
 
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.client.GlHelper;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;
+import com.billstark001.riseui.render.GlHelper;
 
 public abstract class NodeGeneratorBase extends NodeBase {
 

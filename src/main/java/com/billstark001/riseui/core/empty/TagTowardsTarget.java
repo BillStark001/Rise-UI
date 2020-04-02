@@ -22,72 +22,87 @@ public class TagTowardsTarget extends TagBase {
 	public void setTarget(Vector target_pos) {this.target_pos = target_pos;}
 	@Override
 	public void update(TickEvent e) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 	}
 	@Override
 	public boolean appliesOn(int phrase) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return false;
 	}
 	@Override
-	public ApplicationReturn onAdded(NodeBase node) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onAdded(NodeBase node) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRemoved(NodeBase node) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRemoved(NodeBase node) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onGlobalUpdate(NodeBase state) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onGlobalUpdate(NodeBase state) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onLocalUpdate(NodeBase state) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onLocalUpdate(NodeBase state) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPost(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderVertsPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderEdgesPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderVert(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderEdge(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 	@Override
-	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderVertsPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderEdgesPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderFacesPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
 		return null;
 	}
 

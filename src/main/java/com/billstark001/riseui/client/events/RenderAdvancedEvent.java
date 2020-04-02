@@ -5,11 +5,11 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 @Cancelable
-public class RenderTileOverlayEvent extends Event {
+public class RenderAdvancedEvent extends Event {
 	private final RenderGlobal context;
 	private final float partialTicks;
 
-	public RenderTileOverlayEvent(RenderGlobal context, float partialTicks) {
+	public RenderAdvancedEvent(RenderGlobal context, float partialTicks) {
 		this.context = context;
 		this.partialTicks = partialTicks;
 	}

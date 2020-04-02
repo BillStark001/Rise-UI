@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.shading;
+package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
@@ -53,18 +53,18 @@ public abstract class TagSelectionBase extends TagBase {
 	}
 
 	@Override
-	public ApplicationReturn onAdded(NodeBase node) {
-		if (this.node != null) return new TagBase.ApplicationReturn(false);
+	public ApplyReturn onAdded(NodeBase node) {
+		if (this.node != null) return new TagBase.ApplyReturn(false);
 		else {
 			this.node = node;
-			return new TagBase.ApplicationReturn(true);
+			return new TagBase.ApplyReturn(true);
 		}
 	}
 
 	@Override
-	public ApplicationReturn onRemoved(NodeBase node) {
+	public ApplyReturn onRemoved(NodeBase node) {
 		this.node = null;
-		return new TagBase.ApplicationReturn(true);
+		return new TagBase.ApplyReturn(true);
 	}
 	
 	public abstract double getContainRate(int index);
@@ -74,62 +74,62 @@ public abstract class TagSelectionBase extends TagBase {
 	// All functions below are useless, just to materialize abstract functions.
 	
 	@Override
-	public ApplicationReturn onGlobalUpdate(NodeBase state) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onGlobalUpdate(NodeBase state) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onLocalUpdate(NodeBase state) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onLocalUpdate(NodeBase state) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPost(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderVertsPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderEdgesPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderVert(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderEdge(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 

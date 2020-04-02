@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 
-import com.billstark001.riseui.base.shading.Texture2DBase;
+import com.billstark001.riseui.base.shading.mat.Texture2DBase;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;

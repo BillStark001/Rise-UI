@@ -17,6 +17,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.NodeBase;
@@ -37,7 +38,7 @@ import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.computation.UtilsLinalg;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.core.empty.EmptyNode;
+import com.billstark001.riseui.core.empty.NodeEmpty;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.MtlFile;
@@ -48,7 +49,9 @@ import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.states.mesh;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.model.b3d.B3DLoader;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import scala.actors.threadpool.Arrays;
 
 public class Test {
@@ -74,13 +77,13 @@ public class Test {
 		try {
 			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider.dae");
 		} catch (FileNotFoundException e) {
-			// TODO ×Ô¶¯Éú³ÉµÄ catch ¿é
+			// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Éµï¿½ catch ï¿½ï¿½
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO ×Ô¶¯Éú³ÉµÄ catch ¿é
+			// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Éµï¿½ catch ï¿½ï¿½
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO ×Ô¶¯Éú³ÉµÄ catch ¿é
+			// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Éµï¿½ catch ï¿½ï¿½
 			e.printStackTrace();
 		}
 		/*
@@ -119,6 +122,10 @@ public class Test {
 		System.out.println(v1);
 		System.out.println(q3);
 		System.out.println(Quaternion.quatToEuler(q3));
+		
+		
+		TickEvent.RenderTickEvent r;
+		RenderSpider s;
 		
 		/*
 		

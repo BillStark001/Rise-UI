@@ -1,6 +1,8 @@
-package com.billstark001.riseui.base.shading;
+package com.billstark001.riseui.base.shading.mat;
 
 import java.util.Arrays;
+
+import com.billstark001.riseui.base.NodeBase;
 
 public class TagSelectionSoftTable extends TagSelectionBase {
 
@@ -33,6 +35,21 @@ public class TagSelectionSoftTable extends TagSelectionBase {
 	public double getContainRate(int index) {
 		if (index > 0 && index < table.length) return table[index];
 		else return 0;
+	}
+	@Override
+	public ApplyReturn onRenderVertsPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderEdgesPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderFacesPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
 	}
 
 }

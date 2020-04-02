@@ -1,10 +1,10 @@
-package com.billstark001.riseui.base.shading;
+package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
-import com.billstark001.riseui.base.shading.TagSelectionBase.Type;
-import com.billstark001.riseui.client.GlHelper;
+import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
 import com.billstark001.riseui.computation.Vector;
+import com.billstark001.riseui.render.GlHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -47,7 +47,8 @@ public class TagApplyMaterialVert extends TagBase {
 		switch (phrase) {
 		case TagBase.TAG_PHRASE_RENDER_PRE:
 		case TagBase.TAG_PHRASE_RENDER_POST:
-		case TagBase.TAG_PHRASE_RENDER_VERTICES:
+		case TagBase.TAG_PHRASE_RENDER_VERTICES_PRE:
+		case TagBase.TAG_PHRASE_RENDER_VERTICES_POST:
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_VERTEX:
 			return true;
 		default:
@@ -56,28 +57,28 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplicationReturn onAdded(NodeBase node) {return null;}
+	public ApplyReturn onAdded(NodeBase node) {return null;}
 	@Override
-	public ApplicationReturn onRemoved(NodeBase node) {return null;}
+	public ApplyReturn onRemoved(NodeBase node) {return null;}
 	@Override
-	public ApplicationReturn onGlobalUpdate(NodeBase state) {return null;}
+	public ApplyReturn onGlobalUpdate(NodeBase state) {return null;}
 	@Override
-	public ApplicationReturn onLocalUpdate(NodeBase state) {return null;}
+	public ApplyReturn onLocalUpdate(NodeBase state) {return null;}
 	
 	@Override
-	public ApplicationReturn onRenderPre(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPre(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderPost(NodeBase object, double ptick) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+	public ApplyReturn onRenderPost(NodeBase object, double ptick) {
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVerts(NodeBase object, double ptick) {
+	public ApplyReturn onRenderVertsPre(NodeBase object, double ptick) {
 		boolean flag = false;
 		if (this.selection == null) flag = true;
 		if (this.material == null) flag = false;
@@ -89,22 +90,22 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdges(NodeBase object, double ptick) {
+	public ApplyReturn onRenderEdgesPre(NodeBase object, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderFaces(NodeBase object, double ptick) {
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderEdge(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderEdge(NodeBase object, int index, double ptick) {
 		return null;
 	}
 
 	@Override
-	public ApplicationReturn onRenderVert(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderVert(NodeBase object, int index, double ptick) {
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.VERTEX) flag = this.selection.contains(index);
 		if (this.selection == null) flag = true;
@@ -125,7 +126,22 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplicationReturn onRenderFace(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderVertsPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderEdgesPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderFacesPost(NodeBase object) {
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
 		return null;
 	}
 

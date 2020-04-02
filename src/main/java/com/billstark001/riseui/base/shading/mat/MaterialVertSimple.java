@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.shading;
+package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.Layer;
 import com.billstark001.riseui.computation.UtilsTex;

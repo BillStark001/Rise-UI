@@ -2,7 +2,7 @@ package com.billstark001.riseui.develop;
 
 import org.lwjgl.input.Keyboard;
 
-import com.billstark001.riseui.client.events.RenderTileOverlayEvent;
+import com.billstark001.riseui.client.events.RenderAdvancedEvent;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -13,9 +13,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.ListenerList;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+
+@SideOnly(Side.CLIENT)
 public class DevelopProxy {
 
 	public static final KeyBinding TOGGLE_RENDER = new KeyBinding("Start/Stop Rise UI Renders", Keyboard.KEY_H, "Rise UI");
@@ -59,19 +65,19 @@ public class DevelopProxy {
    		World world=Minecraft.getMinecraft().world;
 
    		if(TOGGLE_RENDER.isPressed()){
-   			speakToPlayer(player, "The Deep¡áDark¡âFantasy.");
+   			speakToPlayer(player, "The Deepï¿½ï¿½Darkï¿½ï¿½Fantasy.");
    			isStarted=!isStarted;
    		}
    		if(TOGGLE_GRID.isPressed()){
-   			speakToPlayer(player, "Grid's Deep¡áDark¡âFantasy.");
+   			speakToPlayer(player, "Grid's Deepï¿½ï¿½Darkï¿½ï¿½Fantasy.");
    			renderGrid=!renderGrid;
    		}
    		if(TOGGLE_MOB.isPressed()){
-   			speakToPlayer(player, "Mob's Deep¡áDark¡âFantasy.");
+   			speakToPlayer(player, "Mob's Deepï¿½ï¿½Darkï¿½ï¿½Fantasy.");
    			renderMob=!renderMob;
    		}
    		if(TOGGLE_ORE.isPressed()){
-   			speakToPlayer(player, "Ore's Deep¡áDark¡âFantasy.");
+   			speakToPlayer(player, "Ore's Deepï¿½ï¿½Darkï¿½ï¿½Fantasy.");
    			renderOre=!renderOre;
    		}
    	}
@@ -111,11 +117,26 @@ public class DevelopProxy {
 	*/
 	
 	@SubscribeEvent
-	public void doRender(RenderTileOverlayEvent e) {
+	public void doRender(RenderAdvancedEvent e) {
 		if (isStarted) {
 			RenderTestObject.doRender(e.getPartialTicks());
 			RenderHUD.doRender(e.getPartialTicks());
 		}
 	}
-
+	/*
+	@SubscribeEvent
+	public void detectRenderEvent(Event e) {
+		if (e.getClass().getSimpleName().contains("Render")) {
+			System.out.println(e);
+			if (e.getClass().getSimpleName().contains("RenderTick")) {
+				ListenerList el = e.getListenerList();
+				el = e.getListenerList();
+			}
+			if (e.getClass().getSimpleName().contains("RenderFog")) {
+				ListenerList elf = e.getListenerList();
+				elf = e.getListenerList();
+			}
+		}
+	}
+*/
 }
