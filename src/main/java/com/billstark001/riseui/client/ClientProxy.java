@@ -2,6 +2,8 @@ package com.billstark001.riseui.client;
 
 import org.lwjgl.opengl.GL11;
 
+import com.billstark001.riseui.base.shading.shader.Shader;
+import com.billstark001.riseui.base.shading.shader.States;
 import com.billstark001.riseui.client.events.RenderAdvancedEvent;
 import com.billstark001.riseui.common.CommonProxy;
 import com.billstark001.riseui.computation.UtilsInteract;
@@ -46,7 +48,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void postRenderTileOverlayEvent(RenderWorldLastEvent e) {
+	public void postRenderEvent(RenderWorldLastEvent e) {
 		GlStateManager.pushMatrix();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 
@@ -54,11 +56,12 @@ public class ClientProxy extends CommonProxy {
 		Vec3d LastTickPos = new Vec3d(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ);
 		Vec3d Bias = UtilsInteract.numMult(CurrentPos.subtract(LastTickPos), e.getPartialTicks());
 		Vec3d RenderPos = LastTickPos.add(Bias);
-		GL11.glTranslated(-RenderPos.x + 0.5, -RenderPos.y + 0.5, -RenderPos.z + 0.5);
+		GlStateManager.translate(-RenderPos.x + 0.5, -RenderPos.y + 0.5, -RenderPos.z + 0.5);
 
 		MinecraftForge.EVENT_BUS.post(new RenderAdvancedEvent(e.getContext(), e.getPartialTicks()));
 
 		GlStateManager.popMatrix();
+		Shader.SHADER_DIFFUSE.applyState();
 	}
 	
 	@SubscribeEvent

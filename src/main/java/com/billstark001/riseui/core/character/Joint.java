@@ -32,7 +32,7 @@ public class Joint extends NodeBase {
 	private Joint superior = null;
 	private double length;
 	private double[][] d = {{0, 0, 0}, {0, 1, 0}, {0.25, 0.75, 0}, {0, 0.75, 0.25}, {-0.25, 0.75, 0}, {0, 0.75, -0.25}};
-	private Matrix vertices = new Matrix(d);
+	private Matrix vertices = new Matrix(d).mult(100);
 	private Matrix vcur = vertices;
 	
 	public Joint getSuperior() {return superior;}
@@ -145,12 +145,12 @@ public class Joint extends NodeBase {
 	}
 	@Override
 	public int getEdgeIndicesLength(int index) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return 0;
 	}
 	@Override
 	public int getFaceIndicesLength(int index) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return 0;
 	}
 

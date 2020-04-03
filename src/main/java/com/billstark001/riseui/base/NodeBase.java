@@ -13,6 +13,7 @@ import java.util.Stack;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.billstark001.riseui.base.shading.shader.Shader;
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
@@ -472,15 +473,15 @@ public abstract class NodeBase extends BaseObject{
 		// renderer.dumpState();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_PRE, ptick);
 		if (this.vertsVisible()) {
-			renderer.setVertState();
+			//renderer.setVertState();
 			this.renderVert(ptick);
 		}
 		if (this.edgesVisible()) {
-			renderer.setEdgeState();
+			//renderer.setEdgeState();
 			this.renderEdge(ptick);
 		}
 		if (this.facesVisible()) {
-			renderer.setFaceState();
+			//renderer.setFaceState();
 			this.renderFace(ptick);
 		}
 		if (renderer.isDebugging()) this.renderDebug(ptick);
@@ -579,7 +580,7 @@ public abstract class NodeBase extends BaseObject{
 		for (int i = 0; i < face_count; ++i) {
 			for (int j = 0; j < rpf_tags.length; ++j) {
 				if (!rpf_tags[j].isActivated()) continue;
-				TagBase.ApplyReturn ret = rpf_tags[j].applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, i, ptick);
+				TagBase.ApplyReturn ret = rpf_tags[j].applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, i, ptick, false);
 				if (ret.succeeded) {
 					double rate = (Double) ret.data[0];
 					if (rate > (1 - 1e-6)) rate = 1;
@@ -590,26 +591,30 @@ public abstract class NodeBase extends BaseObject{
 			}
 		}
 		
-		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_PRE, rpf_tags, ptick);
+		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_PRE, rpf_tags, ptick, 0);
 		
 		for (int it = 0; it < rpf_tags.length; ++it) {
 			TagBase t = rpf_tags[it];
 			if (!t.isActivated()) continue; 
-			t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_PRE, this, ptick);
-			for (int is = 0; is < face_count; ++is) {
-				if (final_apply_rate[is][it] < 1e-6) continue;
-				TagBase.ApplyReturn ret = t.applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, is, ptick);
-				
-				Triad[] t_ = this.getFaceIndices(is);
-				
-				renderer.startDrawingFace();
-				for (Triad t1 : t_) {
-					Vector v1, v2;
-					v1 = this.getVertPos(t1.getX());
-					v2 = this.getVertUVM(t1.getY());
-					renderer.addVertex(v1, v2);
+			int rerender_count = (Integer) (t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_PRE, this, ptick, -1).data[0]);
+			for (int ir = 0; ir < rerender_count; ++ir) {
+				boolean succeeded = t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_PRE, this, ptick, ir).succeeded;
+				if (!succeeded) continue;
+				for (int is = 0; is < face_count; ++is) {
+					if (final_apply_rate[is][it] < 1e-6) continue;
+					TagBase.ApplyReturn ret = t.applyOn(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, this, is, ptick, true);
+					
+					Triad[] t_ = this.getFaceIndices(is);
+					
+					renderer.startDrawingFace();
+					for (Triad t1 : t_) {
+						Vector v1, v2;
+						v1 = this.getVertPos(t1.getX());
+						v2 = this.getVertUVM(t1.getY());
+						renderer.addVertex(v1, v2);
+					}
+					renderer.endDrawing();
 				}
-				renderer.endDrawing();
 			}
 			t.applyOn(TagBase.TAG_PHRASE_RENDER_FACES_POST, this, ptick);
 		}
@@ -618,9 +623,9 @@ public abstract class NodeBase extends BaseObject{
 	}
 	public void renderFace_(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_PRE, ptick);
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_PRE, ptick, 0);
 		for (int i = 0; i < this.getFaceCount(); ++i) {
-			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, i, ptick);
+			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, i, ptick, true);
 			Triad[] t_ = this.getFaceIndices(i);
 			
 			renderer.startDrawingFace();
@@ -637,11 +642,9 @@ public abstract class NodeBase extends BaseObject{
 	
 	public void renderDebug(double ptick) {
 		
+		Shader.SHADER_DEBUG.applyState();
+		
 		GlHelper renderer = GlHelper.getInstance();
-		
-		
-		renderer.disableDepth();
-		renderer.setEdgeState();
 		renderer.setLineWidth(4);
 		renderer.setAlpha(1.);
 		
@@ -693,7 +696,8 @@ public abstract class NodeBase extends BaseObject{
 		renderer.addVertex(vtemp[3].subtract(vtemp[2].mult(0.5)));
 		renderer.endDrawing();
 		
-		renderer.enableDepth();
+		Shader.SHADER_DIFFUSE.applyState();
+		
 	}
 
 	// Display Functions

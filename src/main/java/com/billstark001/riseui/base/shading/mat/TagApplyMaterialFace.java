@@ -1,8 +1,11 @@
 package com.billstark001.riseui.base.shading.mat;
 
+import java.util.ArrayList;
+
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
+import com.billstark001.riseui.base.shading.shader.Shader;
 import com.billstark001.riseui.render.GlHelper;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -87,15 +90,28 @@ public class TagApplyMaterialFace extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick, int inform) {
 		boolean flag = true;
 		// if (this.selection == null) flag = true;
 		if (this.material == null) flag = false;
 		if (flag) {
-			Texture2DBase diffuse = this.material.getDiffuse();
-			if (diffuse != null) GlHelper.getInstance().applyTexture(diffuse);
+			if (inform < 0) {
+				return new ApplyReturn(true, 2);
+			} else if (inform == 0) {
+				this.material.SHADER_DIFFUSE.applyState();
+				Texture2DBase diffuse = this.material.getDiffuse();
+				if (diffuse == null) 
+					return new ApplyReturn(false);
+				GlHelper.getInstance().applyTexture(diffuse);
+			} else if (inform == 1) {
+				this.material.SHADER_LIGHT.applyState();
+				Texture2DBase light = this.material.getLight();
+				if (light == null) 
+					return new ApplyReturn(false);
+				GlHelper.getInstance().applyTexture(light);
+			}
 		}
-		return null;
+		return new ApplyReturn(true);
 	}
 
 	@Override
@@ -109,7 +125,7 @@ public class TagApplyMaterialFace extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick, boolean inform) {
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.FACE) flag = this.selection.contains(index);
 		if (this.selection == null) flag = true;

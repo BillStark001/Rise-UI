@@ -59,6 +59,8 @@ public abstract class TagBase extends BaseObject {
 		if (!this.appliesOn(phrase)) return null;
 		double ptick = 0;
 		int index = 0;
+		int inform = -1;
+		boolean inform_ = true;
 		switch (phrase) {
 		case TagBase.TAG_PHRASE_RENDER_PRE:
 			ptick = (Double) args[0];
@@ -75,7 +77,8 @@ public abstract class TagBase extends BaseObject {
 			return this.onRenderEdgesPre(object, ptick);
 		case TagBase.TAG_PHRASE_RENDER_FACES_PRE:
 			ptick = (Double) args[0];
-			return this.onRenderFacesPre(object, ptick);
+			inform = (Integer) args[1];
+			return this.onRenderFacesPre(object, ptick, inform);
 		
 		case TagBase.TAG_PHRASE_RENDER_VERTICES_POST:
 			return this.onRenderVertsPost(object);
@@ -95,7 +98,8 @@ public abstract class TagBase extends BaseObject {
 		case TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE:
 			index = (Integer) args[0];
 			ptick = (Double) args[1];
-			return this.onRenderFace(object, index, ptick);
+			inform_ = (Boolean) args[2];
+			return this.onRenderFace(object, index, ptick, inform_);
 			
 		case TagBase.TAG_PHRASE_GLOBAL_UPDATE:
 			return this.onGlobalUpdate(object);
@@ -176,9 +180,10 @@ public abstract class TagBase extends BaseObject {
 	 * 
 	 * @param object
 	 * @param ptick
-	 * @return
+	 * @param inform
+	 * @return boolean succeeded, int paircount, shader[paircount] shaders, mat[paircount] mats
 	 */
-	public abstract ApplyReturn onRenderFacesPre(NodeBase object, double ptick);
+	public abstract ApplyReturn onRenderFacesPre(NodeBase object, double ptick, int inform);
 	/**
 	 * 
 	 * @param object
@@ -218,9 +223,10 @@ public abstract class TagBase extends BaseObject {
 	 * @param object
 	 * @param index
 	 * @param ptick
+	 * @param inform
 	 * @return boolean succeeded, double alter_rate
 	 */
-	public abstract ApplyReturn onRenderFace(NodeBase object, int index, double ptick);
+	public abstract ApplyReturn onRenderFace(NodeBase object, int index, double ptick, boolean inform);
 	
 	public static void sortTags(List<TagBase> tags) {tags.sort(tagcomp);}
 	private static Comparator<TagBase> tagcomp = new Comparator<TagBase>() {

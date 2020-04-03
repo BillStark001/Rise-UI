@@ -5,6 +5,8 @@ public class BaseObject {
 	private String name;
 	protected Layer layer;
 	private double frame_time; 
+	private boolean frozen = false;
+	public boolean isFrozen() {return this.frozen;}
 	
 	public static final String DEFAULT_NAME = "Unnamed";
 	
@@ -16,15 +18,25 @@ public class BaseObject {
 		setLayer(layer);
 	}
 	
+	protected BaseObject(String name, Layer layer, int mark) {
+		this(name, layer);
+		this.frozen = true;
+	}
+	
 	public String getName() {return this.name;}
 	public void setName(String name) {
+		if (this.frozen) return;
 		if (name == null) name = DEFAULT_NAME;
 		this.name = name;
 	}
 	
 	public Layer getLayer() {return this.layer;}
-	public boolean setLayer(Layer l) {if (l == null) return false; return l.addMember(this);}
+	public boolean setLayer(Layer l) {
+		if (this.frozen) return false;
+		if (l == null) return false; return l.addMember(this);
+	}
 	public boolean removeFromLayer() {
+		if (this.frozen) return false;
 		if (this.layer == null) return false;
 		return this.layer.removeMember(this);
 	}

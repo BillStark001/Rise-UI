@@ -162,32 +162,39 @@ public final class GlHelper {
 	}
 
 	// State Management
+	
+	private static boolean isBlendEnabled = false;
+	public void disableBlend() {GlStateManager.disableBlend(); isBlendEnabled = false;}
+	public void blendFunc(int src, int dst) {
+		// if (isBlendEnabled) 
+			disableBlend();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(src, dst);
+	}
+	public void blendFuncAlpha() {blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);}
+	public void blendFuncOne() {blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ZERO);}
 
 	public void setVertState() {
-		GlStateManager.disableLighting();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.disableCull();
+		//GlStateManager.disableLighting();
+		//blendFuncAlpha();
+		//GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
 	}
 
 	public void setEdgeState() {
-		GlStateManager.disableLighting();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.disableCull();
+		//GlStateManager.disableLighting();
+		//blendFuncAlpha();
+		//GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
 	}
 
 	public void setFaceState() {
 		GlStateManager.enableTexture2D();
-		GlStateManager.enableCull();
-		GlStateManager.disableBlend();
-		GlStateManager.enableLighting();
-		//GlStateManager.enableBlend();
-		//GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		//GlStateManager.enableAlpha();
-		//GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
+		//GlStateManager.enableCull();
+		//GlStateManager.enableLighting();
+		blendFuncOne();
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
 		
 	}
 

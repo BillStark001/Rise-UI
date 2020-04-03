@@ -71,7 +71,7 @@ public class TagTowardsTarget extends TagBase {
 		return null;
 	}
 	@Override
-	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick, int inform) {
 		// TODO �Զ����ɵķ������
 		return null;
 	}
@@ -86,7 +86,7 @@ public class TagTowardsTarget extends TagBase {
 		return null;
 	}
 	@Override
-	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick, boolean inform) {
 		// TODO �Զ����ɵķ������
 		return null;
 	}

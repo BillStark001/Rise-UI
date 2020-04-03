@@ -3,6 +3,7 @@ package com.billstark001.riseui.base.shading.mat;
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
+import com.billstark001.riseui.base.shading.shader.Shader;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.render.GlHelper;
 
@@ -79,6 +80,7 @@ public class TagApplyMaterialVert extends TagBase {
 
 	@Override
 	public ApplyReturn onRenderVertsPre(NodeBase object, double ptick) {
+		Shader.SHADER_VERT.applyState();
 		boolean flag = false;
 		if (this.selection == null) flag = true;
 		if (this.material == null) flag = false;
@@ -95,7 +97,7 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick) {
+	public ApplyReturn onRenderFacesPre(NodeBase object, double ptick, int inform) {
 		return null;
 	}
 
@@ -126,7 +128,7 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderFace(NodeBase object, int index, double ptick, boolean inform) {
 		return null;
 	}
 	@Override

@@ -5,19 +5,18 @@ import java.util.Map;
 
 import com.billstark001.riseui.base.BaseObject;
 import com.billstark001.riseui.base.Layer;
-import com.billstark001.riseui.base.shading.shader.ShaderBase;
-import com.billstark001.riseui.base.shading.shader.ShaderFaceBase;
+import com.billstark001.riseui.base.shading.shader.Shader;
 
 public class MaterialFace extends BaseObject{
 	
 	public static final MaterialFace DEFAULT = new MaterialFace("Default Material");
 	
-	public static final ShaderBase SHADER_DIFFUSE = new ShaderFaceBase("diffuse");
-	public static final ShaderBase SHADER_LIGHT = new ShaderFaceBase("light");
-	public static final ShaderBase SHADER_SPECULAR = new ShaderFaceBase("specular");
-	public static final ShaderBase SHADER_NORMAL = new ShaderFaceBase("normal");
-	public static final ShaderBase SHADER_ALPHA = new ShaderFaceBase("alpha");
-	public static final ShaderBase SHADER_DISPLACEMENT = new ShaderFaceBase("displacement");
+	public static final Shader SHADER_DIFFUSE = Shader.SHADER_DIFFUSE;
+	public static final Shader SHADER_LIGHT = Shader.SHADER_LIGHT;
+	public static final Shader SHADER_SPECULAR = Shader.SHADER_SPECULAR;
+	public static final Shader SHADER_NORMAL = Shader.SHADER_NORMAL;
+	public static final Shader SHADER_ALPHA = Shader.SHADER_ALPHA;
+	public static final Shader SHADER_DISPLACEMENT = Shader.SHADER_DISPLACEMENT;
 	
 	@Override
 	public void setName(String name) {
@@ -33,22 +32,27 @@ public class MaterialFace extends BaseObject{
 	public MaterialFace(Layer layer) {this(null, layer);}
 	public MaterialFace() {this(null, null);}
 	
-	protected Map<ShaderBase, Texture2DBase> shader_tex_map = new LinkedHashMap<ShaderBase, Texture2DBase>();
+	protected Map<Shader, Texture2DBase> shader_tex_map = new LinkedHashMap<Shader, Texture2DBase>();
 	public static final Texture2DBase TEX_NULL = null;
 	
 	//public Texture2DBase get
-	public Texture2DBase getTexByShader(ShaderBase shader) {
+	public Texture2DBase getTexByShader(Shader shader) {
 		return this.shader_tex_map.getOrDefault(shader, TEX_NULL);
 	}
 	
-	public MaterialFace setTexByShader(ShaderBase shader, Texture2DBase tex) {
+	public MaterialFace setTexByShader(Shader shader, Texture2DBase tex) {
 		this.shader_tex_map.put(shader, tex);
 		return this;
 	}
 	
-	public MaterialFace delTexByShader(ShaderBase shader) {
+	public MaterialFace delTexByShader(Shader shader) {
 		this.shader_tex_map.remove(shader);
 		return this;
+	}
+	
+	public Shader[] getShaders() {
+		Shader[] ans = this.shader_tex_map.keySet().toArray(new Shader[0]);
+		return ans;
 	}
 	
 	

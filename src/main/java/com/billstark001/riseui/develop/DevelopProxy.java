@@ -120,9 +120,10 @@ public class DevelopProxy {
 	public void doRender(RenderAdvancedEvent e) {
 		if (isStarted) {
 			RenderTestObject.doRender(e.getPartialTicks());
-			RenderHUD.doRender(e.getPartialTicks());
+			//RenderHUD.doRender(e.getPartialTicks());
 		}
 	}
+	
 	/*
 	@SubscribeEvent
 	public void detectRenderEvent(Event e) {

@@ -141,15 +141,6 @@ public class RenderTestObject{
 
 		horse.setLocalState(new State3DIntegrated(new Vector(0, cur_time, 0)));
 		spider.setChildrenFrameTime(cur_time);
-		//NodeBase spider_body = spider.getChild(0).getChild(0);
-		
-		int tmp_list = glhelper.genDispLists(3);
-		glhelper.startCompileList(tmp_list);
-		//glhelper.startCompileList(tmp_list + 1);
-		//glhelper.startCompileList(tmp_list + 2);
-		//glhelper.endList();
-		//glhelper.endList();
-		glhelper.endList();
 		
 		glhelper.renderObject(horse, delta);
 		glhelper.renderObject(spider, delta);
