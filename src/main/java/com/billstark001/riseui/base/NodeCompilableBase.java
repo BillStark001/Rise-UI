@@ -49,9 +49,11 @@ public abstract class NodeCompilableBase extends NodeBase {
 	}
 	
 	@Override
-	public void render(double ptick) {
+	public void render(double ptick) {this.render(ptick, false);}
+	@Override
+	public void render(double ptick, boolean reverse_normal) {
 		if (!this.isCompiled()) {
-			super.render(ptick);
+			super.render(ptick, reverse_normal);
 		} else {
 			GlStateManager.callList(this.getDisplayList());
 		}

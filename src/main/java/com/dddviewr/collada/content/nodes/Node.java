@@ -7,6 +7,7 @@ import java.util.List;
 import com.dddviewr.collada.content.visualscene.BaseXform;
 import com.dddviewr.collada.content.visualscene.InstanceController;
 import com.dddviewr.collada.content.visualscene.InstanceGeometry;
+import com.dddviewr.collada.content.visualscene.InstanceLight;
 import com.dddviewr.collada.content.visualscene.InstanceNode;
 import com.dddviewr.collada.content.visualscene.Matrix;
 import com.dddviewr.collada.format.Base;
@@ -17,6 +18,7 @@ public class Node extends Base {
 	protected boolean type;
 	protected List<BaseXform> xforms = new ArrayList<BaseXform>();
 	protected List<InstanceGeometry> instanceGeometry = new ArrayList<InstanceGeometry>();
+	protected InstanceLight instanceLight;
 	protected InstanceController instanceController;
 	protected InstanceNode instanceNode;
 	protected List<Node> childNodes = new ArrayList<Node>();
@@ -55,6 +57,10 @@ public class Node extends Base {
 		return this.type;
 	}
 	
+	public boolean isLight() {
+		return !(this.instanceLight == null);
+	}
+	
 	public String getType() {
 		if (isJoint()) return "JOINT";
 		else return "NODE";
@@ -89,6 +95,14 @@ public class Node extends Base {
 		this.instanceGeometry.add(instanceGeometry);
 	}
 
+	public InstanceLight getInstanceLight() {
+		return instanceLight;
+	}
+	
+	public void setInstanceLight(InstanceLight instanceLight) {
+		this.instanceLight = instanceLight;
+	}
+	
 	public InstanceController getInstanceController() {
 		return this.instanceController;
 	}

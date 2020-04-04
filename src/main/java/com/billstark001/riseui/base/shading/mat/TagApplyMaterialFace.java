@@ -144,7 +144,7 @@ public class TagApplyMaterialFace extends TagBase {
 	}
 	@Override
 	public ApplyReturn onRenderFacesPost(NodeBase object) {
-		// TODO 自动生成的方法存根
+		Shader.SHADER_DIFFUSE.applyState();
 		return null;
 	}
 

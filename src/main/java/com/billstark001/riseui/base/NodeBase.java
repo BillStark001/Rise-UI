@@ -24,8 +24,9 @@ import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.core.empty.NodeEmpty;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.render.GlHelper;
 
 import scala.actors.threadpool.Arrays;
@@ -343,7 +344,7 @@ public abstract class NodeBase extends BaseObject{
 	protected void updateGlobalStateCheckDirtyWithoutTag() {if (isGlobalDirty()) updateGlobalStateWithoutTag();}
 	protected void updateGlobalState() {this.updateGlobalStateWithoutTag(); this.applyTags(TagBase.TAG_PHRASE_GLOBAL_UPDATE);}
 	protected void updateGlobalStateWithoutTag() {
-		NodeBase parent = new NodeEmpty();
+		NodeBase parent = new EmptyNode();
 		if (this.parent != null) {
 			this.parent.updateGlobalStateCheckDirty();
 			parent = this.parent;
@@ -391,14 +392,14 @@ public abstract class NodeBase extends BaseObject{
 	}
 	
 	public Vector getGlobalPos() {
-		return this.global_state.get().getLine(4).get(0, 3);
+		return this.global_state.get().getLine(3).get(0, 3);
 	}
 
 	public boolean addTag(TagBase tag) {
 		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_ADDED)) || tag.onAdded(this).succeeded;
 		if (flag) {
 			tags.add(tag);
-			state_tag_cache = new HashMap<Integer, TagBase[]>();
+			this.onTagsAltered();
 		}
 		return flag;
 	}
@@ -407,7 +408,7 @@ public abstract class NodeBase extends BaseObject{
 		boolean flag = (!tag.appliesOn(TagBase.TAG_PHRASE_REMOVED)) || (tag.onRemoved(this).succeeded && tags.contains(tag));
 		if (flag) {
 			tags.remove(tag);
-			state_tag_cache = new HashMap<Integer, TagBase[]>();
+			this.onTagsAltered();
 		}
 		return flag;
 	}
@@ -466,9 +467,13 @@ public abstract class NodeBase extends BaseObject{
 		return tags_ans.toArray(new TagBase[0]);
 	}
 	
-	// Render
+	protected void onTagsAltered() {
+		state_tag_cache = new HashMap<Integer, TagBase[]>();
+	}
 	
-	public void render(double ptick) {
+	// Render
+	public void render(double ptick) {this.render(ptick, false);}
+	public void render(double ptick, boolean reverse_normal) {
 		GlHelper renderer = GlHelper.getInstance();
 		// renderer.dumpState();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_PRE, ptick);
@@ -482,9 +487,9 @@ public abstract class NodeBase extends BaseObject{
 		}
 		if (this.facesVisible()) {
 			//renderer.setFaceState();
-			this.renderFace(ptick);
+			this.renderFace(ptick, reverse_normal);
 		}
-		if (renderer.isDebugging()) this.renderDebug(ptick);
+		//if (renderer.isDebugging()) this.renderDebug(ptick);
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_POST, ptick);
 		// renderer.resetState();
 	}
@@ -569,7 +574,8 @@ public abstract class NodeBase extends BaseObject{
 	 * 
 	 * Extendability Disaster!!!!!
 	 */
-	public void renderFace(double ptick) {
+	public void renderFace(double ptick) {this.renderFace(ptick, false);}
+	public void renderFace(double ptick, boolean reverse_normal) {
 		GlHelper renderer = GlHelper.getInstance();
 		
 		int face_count = this.getFaceCount();
@@ -607,11 +613,20 @@ public abstract class NodeBase extends BaseObject{
 					Triad[] t_ = this.getFaceIndices(is);
 					
 					renderer.startDrawingFace();
-					for (Triad t1 : t_) {
-						Vector v1, v2;
-						v1 = this.getVertPos(t1.getX());
-						v2 = this.getVertUVM(t1.getY());
-						renderer.addVertex(v1, v2);
+					if (reverse_normal) {
+						for (int i_ = t_.length - 1; i_ > -1; --i_) {
+							Vector v1, v2;
+							v1 = this.getVertPos(t_[i_].getX());
+							v2 = this.getVertUVM(t_[i_].getY());
+							renderer.addVertex(v1, v2);
+						}
+					} else {
+						for (Triad t1 : t_) {
+							Vector v1, v2;
+							v1 = this.getVertPos(t1.getX());
+							v2 = this.getVertUVM(t1.getY());
+							renderer.addVertex(v1, v2);
+						}
 					}
 					renderer.endDrawing();
 				}
@@ -621,31 +636,13 @@ public abstract class NodeBase extends BaseObject{
 
 		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_POST, rpf_tags, ptick);
 	}
-	public void renderFace_(double ptick) {
-		GlHelper renderer = GlHelper.getInstance();
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_PRE, ptick, 0);
-		for (int i = 0; i < this.getFaceCount(); ++i) {
-			this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_FACE, i, ptick, true);
-			Triad[] t_ = this.getFaceIndices(i);
-			
-			renderer.startDrawingFace();
-			for (Triad t : t_) {
-				Vector v1, v2;
-				v1 = this.getVertPos(t.getX());
-				v2 = this.getVertUVM(t.getY());
-				renderer.addVertex(v1, v2);
-			}
-			renderer.endDrawing();
-		}
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_FACES_POST, ptick);
-	}
 	
 	public void renderDebug(double ptick) {
 		
 		Shader.SHADER_DEBUG.applyState();
 		
 		GlHelper renderer = GlHelper.getInstance();
-		renderer.setLineWidth(4);
+		renderer.setLineWidth(2);
 		renderer.setAlpha(1.);
 		
 		/*
@@ -657,7 +654,10 @@ public abstract class NodeBase extends BaseObject{
 		vtemp = mtemp.toVecArray();
 		*/
 		
-		Vector[] vtemp = Matrix.I4.toVecArray();
+		State3DIntegrated stmp = this.getGlobalState().decomp();
+		Matrix axis = Matrix.I4.mult(0.25).mult(Utils3D.sclToHomoState(stmp.getScl().power(-1).add(stmp.getScl().log(10).mult(0.25)))); //
+		
+		Vector[] vtemp = axis.toVecArray();
 		//Vector[] vtemp = this.getLocalState().getState().toVecArray();
 		
 		renderer.setColor(255, 0, 0);
@@ -681,22 +681,22 @@ public abstract class NodeBase extends BaseObject{
 		renderer.setColor(255, 0, 255);
 		renderer.startDrawingEdge(false);
 		renderer.addVertex(vtemp[3]);
-		renderer.addVertex(vtemp[3].subtract(vtemp[0].mult(0.5)));
+		renderer.addVertex(vtemp[3].subtract(vtemp[0].mult(0.25)));
 		renderer.endDrawing();
 		
 		renderer.setColor(255, 255, 0);
 		renderer.startDrawingEdge(false);
 		renderer.addVertex(vtemp[3]);
-		renderer.addVertex(vtemp[3].subtract(vtemp[1].mult(0.5)));
+		renderer.addVertex(vtemp[3].subtract(vtemp[1].mult(0.25)));
 		renderer.endDrawing();
 		
 		renderer.setColor(0, 255, 255);
 		renderer.startDrawingEdge(false);
 		renderer.addVertex(vtemp[3]);
-		renderer.addVertex(vtemp[3].subtract(vtemp[2].mult(0.5)));
+		renderer.addVertex(vtemp[3].subtract(vtemp[2].mult(0.25)));
 		renderer.endDrawing();
 		
-		Shader.SHADER_DIFFUSE.applyState();
+		//Shader.SHADER_DIFFUSE.applyState();
 		
 	}
 
@@ -724,12 +724,22 @@ public abstract class NodeBase extends BaseObject{
 		return vec32String(Quaternion.quatToEuler(q).mult(180 / Math.PI));
 	}
 	
+	protected String getExtraDumpInfo() {
+		return null;
+	}
+	
 	public void dump() {dump(System.out, 0);}
 	public void dump(PrintStream out) {dump(out, 0);}
 	public void dump(PrintStream out, int level){
 		println(out, super.toString(), level); 
 		println(out, String.format("STATE_LOCAL%s: %s", (this.getLocalState() instanceof State3DIntegrated ? "*" : " "), this.getLocalState()), level + 1);
 		println(out, "STATE_GLOBAL: " + this.getGlobalState(), level + 1);
+		String extra = this.getExtraDumpInfo();
+		if (extra != null && extra.length() > 0) {
+			String[] extra_ = extra.split("\n");
+			for (String e: extra_)
+				println(out, e, level + 1);
+		}
 		if (this.children.size() == 0) return;
 		//println(out, "", level + 1);
 		println(out, "CHILDREN:", level + 1);

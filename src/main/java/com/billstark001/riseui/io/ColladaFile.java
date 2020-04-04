@@ -24,7 +24,8 @@ import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.character.Joint;
-import com.billstark001.riseui.core.empty.NodeEmpty;
+import com.billstark001.riseui.core.empty.EmptyNode;
+import com.billstark001.riseui.core.empty.Light;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.dddviewr.collada.Accessor;
 import com.dddviewr.collada.Collada;
@@ -47,10 +48,12 @@ import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.content.geometry.PolyList;
 import com.dddviewr.collada.content.geometry.Primitives;
 import com.dddviewr.collada.content.images.LibraryImages;
+import com.dddviewr.collada.content.lights.LibraryLights;
 import com.dddviewr.collada.content.materials.LibraryMaterials;
 import com.dddviewr.collada.content.materials.Material;
 import com.dddviewr.collada.content.nodes.Node;
 import com.dddviewr.collada.content.visualscene.BaseXform;
+import com.dddviewr.collada.content.visualscene.InstanceLight;
 import com.dddviewr.collada.content.visualscene.Rotate;
 import com.dddviewr.collada.content.visualscene.Scale;
 import com.dddviewr.collada.content.visualscene.Translate;
@@ -68,6 +71,7 @@ public class ColladaFile {
 	private LibraryControllers lcon = null;
 	private LibraryAnimations lani = null;
 	private LibraryImages limg = null;
+	private LibraryLights llgt = null;
 	
 	private Map<Integer, MaterialFace> material = null;
 	private Map<String, NodeBase> parsed = new HashMap<String, NodeBase>();
@@ -105,6 +109,7 @@ public class ColladaFile {
 		lcon = file.getLibraryControllers();
 		lani = file.getLibraryAnimations();
 		limg = file.getLibraryImages();
+		llgt = file.getLibraryLights();
 		
 		// Animations - DB Establishment
 		
@@ -389,8 +394,19 @@ public class ColladaFile {
 			ans = parseMesh(gtemp.getMesh());
 			ans.setName(n.getName());
 			ans.setLocalState(c);
+		} else if (n.isLight()) {
+			Light ans_ = new Light(c, n.getName());
+			com.dddviewr.collada.content.lights.Light il = llgt.getElement(n.getInstanceLight().getUrl());
+			ans_.setColorRGB(il.getColor().getR(), il.getColor().getG(), il.getColor().getB());
+			ans_.setAttenuation(Light.ATT_CONSTANT, il.constant_attenuation);
+			ans_.setAttenuation(Light.ATT_LINEAR, il.linear_attenuation);
+			ans_.setAttenuation(Light.ATT_QUADRATIC, il.quadratic_attenuation);
+			ans_.setSpotCutoff(il.falloff_angle);
+			ans_.setSpotExponent(il.falloff_exponent);
+			ans_.setType(il.getType());
+			ans = ans_;
 		} else {
-			ans = new NodeEmpty(c, n.getName());
+			ans = new EmptyNode(c, n.getName());
 		}
 		if (t != null && t.containsFrames()) ans.setLocalState(t);
 		

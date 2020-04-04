@@ -6,72 +6,72 @@ import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;
 
-public class NodeEmpty extends NodeBase {
+public class EmptyNode extends NodeBase {
 
-	public NodeEmpty(Vector pos, Quaternion rot, Vector scl, String name) {
+	public EmptyNode(Vector pos, Quaternion rot, Vector scl, String name) {
 		super(pos, rot, scl, name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Quaternion rot, Vector scl) {
+	public EmptyNode(Vector pos, Quaternion rot, Vector scl) {
 		super(pos, rot, scl);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Quaternion rot, double scl) {
+	public EmptyNode(Vector pos, Quaternion rot, double scl) {
 		super(pos, rot, scl);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Vector rot, Vector scl) {
+	public EmptyNode(Vector pos, Vector rot, Vector scl) {
 		super(pos, rot, scl);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Quaternion rot) {
+	public EmptyNode(Vector pos, Quaternion rot) {
 		super(pos, rot);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos) {
+	public EmptyNode(Vector pos) {
 		super(pos);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty() {
+	public EmptyNode() {
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Quaternion rot, double scl, String name) {
+	public EmptyNode(Vector pos, Quaternion rot, double scl, String name) {
 		super(pos, rot, scl, name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Vector rot, Vector scl, String name) {
+	public EmptyNode(Vector pos, Vector rot, Vector scl, String name) {
 		super(pos, rot, scl, name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, Quaternion rot, String name) {
+	public EmptyNode(Vector pos, Quaternion rot, String name) {
 		super(pos, rot, name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(Vector pos, String name) {
+	public EmptyNode(Vector pos, String name) {
 		super(pos, name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(String name) {
+	public EmptyNode(String name) {
 		super(name);
 		// TODO �Զ����ɵĹ��캯�����
 	}
 
-	public NodeEmpty(State3DIntegrated c, String name) {
+	public EmptyNode(State3DIntegrated c, String name) {
 		super(c, name);
 	}
 	
-	public NodeEmpty(State3DIntegrated c) {
+	public EmptyNode(State3DIntegrated c) {
 		super(c, null);
 	}
 

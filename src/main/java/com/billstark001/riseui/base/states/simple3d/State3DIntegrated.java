@@ -45,6 +45,7 @@ public class State3DIntegrated extends State3DSimple{
 	public State3DIntegrated(Vector pos) {this(pos, new State3DRot().getDefaultRepr(), null);}
 	public State3DIntegrated() {this(null, new State3DRot().getDefaultRepr(), null);}
 	
+	public Quaternion getExtRot() {return r1.getStateRepr();}
 	public Vector getPos() {return p.getStateRepr();}
 	public Quaternion getRot() {return r2.getStateRepr();}
 	public Vector getScl() {return s.getStateRepr();}

@@ -206,8 +206,14 @@ public final class Utils3D {
 		if (m == null)
 			return null;
 		Vector[] vtemp = m.toVecArray();
-		for (int i = 0; i < vtemp.length; ++i) {
-			vtemp[i] = new Vector(vtemp[i].get(0) * v.get(0), vtemp[i].get(1) * v.get(1), vtemp[i].get(2) * v.get(2));
+		if (m.getShape().getY() == 4) {
+			for (int i = 0; i < vtemp.length; ++i) {
+				vtemp[i] = new Vector(vtemp[i].get(0) * v.get(0), vtemp[i].get(1) * v.get(1), vtemp[i].get(2) * v.get(2), vtemp[i].get(3));
+			}
+		} else {
+			for (int i = 0; i < vtemp.length; ++i) {
+				vtemp[i] = new Vector(vtemp[i].get(0) * v.get(0), vtemp[i].get(1) * v.get(1), vtemp[i].get(2) * v.get(2));
+			}
 		}
 		return new Matrix(vtemp);
 	}
@@ -215,6 +221,7 @@ public final class Utils3D {
 	public static Matrix zoom(Matrix m, double d) {
 		if (m == null)
 			return null;
+		if (m.getShape().getY() == 4) return zoom(m, new Vector(d, d, d, 1));
 		return m.mult(d);
 	}
 
@@ -222,6 +229,7 @@ public final class Utils3D {
 		if (m == null)
 			return null;
 		Matrix r = Quaternion.quatToRotMat(q);
+		if (m.getShape().getY() == 4) r = Matrix.homoExtend(r, 4);
 		return m.mult(r);
 	}
 
@@ -229,6 +237,7 @@ public final class Utils3D {
 		if (m == null)
 			return null;
 		Matrix r = Quaternion.eulerToRotMat(v);
+		if (m.getShape().getY() == 4) r = Matrix.homoExtend(r, 4);
 		return m.mult(r);
 	}
 

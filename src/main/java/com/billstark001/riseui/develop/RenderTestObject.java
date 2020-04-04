@@ -1,6 +1,5 @@
 package com.billstark001.riseui.develop;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
@@ -18,13 +17,14 @@ import com.billstark001.riseui.base.shading.mat.TagApplyMaterialEdge;
 import com.billstark001.riseui.base.shading.mat.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shading.mat.TagApplyMaterialVert;
 import com.billstark001.riseui.base.shading.mat.Texture2DGrayGen;
+import com.billstark001.riseui.base.shading.shader.Shader;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.computation.ColorGradient;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.core.empty.NodeEmpty;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.core.polygon.Presets;
 import com.billstark001.riseui.io.CharResourceLoader;
@@ -35,8 +35,6 @@ import com.billstark001.riseui.io.ObjFile;
 import com.billstark001.riseui.render.GlHelper;
 import com.dddviewr.collada.Collada;
 
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderTestObject{
@@ -52,13 +50,13 @@ public class RenderTestObject{
 	private static ColladaFile sp_dae;
 	public static Polygon horse, table, sphere;
 	private static Polygon hgrid;
-	private static NodeEmpty spider;
+	private static EmptyNode spider;
 
 	private static final ResourceLocation lobj = new ResourceLocation("riseui:models/skh.obj");
 	private static final ResourceLocation lmtl = new ResourceLocation("riseui:models/skh.mtl");
 	private static final ResourceLocation tobj = new ResourceLocation("riseui:models/table.obj");
 	private static final ResourceLocation tmtl = new ResourceLocation("riseui:models/table.mtl");
-	private static final ResourceLocation spic = new ResourceLocation("riseui:models/motive_spider.dae");
+	private static final ResourceLocation spic = new ResourceLocation("riseui:models/motive_spider1.dae");
 
 	public static void prepareRender() {
 
@@ -109,7 +107,7 @@ public class RenderTestObject{
 
 		sp_dae = new ColladaFile(stemp);
 		sp_dae.parse();
-		spider = (NodeEmpty) sp_dae.getNodeByName("spider");
+		spider = (EmptyNode) sp_dae.getNodeByName("spider");
 		spider.setLocalState(new State3DIntegrated(new Vector(2, 1, 2), null, 0.01));
 		spider.setVisEdge(NodeBase.Visibility.TRUE);
 		spider.setVisVert(NodeBase.Visibility.TRUE);
@@ -157,7 +155,7 @@ public class RenderTestObject{
 		*/
 
 		//GlStateManager.popMatrix();
-
+		Shader.SHADER_DIFFUSE.applyState();
 	}	
 
 }

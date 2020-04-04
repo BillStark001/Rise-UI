@@ -14,8 +14,10 @@ import com.billstark001.riseui.base.shading.mat.Texture2DBase;
 import com.billstark001.riseui.base.shading.mat.Texture2DFromRes;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
+import com.billstark001.riseui.computation.UtilsLinalg;
 import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
+import com.billstark001.riseui.core.empty.Light;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -163,40 +165,15 @@ public final class GlHelper {
 
 	// State Management
 	
-	private static boolean isBlendEnabled = false;
-	public void disableBlend() {GlStateManager.disableBlend(); isBlendEnabled = false;}
+	private static boolean blend_enabled = false;
+	public void disableBlend() {GlStateManager.disableBlend(); blend_enabled = false;}
 	public void blendFunc(int src, int dst) {
-		// if (isBlendEnabled) 
-			disableBlend();
+		blend_enabled = true;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(src, dst);
 	}
 	public void blendFuncAlpha() {blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);}
 	public void blendFuncOne() {blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ZERO);}
-
-	public void setVertState() {
-		//GlStateManager.disableLighting();
-		//blendFuncAlpha();
-		//GlStateManager.disableCull();
-		GlStateManager.disableTexture2D();
-	}
-
-	public void setEdgeState() {
-		//GlStateManager.disableLighting();
-		//blendFuncAlpha();
-		//GlStateManager.disableCull();
-		GlStateManager.disableTexture2D();
-	}
-
-	public void setFaceState() {
-		GlStateManager.enableTexture2D();
-		//GlStateManager.enableCull();
-		//GlStateManager.enableLighting();
-		blendFuncOne();
-		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
-		
-	}
 
 	public void clearAccumCache() {
 		GL11.glClear(GL11.GL_ACCUM);
@@ -268,14 +245,30 @@ public final class GlHelper {
 		for (int i = vpos.length - 1; i > -1 ; --i) addVertex(vpos[i], vuv[i]);
 		endDrawing();
 	}
+	
+	public boolean needReverseNormal(Matrix state) {
+		return UtilsLinalg.solveDeterminant(state) <= 0;
+	}
 
-	public void renderObjectLocal(NodeBase obj, double ptick) {
+	public void renderObjectLocal(NodeBase obj, double ptick, boolean reverse_normal) {
 		if (obj == null) return;
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
 		GlStateManager.multMatrix(obj.getLocalState().get().storeBufferF());
-		obj.render(ptick);
-		for (NodeBase o: obj.getChildren()) renderObjectLocal(o, ptick);
+		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState().get());
+		for (NodeBase o: obj.getChildren()) renderObjectLocal(o, ptick, reverse_normal);
+		obj.render(ptick, reverse_normal);
+		GlStateManager.popMatrix();
+	}
+	
+	public void renderObjectDebugLocal(NodeBase obj, double ptick, boolean reverse_normal) {
+		if (obj == null) return;
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		GlStateManager.pushMatrix();
+		GlStateManager.multMatrix(obj.getLocalState().get().storeBufferF());
+		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState().get());
+		for (NodeBase o: obj.getChildren()) renderObjectDebugLocal(o, ptick, reverse_normal);
+		obj.renderDebug(ptick);
 		GlStateManager.popMatrix();
 	}
 
@@ -284,19 +277,38 @@ public final class GlHelper {
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
 		GlStateManager.multMatrix(obj.getParentGlobalState().get().storeBufferF());
-		renderObjectLocal(obj, ptick);
+		renderObjectLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState().get()));
+		if (this.isDebugging()) renderObjectDebugLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState().get()));
 		GlStateManager.popMatrix();
 	}
 
 	public void renderWithoutGl(NodeBase obj, double ptick) {
 		if (obj == null) return;
+		if (this.isDebugging()) renderDebugWithoutGl(obj, ptick);
+		
+		for (NodeBase o: obj.getChildren()) renderWithoutGl(o, ptick);
+		
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
 		Matrix render_matrix = obj.getGlobalState().get();
 		GlStateManager.multMatrix(render_matrix.storeBufferF());
-		obj.render(ptick);
+		obj.render(ptick, needReverseNormal(render_matrix));
 		GlStateManager.popMatrix();
-		for (NodeBase o: obj.getChildren()) renderWithoutGl(o, ptick);
+		
+	}
+	
+	public void renderDebugWithoutGl(NodeBase obj, double ptick) {
+		if (obj == null) return;
+		
+		for (NodeBase o: obj.getChildren()) renderDebugWithoutGl(o, ptick);
+		
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		GlStateManager.pushMatrix();
+		Matrix render_matrix = obj.getGlobalState().get();
+		GlStateManager.multMatrix(render_matrix.storeBufferF());
+		obj.renderDebug(ptick);
+		GlStateManager.popMatrix();
+		
 	}
 
 	public static Matrix getGlMatrix(int mat) {
@@ -327,6 +339,17 @@ public final class GlHelper {
 	}
 
 	// Illumination related
+	
+	/**
+	 * TODO!!!
+	 * @param light_node
+	 * @param light
+	 */
+	public void loadLight(int light_node, Light light) {
+		GlStateManager.enableLight(light_node);
+		//GlStateManager.glLight(light_node, pname, params);
+	}
+	
 	
 	protected FloatBuffer brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
 	

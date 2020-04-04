@@ -50,6 +50,7 @@ public class ClientProxy extends CommonProxy {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void postRenderEvent(RenderWorldLastEvent e) {
 		GlStateManager.pushMatrix();
+		//Shader.SHADER_DIFFUSE.applyState();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 
 		Vec3d CurrentPos = player.getPositionVector();
@@ -59,9 +60,9 @@ public class ClientProxy extends CommonProxy {
 		GlStateManager.translate(-RenderPos.x + 0.5, -RenderPos.y + 0.5, -RenderPos.z + 0.5);
 
 		MinecraftForge.EVENT_BUS.post(new RenderAdvancedEvent(e.getContext(), e.getPartialTicks()));
-
+		//Shader.SHADER_DIFFUSE.applyState();
 		GlStateManager.popMatrix();
-		Shader.SHADER_DIFFUSE.applyState();
+		
 	}
 	
 	@SubscribeEvent

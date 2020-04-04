@@ -38,7 +38,7 @@ import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.UtilsInteract;
 import com.billstark001.riseui.computation.UtilsLinalg;
 import com.billstark001.riseui.computation.Vector;
-import com.billstark001.riseui.core.empty.NodeEmpty;
+import com.billstark001.riseui.core.empty.EmptyNode;
 import com.billstark001.riseui.core.polygon.Polygon;
 import com.billstark001.riseui.io.ColladaFile;
 import com.billstark001.riseui.io.MtlFile;
@@ -75,7 +75,7 @@ public class Test {
 		
 		Collada file = null;
 		try {
-			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider.dae");
+			file = Collada.readFile("C:\\Users\\zhaoj\\Desktop\\gltf_test\\motive_spider1.dae");
 		} catch (FileNotFoundException e) {
 			// TODO �Զ����ɵ� catch ��
 			e.printStackTrace();

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
+import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.Vector;
+import com.billstark001.riseui.render.GlHelper;
 
 public class Joint extends NodeBase {
 
@@ -28,81 +31,33 @@ public class Joint extends NodeBase {
 	public Joint(State3DIntegrated c, String name) {super(c, name);}
 	public Joint(State3DIntegrated c) {super(c, null);}
 
-	private List<Joint> inferior = new ArrayList<Joint>();
-	private Joint superior = null;
-	private double length;
-	private double[][] d = {{0, 0, 0}, {0, 1, 0}, {0.25, 0.75, 0}, {0, 0.75, 0.25}, {-0.25, 0.75, 0}, {0, 0.75, -0.25}};
-	private Matrix vertices = new Matrix(d).mult(100);
-	private Matrix vcur = vertices;
+	private static final double[][] d = {{0, 1, 0, 1}, {0, 0, 0, 1}, {0.25, 0.25, 0, 1}, {0, 0.25, 0.25, 1}, {-0.25, 0.25, 0, 1}, {0, 0.25, -0.25, 1}};
+	private static final Matrix vertices = new Matrix(d);
+	private static Matrix vcur = vertices;
 	
-	public Joint getSuperior() {return superior;}
-	public Joint[] getInferiors() {return inferior.toArray(new Joint[0]);}
+	public Joint getSuperior() {return this.parent instanceof Joint? (Joint) this.parent: null;}
+	public Joint[] getInferiors() {
+		ArrayList<Joint> ans = new ArrayList<Joint>();
+		for (NodeBase n: this.children) {
+			if (n instanceof Joint) ans.add((Joint) n);
+		}
+		return ans.toArray(new Joint[0]);
+	}
 	
 	public double getLength() {
 		if (this.parent == null || !(this.parent instanceof Joint)) return 0;
-		
 		return this.getGlobalPos().add(this.parent.getGlobalPos().mult(-1)).getLength();
 	}
 
-	// Maintainence
-	
-	@Override
-	public boolean addChildRemainGlobalState(NodeBase obj) {
-		boolean flag = super.addChildRemainGlobalState(obj);
-		if (flag && obj instanceof Joint) {this.inferior.add((Joint) obj);}
-		return flag;
-	}
-	
-	@Override
-	public boolean setParentRemainGlobalState(NodeBase parent) {
-		boolean flag = super.setParentRemainGlobalState(parent);
-		if (flag && parent != null && parent instanceof Joint) {
-			this.superior = (Joint) parent;
-		}
-		return flag;
-	}
-	
-	@Override
-	public boolean removeParentRemainGlobalState() {
-		if (this.parent instanceof Joint) {
-			if (((Joint) this.parent).inferior.contains(this)) ((Joint) this.parent).inferior.remove(this); 
-			this.superior = null;
-			this.length = 0;
-		}
-		return super.removeParentRemainGlobalState();
-	}
-	
-	/*
-	@Override
-	public void dump(PrintStream out, int level){
-		println(out, String.format("%s %s", this.getClass().getSimpleName(), this.getName()), level); 
-		println(out, "LOCAL:", level + 1);
-		println(out, "POS" + vec32String(this.getPos()), level + 2);
-		println(out, "ROT" + quat2String(this.getRot()), level + 2);
-		println(out, "SCL" + vec32String(this.getScale()), level + 2);
-		println(out, "GLOBAL:", level + 1);
-		println(out, "POS" + vec32String(this.getGlobalPos()), level + 2);
-		println(out, "ROT" + quat2String(this.getGlobalRot()), level + 2);
-		println(out, "SCL" + vec32String(this.getGlobalScale()), level + 2);
-		println(out, "LENGTH: " + this.getLength(), level + 1);
-		if (this.children.size() == 0) return;
-		println(out, "", level + 1);
-		println(out, "CHILDREN:", level + 1);
-		for (BaseNode i: this.children) {
-			i.dump(out, level + 2);
-		}
-	}
-	*/
-	
 	// Render
 
 	@Override
 	public boolean isEdgeLooped(int i) {return false;}
 
 	@Override
-	public int getVertCount() {return 6;}
+	public int getVertCount() {return 0;}//6;}
 	@Override
-	public int getEdgeCount() {return 15;}
+	public int getEdgeCount() {return 0;}//15;}
 	@Override
 	public int getFaceCount() {return 0;}
 
@@ -145,14 +100,52 @@ public class Joint extends NodeBase {
 	}
 	@Override
 	public int getEdgeIndicesLength(int index) {
-		// TODO �Զ����ɵķ������
 		return 0;
 	}
-	@Override
 	public int getFaceIndicesLength(int index) {
-		// TODO �Զ����ɵķ������
 		return 0;
 	}
 
-
+	@Override
+	public void renderDebug(double ptick) {
+		super.renderDebug(ptick);
+		if (!(this.parent instanceof Joint)) return;
+		GlHelper renderer = GlHelper.getInstance();
+		renderer.setColor(186, 231, 241);
+		
+		Matrix parent_state = Matrix.inverse(this.getLocalState().get());
+		
+		
+		vcur = Matrix.I4.mult(parent_state);
+		
+		Vector v1 = new Vector(0, -1, 0);
+		Vector v2 = vcur.getLine(3).mult(-1).get(0, 3);
+		
+		Vector axis = v1.cross(v2);
+		double angle = Math.acos(v1.dot(v2) / (v1.getLength() * v2.getLength()));
+		//double angle2 = Math.asin(axis.getLength() / (v1.getLength() * v2.getLength()));
+		
+		Quaternion rot = Quaternion.getQuatByAA(axis, -angle/2);
+		
+		vcur = vertices;
+		vcur = Utils3D.rotate(vcur, rot);
+		vcur = vcur.mult(Utils3D.sclToHomoState(this.getGlobalState().decomp().getScl().power(-1).mult(0.4*Math.min(1, this.getLength()))));
+		vcur = vcur.mult(parent_state);
+		
+		for (int i = 0; i < 15; ++i) {
+			int[] v_ = this.getEdgeIndices(i);
+			renderer.startDrawingEdge(this.isEdgeLooped(i));
+			Vector vpos;
+			for (int v: v_) {
+				if (v == 0) {
+					vpos = Vector.UNIT0_D3;
+				} else {
+					vpos = vcur.getLine(v);
+				}
+				renderer.addVertex(vpos);
+			}
+			renderer.endDrawing();
+		}
+	}
+	
 }

@@ -205,6 +205,23 @@ public final class Vector {
 		for(int i = 0; i < dim; ++i) temp[i] = Math.pow(temp[i], x);
 		return new Vector(temp);
 	}
+	public Vector log() {return this.log(Math.E);}
+	public Vector log(double base) {
+		base = Math.log(base);
+		double[] temp = elements.clone();
+		for(int i = 0; i < dim; ++i) temp[i] = Math.log(temp[i]) / base;
+		return new Vector(temp);
+	}
+	
+	@FunctionalInterface
+	public interface Operator {public double operate(double val, Object...args);}
+	public Vector applyCustomOperator(Operator operator, Object...args) {
+		double[] temp = elements.clone();
+		for(int i = 0; i < dim; ++i) temp[i] = operator.operate(temp[i], args);
+		return new Vector(temp);
+	}
+	
+	
 	public Vector normalize() {if (this.getLength() == 0)return this; return this.mult(1 / this.getLength());}
 	
 	public Vector minusElementWise(Vector v) {return this.addElementWise(v.mult(-1));}

@@ -16,6 +16,7 @@ public final class States {
 		GlStateManager.disableDepth();
 		GlStateManager.disableLighting();
 		GlStateManager.disableTexture2D();
+		//System.out.println(1);
 		glh.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 	}
 	
@@ -23,19 +24,27 @@ public final class States {
 		GlStateManager.enableDepth();
 		GlStateManager.disableLighting();
 		GlStateManager.disableTexture2D();
+		glh.blendFunc(GL11.GL_ONE, GL11.GL_ZERO);
+		glh.disableBlend();
 	}
 
 	public static void standard_edge() {
 		GlStateManager.enableDepth();
 		GlStateManager.disableLighting();
 		GlStateManager.disableTexture2D();
+		glh.blendFunc(GL11.GL_ONE, GL11.GL_ZERO);
+		glh.disableBlend();
 	}
 
 	public static void face_diffuse() {
 		GlStateManager.enableDepth();
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
-		GlStateManager.disableAlpha();
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+		//System.out.println(0);
+		//System.out.println(GL11.glGetFloat(GL11.GL_ALPHA_TEST_REF));
+		glh.blendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 		glh.disableBlend();
 	}
 	
@@ -43,30 +52,31 @@ public final class States {
 		GlStateManager.enableDepth();
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
-		GlStateManager.disableAlpha();
+		//System.out.println(0);
+		glh.blendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 		glh.disableBlend();
-		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
+		//GlStateManager.enableAlpha();
+		//GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
 	}
 	
 	public static void face_light() {
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
-		GlStateManager.disableAlpha();
 		GlStateManager.disableLighting();
+		//System.out.println(1);
 		glh.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
+		//GlStateManager.enableAlpha();
+		//GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
 	}
 	
 	public static void face_light_without_cull() {
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableCull();
-		GlStateManager.disableAlpha();
 		GlStateManager.disableLighting();
+		//System.out.println(1);
 		glh.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
+		//GlStateManager.enableAlpha();
+		//GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0.0F);
 	}
 
 }

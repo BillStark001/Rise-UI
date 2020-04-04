@@ -30,6 +30,7 @@ import com.dddviewr.collada.content.geometry.LibraryGeometries;
 import com.dddviewr.collada.content.geometry.Mesh;
 import com.dddviewr.collada.content.images.Image;
 import com.dddviewr.collada.content.images.LibraryImages;
+import com.dddviewr.collada.content.lights.LibraryLights;
 import com.dddviewr.collada.content.materials.LibraryMaterials;
 import com.dddviewr.collada.content.materials.Material;
 import com.dddviewr.collada.content.nodes.LibraryNodes;
@@ -49,6 +50,7 @@ public class Collada extends Base {
 	protected LibraryMaterials libraryMaterials;
 	protected LibraryEffects libraryEffects;
 	protected LibraryNodes libraryNodes;
+	protected LibraryLights libraryLights;
 	protected Scene scene;
 	
 	protected String authoringTool = "";
@@ -56,6 +58,14 @@ public class Collada extends Base {
 	protected Unit unit;
 	
 	public static XMLReader reader;
+
+	public LibraryLights getLibraryLights() {
+		return libraryLights;
+	}
+
+	public void setLibraryLights(LibraryLights libraryLights) {
+		this.libraryLights = libraryLights;
+	}
 
 	public LibraryGeometries getLibraryGeometries() {
 		return libraryGeometries;
