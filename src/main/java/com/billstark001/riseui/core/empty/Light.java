@@ -14,6 +14,8 @@ import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.character.Joint;
 import com.billstark001.riseui.render.GlHelper;
 
+import net.minecraft.util.math.MathHelper;
+
 public class Light extends NodeBase {
 	
 	// Type Related
@@ -85,13 +87,29 @@ public class Light extends NodeBase {
 	
 	// Spots
 	
-	public static final Vector DEFAULT_SPOT_DIRECTION = new Vector(0, 0, 1, 0);
-	protected Vector spot_direction = DEFAULT_SPOT_DIRECTION;
+	public static final Vector DEFAULT_DIRECTION = new Vector(0, 0, -1, 0);
+	protected static final Vector DEFAULT_DIRTMP = new Vector(1, 0, 0, 0);
+	protected Vector direction = DEFAULT_DIRECTION;
+    protected Vector dirtmp = DEFAULT_DIRTMP;
+	
+	public Vector getInnerDirection() {return direction;}
+	public void setInnerDirection(Vector dir) {
+		if (dir == null) dir = DEFAULT_DIRECTION; 
+		this.direction = dir;
+		this.dirtmp = Utils3D.genVerticalVector(direction);
+	}
+	
+	protected Vector getDirTmp() {
+		if (this.getInnerDirection() == null) return null;
+		if (this.dirtmp == null) {
+			this.dirtmp = Utils3D.genVerticalVector(this.getInnerDirection());
+		}
+		return this.dirtmp;
+	}
+	
 	protected double spot_exponent;
 	protected double spot_cutoff;
 	
-	public Vector getSpotDirection() {return spot_direction;}
-	public void setSpotDirection(Vector dir) {if (dir == null) dir = DEFAULT_SPOT_DIRECTION; this.spot_direction = dir;}
 	public double getSpotExponent() {return spot_exponent;}
 	public void setSpotExponent(double exp) {this.spot_exponent = exp;}
 	public double getSpotCutoff() {return spot_cutoff;}
@@ -100,7 +118,7 @@ public class Light extends NodeBase {
 	protected String extra_dump_template = "TYPE: %s, COLOR: %s, ATTENUATION(C, L, Q): %s, SPOT_ARGS: D%s EXP%g COF%g";
 	@Override
 	protected String getExtraDumpInfo() {
-		return String.format(extra_dump_template, this.getType(), Arrays.toString(UtilsTex.colorToRGBA(this.getColor())), this.getAttenuations(), this.getSpotDirection(), this.getSpotExponent(), this.getSpotCutoff());
+		return String.format(extra_dump_template, this.getType(), Arrays.toString(UtilsTex.colorToRGBA(this.getColor())), this.getAttenuations(), this.getInnerDirection(), this.getSpotExponent(), this.getSpotCutoff());
 	}
 	
 	public Light(State3DIntegrated state, String name) {
@@ -206,8 +224,13 @@ public class Light extends NodeBase {
 	
 	
 	private static final double[][] d = {{0, 1, 0, 1}, {0, -1, 0, 1}, {1, 0, 0, 1}, {0, 0, 1, 1}, {-1, 0, 0, 1}, {0, 0, -1, 1}};
-	private static final Matrix vertices = new Matrix(d).mult(0.2);
+	private static final Matrix vertices = new Matrix(d).mult(0.1);
 	private Matrix vcur = vertices;
+	
+	@Override
+	public void onRender(double ptick, boolean reverse_normal) {
+		
+	}
 	
 	@Override
 	public void renderDebug(double ptick) {
@@ -216,12 +239,16 @@ public class Light extends NodeBase {
 		GlHelper renderer = GlHelper.getInstance();
 		renderer.setColor(this.getColor());
 		
-		Matrix resize_mat = Utils3D.sclToHomoState(this.getGlobalState().decomp().getScl().power(-1));
+		Vector resize_vec = this.getGlobalState().decomp().getScl().power(-1);
+		Matrix resize_mat = Utils3D.sclToHomoState(resize_vec);
+		
 		
 		vcur = vertices;
 		vcur = vcur.mult(resize_mat);
 		if (this.getType() == Type.AMBIENT) {
 			renderer.setLineWidth(3);
+			vcur = Utils3D.zoom(vcur, 4);
+		} else if (this.getType() == Type.DIRECTIONAL) {
 			vcur = Utils3D.zoom(vcur, 2);
 		}
 		
@@ -238,24 +265,26 @@ public class Light extends NodeBase {
 		
 		if (this.getType() == Type.DIRECTIONAL) {
 			renderer.setLineWidth(3);
-			Vector vsp = this.getSpotDirection().get(0, 3);
+			Vector vdir = this.getInnerDirection().get(0, 3).mult(resize_vec.get(0, 3));
 			renderer.startDrawingEdge(false);
-			renderer.addVertex(vsp.mult(-0.1));
-			renderer.addVertex(vsp);
+			renderer.addVertex(vdir.mult(-0.1));
+			renderer.addVertex(vdir);
 			renderer.endDrawing();
-		} else if (this.getType() == Type.POINT) {
+		}
+		double scale_factor = 0.5;
+		if (this.getType() == Type.POINT || this.getType() == Type.SPOT) {
 			if (this.getAttenuation(ATT_CONSTANT) > 1e-6) {
-				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_CONSTANT)).mult(resize_mat);
+				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_CONSTANT)).mult(resize_mat).mult(scale_factor);
 				Matrix mtpm = mtmp.mult(-1);
-				renderer.startDrawingEdge(false);
 				for (int i = 0; i < 3; ++i) {
+					renderer.startDrawingEdge(false);
 					renderer.addVertex(mtmp.getLine(i));
 					renderer.addVertex(mtpm.getLine(i));
+					renderer.endDrawing();
 				}
-				renderer.endDrawing();
 			}
 			if (this.getAttenuation(ATT_LINEAR) > 1e-6) {
-				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_LINEAR)).mult(resize_mat);
+				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_LINEAR)).mult(resize_mat).mult(scale_factor);
 				Matrix mtpm = mtmp.mult(-1);
 				renderer.startDrawingEdge(true);
 				renderer.addVertex(mtmp.getLine(0));
@@ -277,7 +306,7 @@ public class Light extends NodeBase {
 				renderer.endDrawing();
 			}
 			if (this.getAttenuation(ATT_QUADRATIC) > 1e-6) {
-				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_QUADRATIC)).mult(resize_mat);
+				Matrix mtmp = Matrix.I4.mult(this.getAttenuation(ATT_QUADRATIC)).mult(resize_mat).mult(scale_factor);
 				Matrix mtpm = mtmp.mult(-1);
 				renderer.startDrawingEdge(true);
 				renderer.addVertex(mtmp.getLine(0));
@@ -310,8 +339,43 @@ public class Light extends NodeBase {
 				renderer.addVertex(mtpm.getLine(1).add(mtmp.getLine(2)).mult(0.7071));
 				renderer.endDrawing();
 			}
-		} else if (this.getType() == Type.SPOT) {
+		}
+		scale_factor = 3;
+		if (this.getType() == Type.SPOT) {
+			Vector vdir = this.getInnerDirection().get(0, 3).mult(resize_vec.get(0, 3));
+			renderer.startDrawingEdge(false);
+			renderer.addVertex(Vector.UNIT0_D3);
+			renderer.addVertex(vdir.mult(scale_factor));
+			renderer.endDrawing();
+			Vector v1 = this.getDirTmp().get(0, 3).normalize().mult(resize_vec.get(0, 3));
+			Vector v2 = this.getInnerDirection().get(0, 3).cross(v1).normalize().mult(resize_vec.get(0, 3));
 			
+			float cutoff = (float) ((this.getSpotCutoff() * Math.PI / 180) / 2);
+			Vector vdir_tmp = vdir.mult(scale_factor);
+			Vector vdir_tmp_ = vdir.mult(MathHelper.cos(cutoff) * scale_factor);
+			Vector vdir_oxt1 = v1.mult(scale_factor);
+			Vector vdir_oxt2 = v2.mult(scale_factor);
+			Vector v1t = v1.mult(MathHelper.sin(cutoff) * scale_factor);
+			Vector v2t = v2.mult(MathHelper.sin(cutoff) * scale_factor);
+			
+			renderer.startDrawingEdge(true);
+			for (float angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
+				renderer.addVertex(vdir_tmp_.add(v1t.mult(MathHelper.cos(angle)).add(v2t.mult(MathHelper.sin(angle)))));
+			}
+			renderer.endDrawing();
+			
+			renderer.startDrawingEdge(true);
+			renderer.addVertex(Vector.UNIT0_D3);
+			for (float angle = -cutoff; angle < cutoff * 1.1; angle += cutoff / 10) {
+				renderer.addVertex(vdir_tmp.mult(MathHelper.cos(angle)).add(vdir_oxt1.mult(MathHelper.sin(angle))));
+			}
+			renderer.endDrawing();
+			renderer.startDrawingEdge(true);
+			renderer.addVertex(Vector.UNIT0_D3);
+			for (float angle = -cutoff; angle < cutoff * 1.1; angle += cutoff / 10) {
+				renderer.addVertex(vdir_tmp.mult(MathHelper.cos(angle)).add(vdir_oxt2.mult(MathHelper.sin(angle))));
+			}
+			renderer.endDrawing();
 		}
 		
 	}

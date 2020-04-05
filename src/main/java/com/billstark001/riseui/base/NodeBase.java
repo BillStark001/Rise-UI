@@ -472,6 +472,7 @@ public abstract class NodeBase extends BaseObject{
 	}
 	
 	// Render
+	public void onRender(double ptick, boolean reverse_normal) {}
 	public void render(double ptick) {this.render(ptick, false);}
 	public void render(double ptick, boolean reverse_normal) {
 		GlHelper renderer = GlHelper.getInstance();
@@ -489,6 +490,7 @@ public abstract class NodeBase extends BaseObject{
 			//renderer.setFaceState();
 			this.renderFace(ptick, reverse_normal);
 		}
+		this.onRender(ptick, reverse_normal);
 		//if (renderer.isDebugging()) this.renderDebug(ptick);
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_POST, ptick);
 		// renderer.resetState();

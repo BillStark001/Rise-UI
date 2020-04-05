@@ -252,6 +252,19 @@ public final class Utils3D {
 		return rotToHomoState(Quaternion.eulerToQuat(rot));
 	}
 
+	public static Vector genVerticalVector(Vector v) {
+		if (v.getDimension() < 2) return null;
+		else if (v.getDimension() == 2) {
+			return new Vector(-v.get(1), v.get(0));
+		}
+		Vector vrest = v.get(3, v.getDimension());
+		v = v.get(0, 3);
+		Vector vt = Vector.ORTHO_Y3;
+		double angle_sin = v.cross(vt).getLength() / (v.getLength() * vt.getLength());
+		if (angle_sin < 0.01) vt = Vector.ORTHO_Z3;
+		Vector vans = v.cross(vt).normalize();
+		return vans.concatenate(vrest);
+	}
 	
 	
 }

@@ -30,12 +30,13 @@ public abstract class NodeCompilableBase extends NodeBase {
 	public boolean isCompiled() {return this.compiled;}
 	public void markRecompile() {this.compiled = false;}
 	
-	public void checkAndCompile() {if (!this.isCompiled()) this.compileList();}
-	public void compileList() {
+	@Deprecated
+	public void checkAndCompile() {if (!this.isCompiled()) this.compileList(0, false);}
+	public void compileList(double ptick, boolean reverse_normal) {
 		GlHelper helper = GlHelper.getInstance();
-		if (this.displayList == -1) this.displayList = helper.genDispList();
+		this.displayList = helper.genDispList();
         helper.startCompileList(this.displayList);
-        this.render(0);
+        super.render(ptick, reverse_normal);
         helper.endList();
         this.compiled = true;
 	}
@@ -53,7 +54,9 @@ public abstract class NodeCompilableBase extends NodeBase {
 	@Override
 	public void render(double ptick, boolean reverse_normal) {
 		if (!this.isCompiled()) {
-			super.render(ptick, reverse_normal);
+			//super.render(ptick, reverse_normal);
+			//checkAndCompile();
+			this.compileList(ptick, reverse_normal);
 		} else {
 			GlStateManager.callList(this.getDisplayList());
 		}
