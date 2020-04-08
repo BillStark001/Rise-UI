@@ -62,8 +62,14 @@ public final class Pair {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return String.format("(%d, %d)", xi, yi);
+	}
+	
+	@Override
+	public int hashCode() {
+		return xi << 16 + yi;
 	}
 	
 	public int[] toIntArray() {

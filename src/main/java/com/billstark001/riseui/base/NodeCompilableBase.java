@@ -18,6 +18,7 @@ import com.billstark001.riseui.base.TagBase.ApplyReturn;
 import com.billstark001.riseui.base.states.StateBase;
 import com.billstark001.riseui.base.states.simple3d.State3DSimple;
 import com.billstark001.riseui.computation.Matrix;
+import com.billstark001.riseui.computation.Pair;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
@@ -33,8 +34,10 @@ public abstract class NodeCompilableBase extends NodeBase {
 	private int vbo_vvert_id;
 	private int vbo_fvert_id;
 	private int vbo_evert_id;
-	private int vbo_color_id;
+	private int vbo_vert_color_id;
+	private int vbo_edge_color_id;
 	private int vbo_edge_index_id;
+	private int vbo_edge_index_count;
 	private Map<TagBase, Integer> vbo_face_index_ids = null;
 	private Map<TagBase, Integer> vbo_face_index_counts = null;
 	
@@ -67,11 +70,13 @@ public abstract class NodeCompilableBase extends NodeBase {
 		this.face_cache_final_apply_rate = null;
 		this.face_cache_rpf_tags = null;
 		this.face_cache_triad_mapping_map = null;
-		if (this.vbo_color_id > 0) GL15.glDeleteBuffers(this.vbo_color_id);
+		if (this.vbo_vert_color_id > 0) GL15.glDeleteBuffers(this.vbo_vert_color_id);
+		if (this.vbo_edge_color_id > 0) GL15.glDeleteBuffers(this.vbo_edge_color_id);
 		if (this.vbo_fvert_id > 0) GL15.glDeleteBuffers(this.vbo_fvert_id);
 		if (this.vbo_vvert_id > 0) GL15.glDeleteBuffers(this.vbo_vvert_id);
 		if (this.vbo_evert_id > 0) GL15.glDeleteBuffers(this.vbo_evert_id);
 		if (this.vbo_edge_index_id > 0) GL15.glDeleteBuffers(this.vbo_edge_index_id);
+		this.vbo_edge_index_count = 0;
 		if (this.vbo_face_index_ids != null) {
 			for (int id: this.vbo_face_index_ids.values()) 
 				GL15.glDeleteBuffers(id);
@@ -80,7 +85,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 		if (this.vbo_face_index_counts != null) {
 			this.vbo_face_index_counts = null;
 		}
-		this.vao_id = this.vbo_vvert_id = this.vbo_fvert_id = this.vbo_evert_id = this.vbo_color_id = this.vbo_edge_index_id = 0;
+		this.vao_id = this.vbo_vvert_id = this.vbo_fvert_id = this.vbo_evert_id = this.vbo_vert_color_id = this.vbo_edge_index_id = 0;
 	}
 	
 	@Override
@@ -154,7 +159,8 @@ public abstract class NodeCompilableBase extends NodeBase {
 	//public FloatBuffer storeNormBuffer() {return storeVectorBuffer(VERTEX_EDGE_STRIDE, this.getNormalMaxIndex(), this::getVertNrm, Vector.ORTHO_Z3);}
 	
 	protected double buffered_vert_size;
-	public ByteBuffer storeColorBuffer() {
+	protected double buffered_edge_size;
+	public ByteBuffer storeVertColorBuffer() {
 		double ptick = 0;
 		int nr_vert = this.getVertCount();
 		ByteBuffer color_buffer = BufferUtils.createByteBuffer(nr_vert * COLOR_STRIDE);
@@ -168,8 +174,8 @@ public abstract class NodeCompilableBase extends NodeBase {
 			for (ApplyReturn r: rets) {
 				if (r.succeeded) {
 					++succeeded_count;
-					color = (Integer) r.data[0];
-					size = (Double) r.data[1];
+					if (r.data != null && r.data[0] != null) color = (Integer) r.data[0];
+					if (r.data != null && r.data[1] != null) size = (Double) r.data[1];
 				}
 			}
 			if (size >= 0) buffered_vert_size += size;
@@ -210,13 +216,13 @@ public abstract class NodeCompilableBase extends NodeBase {
 	}
 	*/
 	
-	protected int getVAOId() {
+	protected int ensureVAOId() {
 		if (vao_id <= 0) vao_id = GL30.glGenVertexArrays();
 		return vao_id;
 	}
 	
 	protected void createVertBuffer() {
-		vao_id = this.getVAOId();
+		vao_id = this.ensureVAOId();
         GL30.glBindVertexArray(vao_id);
         
         FloatBuffer vertices_buffer = this.storeVertBuffer();
@@ -234,10 +240,10 @@ public abstract class NodeCompilableBase extends NodeBase {
 		if (vao_id <= 0 || vbo_vvert_id <= 0) this.createVertBuffer();
         GL30.glBindVertexArray(vao_id);
         
-        ByteBuffer color_buffer = this.storeColorBuffer();
+        ByteBuffer color_buffer = this.storeVertColorBuffer();
         
-        vbo_color_id = GL15.glGenBuffers();
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_color_id);
+        vbo_vert_color_id = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_vert_color_id);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, color_buffer, GL15.GL_STATIC_DRAW);
         GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, COLOR_STRIDE, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
@@ -245,7 +251,7 @@ public abstract class NodeCompilableBase extends NodeBase {
         GL30.glBindVertexArray(0);
 	}
 	public void renderVertWithBuffer(double ptick) {
-		if (vao_id <= 0 || vbo_vvert_id <= 0 || vbo_color_id <= 0) 
+		if (vao_id <= 0 || vbo_vvert_id <= 0 || vbo_vert_color_id <= 0) 
 			this.prepareVertRender();
 		
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES_PRE, ptick);
@@ -255,6 +261,14 @@ public abstract class NodeCompilableBase extends NodeBase {
         GL30.glBindVertexArray(vao_id);
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_vvert_id);
+        GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_vert_color_id);
+        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         
         GL11.glDrawArrays(GL11.GL_POINTS, 0, this.getVertCount());
          
@@ -291,24 +305,115 @@ public abstract class NodeCompilableBase extends NodeBase {
 	}
 	
 	public void prepareEdgeRender() {
-		if (vao_id <= 0 || vbo_vvert_id <= 0) this.createVertBuffer();
+		vao_id = this.ensureVAOId();
+		double ptick = 0;
+		
+		Map<Pair, Integer> index_map = new HashMap<Pair, Integer>();
+		List<Pair> render_list = new ArrayList<Pair>();
+		int cur_count = 0;
+
+		double temp_edge_size = 1;
+		int valid_size_count = 0;
+		
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_PRE, ptick);
+		for (int i = 0; i < this.getEdgeCount(); ++i) {
+			List<ApplyReturn> rets = this.applyTags(TagBase.TAG_PHRASE_RENDER_PARTICULAR_EDGE, i, ptick);
+			int[] colors = null;
+			double[] widths = null;
+			for (ApplyReturn r: rets) {
+				if (r.succeeded) {
+					if (r.data != null && r.data[0] != null) colors = (int[]) (r.data[0]);
+					if (r.data != null && r.data[1] != null) widths = (double[]) (r.data[1]);
+				}
+			}
+			if (widths != null) {
+				for (int i1 = 0; i1 < widths.length; ++i1)
+					temp_edge_size += widths[i1];
+				valid_size_count += widths.length;
+			}
+			int[] vertices = this.getEdgeIndices(i);
+			if (vertices.length < 2) 
+				continue;
+			Pair last_render_pair = null;
+			Pair first_render_pair = null;
+			boolean flag = this.isEdgeLooped(i);
+			for (int i2 = 0; i2 < vertices.length; ++i2) {
+				int vi2 = vertices[i2];
+				int ci2 = colors == null ? 0xFFFFFFFF : colors[i2];
+				Pair pvc = new Pair(vi2, ci2);
+				if (!index_map.containsKey(pvc)) index_map.put(pvc, cur_count++);
+				
+				if (last_render_pair != null) {
+					render_list.add(last_render_pair);
+					render_list.add(pvc);
+					if (flag && i2 == vertices.length - 1) {
+						render_list.add(pvc);
+						render_list.add(first_render_pair);
+					}
+				} else {
+					first_render_pair = pvc;
+				}
+				
+				last_render_pair = pvc;
+			}
+		}
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_POST, ptick);
+		
+		
+
+		temp_edge_size /= valid_size_count;
+		this.buffered_edge_size = Math.max(0, temp_edge_size);
+		Map<Integer, Pair> reverse_index_map = new HashMap<Integer, Pair>();
+		for (Pair p: index_map.keySet()) {
+			reverse_index_map.put(index_map.get(p), p);
+		}
+		
+		vbo_edge_index_count = render_list.size() * 4;
+		IntBuffer index_buffer = BufferUtils.createIntBuffer(render_list.size());
+		for (int i = 0; i < render_list.size(); ++i) 
+			index_buffer.put(index_map.get(render_list.get(i)));
+		index_buffer.flip();
+		
+		FloatBuffer vertex_buffer = BufferUtils.createFloatBuffer(cur_count * VERTEX_EDGE_STRIDE);
+        ByteBuffer color_buffer = BufferUtils.createByteBuffer(cur_count * COLOR_STRIDE);
+        for (int i = 0; i < cur_count; ++i) {
+        	Pair p = reverse_index_map.get(i);
+        	//Vector pos = this.getVertPos(p.getX());
+        	//vertex_buffer.put((float) pos.get(0));
+        	//vertex_buffer.put((float) pos.get(1));
+        	//vertex_buffer.put((float) pos.get(2));
+        	this.getVertPos(p.getX()).get(0, 3).storeBufferF(vertex_buffer);
+        	color_buffer.put(UtilsTex.colorToRGBAByte(p.getY()));
+        }
+        vertex_buffer.flip();
+        color_buffer.flip();
+        
         GL30.glBindVertexArray(vao_id);
         
-        ByteBuffer color_buffer = this.storeColorBuffer();
-        
-        vbo_color_id = GL15.glGenBuffers();
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_color_id);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, color_buffer, GL15.GL_STATIC_DRAW);
-        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, COLOR_STRIDE, 0);
+        vbo_evert_id = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_evert_id);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertex_buffer, GL15.GL_STATIC_DRAW);
+        GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-         
+        
+        vbo_edge_color_id = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_edge_color_id);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, color_buffer, GL15.GL_STATIC_DRAW);
+        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        
+        vbo_edge_index_id = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vbo_edge_index_id);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, index_buffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+        
         GL30.glBindVertexArray(0);
 	}
 	public void renderEdgeWithBuffer(double ptick) {
-		if (vao_id <= 0 || vbo_vvert_id <= 0 || vbo_color_id <= 0) 
-			this.prepareVertRender();
+		if (vao_id <= 0 || vbo_evert_id <= 0 || vbo_edge_color_id <= 0) 
+			this.prepareEdgeRender();
 		
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES_PRE, ptick);
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_PRE, ptick);
 		
 		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         
@@ -316,15 +421,25 @@ public abstract class NodeCompilableBase extends NodeBase {
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
         
-        GL11.glDrawArrays(GL11.GL_POINTS, 0, this.getVertCount());
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_evert_id);
+        GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_edge_color_id);
+        GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.vbo_edge_index_id);
+        GL11.glDrawElements(GL11.GL_LINES, this.vbo_edge_index_count, GL11.GL_UNSIGNED_INT, 0);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
          
         GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         GL30.glBindVertexArray(0);
          
-		this.applyTags(TagBase.TAG_PHRASE_RENDER_VERTICES_POST, ptick);
+		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_POST, ptick);
 	}
-	public void renderEdge(double ptick) {
+	public void renderEdgeNaive(double ptick) {
 		GlHelper renderer = GlHelper.getInstance();
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_PRE, ptick);
 		for (int i = 0; i < this.getEdgeCount(); ++i) {
@@ -349,6 +464,9 @@ public abstract class NodeCompilableBase extends NodeBase {
 		this.applyTags(TagBase.TAG_PHRASE_RENDER_EDGES_POST, ptick);
 	}
 	
+	public void renderEdge(double ptick) {
+		this.renderEdgeWithBuffer(ptick);
+	}
 	
 	public Vector concatPTN(Triad t) {
 		Vector v1, v2, v3;
@@ -360,6 +478,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 		v3 = (v3 == null ? Vector.ORTHO_Z3 : v3).get(0, 3);
 		return v1.concatenate(v2).concatenate(v3);
 	}
+	
 	public void prepareFaceRender(boolean reverse_normal) {
 		double ptick = 0;
 		int face_count = this.getFaceCount();
@@ -406,7 +525,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 		vertex_buffer.flip();
 		this.face_cache_triad_mapping_map = map_tmp;
 		
-		vao_id = this.getVAOId();
+		vao_id = this.ensureVAOId();
 		GL30.glBindVertexArray(vao_id);
 		
 		vbo_fvert_id = GL15.glGenBuffers();
@@ -476,13 +595,20 @@ public abstract class NodeCompilableBase extends NodeBase {
 		this.applyTagsWithExclusion(TagBase.TAG_PHRASE_RENDER_FACES_POST, rpf_tags, ptick);
 		GL30.glBindVertexArray(0);
 	}
+	
 	public void renderFaceWithBuffer(double ptick, boolean reverse_normal) {
 		if (this.vbo_fvert_id <= 0) {
 			this.prepareFaceRender(reverse_normal);
 		}
 		
-		GL30.glBindVertexArray(this.getVAOId());
+		GL30.glBindVertexArray(this.ensureVAOId());
         
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo_fvert_id);
+        GL11.glVertexPointer(3, GL11.GL_FLOAT, VERTEX_FACE_STRIDE * 4, 0);
+        GL11.glTexCoordPointer(2, GL11.GL_FLOAT, VERTEX_FACE_STRIDE * 4, 3 * 4);
+        GL11.glNormalPointer(GL11.GL_FLOAT, VERTEX_FACE_STRIDE * 4, 5 * 4);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		
 		TagBase[] rpf_tags = this.face_cache_rpf_tags;
 		for (int it = 0; it < rpf_tags.length; ++it) {
 			TagBase t = rpf_tags[it];
@@ -497,9 +623,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 				GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
 		         
 		        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.vbo_face_index_ids.get(t));
-		         
 		        GL11.glDrawElements(GL11.GL_TRIANGLES, this.vbo_face_index_counts.get(t), GL11.GL_UNSIGNED_INT, 0);
-		         
 		        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
