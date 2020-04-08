@@ -1,6 +1,7 @@
 package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.NodeCompilableBase;
 import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
 import com.billstark001.riseui.base.shading.shader.Shader;
@@ -109,24 +110,25 @@ public class TagApplyMaterialEdge extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderEdge(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderEdge(NodeBase object_, int index, double ptick) {
+		if (!(object_ instanceof NodeCompilableBase)) return new ApplyReturn(false, null, null);
+		NodeCompilableBase object = (NodeCompilableBase) object_;
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.EDGE) flag = this.selection.contains(index);
 		if (this.selection == null) flag = true;
 		if (this.material == null) flag = false;
+		int[] colors = null;
+		double[] widths = null;
 		if (flag) {
-			if (this.material.needsPos()) {
-				Vector[] pos = object.getEdges(index);
-				if (pos != null) {
-					GlHelper.getInstance().pushColors(this.material.getColor(pos));
-					GlHelper.getInstance().pushWidths(this.material.getWidth(pos));
-				}
-			} else {
-				GlHelper.getInstance().pushColors(this.material.getColor(new Vector[object.getEdgeIndicesLength(index)]));
-				GlHelper.getInstance().pushWidths(this.material.getWidth(new Vector[object.getEdgeIndicesLength(index)]));
-			}
+			Vector[] pos = null;
+			if (this.material.needsPos()) 
+				pos = object.getEdges(index);
+			if (pos == null)
+				pos = new Vector[object.getEdgeIndicesLength(index)];
+			colors = this.material.getColor(pos);
+			widths = this.material.getWidth(pos);
 		}
-		return null;
+		return new ApplyReturn(flag, colors, widths);
 	}
 
 	@Override

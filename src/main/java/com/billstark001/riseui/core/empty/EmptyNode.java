@@ -76,69 +76,22 @@ public class EmptyNode extends NodeBase {
 	}
 
 	@Override
-	public int getVertCount() {
-		// TODO �Զ����ɵķ������
-		return 0;
+	public void renderVert(double ptick) {
+		// TODO 自动生成的方法存根
+		
 	}
 
 	@Override
-	public int getEdgeCount() {
-		// TODO �Զ����ɵķ������
-		return 0;
+	public void renderEdge(double ptick) {
+		// TODO 自动生成的方法存根
+		
 	}
 
 	@Override
-	public int getFaceCount() {
-		// TODO �Զ����ɵķ������
-		return 0;
+	public void renderFace(double ptick, boolean reverse_normal) {
+		// TODO 自动生成的方法存根
+		
 	}
 
-	@Override
-	public Vector getVertPos(int index) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public Vector getVertNrm(int index) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public Vector getVertUVM(int index) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public boolean isEdgeLooped(int index) {
-		// TODO �Զ����ɵķ������
-		return false;
-	}
-
-	@Override
-	public int[] getEdgeIndices(int index) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public Triad[] getFaceIndices(int index) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public int getEdgeIndicesLength(int index) {
-		// TODO �Զ����ɵķ������
-		return 0;
-	}
-
-	@Override
-	public int getFaceIndicesLength(int index) {
-		// TODO �Զ����ɵķ������
-		return 0;
-	}
 
 }

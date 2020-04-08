@@ -45,6 +45,11 @@ public final class Triad {
 	public final Triad reverseZ() {return new Triad(xi, yi, -zi);}
 	
 	@Override
+	public int hashCode() {
+		return this.xi << 20 + this.yi << 10 + this.zi;
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

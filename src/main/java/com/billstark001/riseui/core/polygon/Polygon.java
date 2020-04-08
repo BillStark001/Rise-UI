@@ -62,9 +62,14 @@ public class Polygon extends NodeCompilableBase{
 		return super.setParentRemainGlobalState(obj);
 	}
 	
-	public Vector getVertPos(int index) {if (pos != null) return pos_r.getLine(index); else return new Vector(0, 0, 0);}
-	public Vector getVertNrm(int index) {if (nrm != null) return nrm_r.getLine(index); else return null;}
-	public Vector getVertUVM(int index) {if (uvm != null) return uvm_r.getLine(index); else return new Vector(0, 0, 0);}
+	public Vector getVertPos(int index) {if (pos != null) return pos_r.getLine(index); else return Vector.UNIT0_D3;}
+	public Vector getVertNrm(int index) {if (nrm != null) return nrm_r.getLine(index); else return Vector.ORTHO_Z3;}
+	public Vector getVertUVM(int index) {if (uvm != null) return uvm_r.getLine(index); else return Vector.UNIT0_D2;}
+	
+	public int getPosMaxIndex() {return pos == null ? 0 : pos.getShape().getX();}
+	public int getNormalMaxIndex() {return nrm == null ? 0 : nrm.getShape().getX();}
+	public int getTexUVMaxIndex() {return uvm == null ? 0 : uvm.getShape().getX();}
+	
 	
 	@Override
 	public Triad[] getFaceIndices(int index) {

@@ -91,6 +91,14 @@ public final class GlHelper {
 		if (size >= 0) setPointSize(size);
 		R.pos(pos.get(0), pos.get(1), pos.get(2)).color(colors[0], colors[1], colors[2], colors[3]).endVertex();
 	}
+	public void addVertex(Vector pos, int color) {
+		int[] colors = UtilsTex.colorToRGBA(color);
+		double width = popWidth();
+		double size = popSize();
+		if (width >= 0) setLineWidth(width);
+		if (size >= 0) setPointSize(size);
+		R.pos(pos.get(0), pos.get(1), pos.get(2)).color(colors[0], colors[1], colors[2], colors[3]).endVertex();
+	}
 
 	// Color and Width Assignment
 	public void setColor(int c) {r = c >> 16 & 255; g = c >> 8 & 255; b = c & 255;}	
@@ -113,8 +121,10 @@ public final class GlHelper {
 
 	public void setLineWidth(double width) {GL11.glLineWidth((float) width);}
 	public void setPointSize(double size) {GL11.glPointSize((float) size);}
+	public void setLineWidth(float width) {GL11.glLineWidth(width);}
+	public void setPointSize(float size) {GL11.glPointSize(size);}
 
-	public void pushColors(int[] colors) {
+	public void pushColors(int...colors) {
 		for (int color: colors)
 			color_cache.add(color);
 	}
@@ -133,8 +143,8 @@ public final class GlHelper {
 	}
 
 	public void pushWidths(double[] widths) {
-		for (double color: widths)
-			width_cache.add(color);
+		for (double width: widths)
+			width_cache.add(width);
 	}
 
 	public double popWidth() {
@@ -143,9 +153,9 @@ public final class GlHelper {
 		return ans;
 	}
 
-	public void pushSizes(double[] widths) {
-		for (double color: widths)
-			size_cache.add(color);
+	public void pushSizes(double...sizes) {
+		for (double size: sizes)
+			size_cache.add(size);
 	}
 
 	public double popSize() {

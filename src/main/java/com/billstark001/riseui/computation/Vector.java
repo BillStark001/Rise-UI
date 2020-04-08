@@ -1,5 +1,7 @@
 package com.billstark001.riseui.computation;
 
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 public final class Vector {
@@ -137,7 +139,10 @@ public final class Vector {
 	 * @param end int.
 	 * @return Vector of the [start, end) part of the original Vector.
 	 */
-	public Vector get(int start, int end) {return new Vector(Arrays.copyOfRange(elements, this.findPos(start), this.findPos(end)));}
+	public Vector get(int start, int end) {
+		if (start == 0 && end == this.getDimension()) return this;
+		return new Vector(Arrays.copyOfRange(elements, this.findPos(start), this.findPos(end)));
+	}
 	
 	public Vector concatenate(Vector v) {
 		double[] temp = new double[dim + v.dim];
@@ -342,5 +347,10 @@ public final class Vector {
 		double[] ans = new double[this.dim];
 		for (int i = 0; i < dim; ++i) ans[i] = this.elements[i];
 		return ans;
+	}
+
+	public void storeBufferD(DoubleBuffer buffer) {buffer.put(elements);}
+	public void storeBufferF(FloatBuffer buffer) {
+		for (int i = 0; i < this.getDimension(); ++i) buffer.put((float) elements[i]);
 	}
 }

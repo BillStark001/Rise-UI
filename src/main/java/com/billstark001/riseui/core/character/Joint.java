@@ -51,17 +51,7 @@ public class Joint extends NodeBase {
 
 	// Render
 
-	@Override
-	public boolean isEdgeLooped(int i) {return false;}
 
-	@Override
-	public int getVertCount() {return 0;}//6;}
-	@Override
-	public int getEdgeCount() {return 0;}//15;}
-	@Override
-	public int getFaceCount() {return 0;}
-
-	@Override
 	public int[] getEdgeIndices(int index) {
 		int[] ans = new int[2];
 		if (index < 0 || index >= 15) index = 0;
@@ -78,33 +68,6 @@ public class Joint extends NodeBase {
 		return ans;
 	}
 
-	public void refreshGrid() {
-		//vcur = Utils.zoom(vertices, length);
-		//vcur = Utils.rotate(vertices, rot.inverse());
-	}
-	@Override
-	public Vector getVertPos(int index) {return vcur.getLine(index);}
-
-
-	@Override
-	public Vector getVertNrm(int index) {
-		return new Vector(0, 0, 0);
-	}
-	@Override
-	public Vector getVertUVM(int index) {
-		return new Vector(0, 0, 0);
-	}
-	@Override
-	public Triad[] getFaceIndices(int index) {
-		return null;
-	}
-	@Override
-	public int getEdgeIndicesLength(int index) {
-		return 0;
-	}
-	public int getFaceIndicesLength(int index) {
-		return 0;
-	}
 
 	@Override
 	public void renderDebug(double ptick) {
@@ -134,7 +97,7 @@ public class Joint extends NodeBase {
 		
 		for (int i = 0; i < 15; ++i) {
 			int[] v_ = this.getEdgeIndices(i);
-			renderer.startDrawingEdge(this.isEdgeLooped(i));
+			renderer.startDrawingEdge(false);
 			Vector vpos;
 			for (int v: v_) {
 				if (v == 0) {
@@ -146,6 +109,15 @@ public class Joint extends NodeBase {
 			}
 			renderer.endDrawing();
 		}
+	}
+	@Override
+	public void renderVert(double ptick) {
+	}
+	@Override
+	public void renderEdge(double ptick) {
+	}
+	@Override
+	public void renderFace(double ptick, boolean reverse_normal) {
 	}
 	
 }

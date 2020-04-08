@@ -184,22 +184,6 @@ public class Light extends NodeBase {
 		// TODO 自动生成的构造函数存根
 	}
 
-	@Override
-	public int getVertCount() {return 0;}
-	@Override
-	public int getEdgeCount() {return 0;}
-	@Override
-	public int getFaceCount() {return 0;}
-
-	@Override
-	public Vector getVertPos(int index) {return null;}
-	@Override
-	public Vector getVertNrm(int index) {return null;}
-	@Override
-	public Vector getVertUVM(int index) {return null;}
-	@Override
-	public boolean isEdgeLooped(int index) {return false;}
-	@Override
 	public int[] getEdgeIndices(int index) {
 		int[] ans = new int[2];
 		if (index < 0 || index >= 15) index = 0;
@@ -215,12 +199,6 @@ public class Light extends NodeBase {
 		}
 		return ans;
 	}
-	@Override
-	public Triad[] getFaceIndices(int index) {return null;}
-	@Override
-	public int getEdgeIndicesLength(int index) {return 0;}
-	@Override
-	public int getFaceIndicesLength(int index) {return 0;}
 	
 	
 	private static final double[][] d = {{0, 1, 0, 1}, {0, -1, 0, 1}, {1, 0, 0, 1}, {0, 0, 1, 1}, {-1, 0, 0, 1}, {0, 0, -1, 1}};
@@ -254,7 +232,7 @@ public class Light extends NodeBase {
 		
 		for (int i = 0; i < 15; ++i) {
 			int[] v_ = this.getEdgeIndices(i);
-			renderer.startDrawingEdge(this.isEdgeLooped(i));
+			renderer.startDrawingEdge(false);
 			Vector vpos;
 			for (int v: v_) {
 				vpos = vcur.getLine(v);
@@ -377,6 +355,21 @@ public class Light extends NodeBase {
 			}
 			renderer.endDrawing();
 		}
+		
+	}
+	@Override
+	public void renderVert(double ptick) {
+		// TODO 自动生成的方法存根
+		
+	}
+	@Override
+	public void renderEdge(double ptick) {
+		// TODO 自动生成的方法存根
+		
+	}
+	@Override
+	public void renderFace(double ptick, boolean reverse_normal) {
+		// TODO 自动生成的方法存根
 		
 	}
 	

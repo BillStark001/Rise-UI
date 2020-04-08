@@ -1,9 +1,11 @@
 package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.NodeCompilableBase;
 import com.billstark001.riseui.base.TagBase;
 import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
 import com.billstark001.riseui.base.shading.shader.Shader;
+import com.billstark001.riseui.computation.UtilsTex;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.render.GlHelper;
 
@@ -107,24 +109,23 @@ public class TagApplyMaterialVert extends TagBase {
 	}
 
 	@Override
-	public ApplyReturn onRenderVert(NodeBase object, int index, double ptick) {
+	public ApplyReturn onRenderVert(NodeBase object_, int index, double ptick) {
+		if (!(object_ instanceof NodeCompilableBase)) return new ApplyReturn(false, 0XFFFFFFFF, 1);
+		NodeCompilableBase object = (NodeCompilableBase) object_;
 		boolean flag = false;
 		if (this.selection != null && this.selection.getType() == Type.VERTEX) flag = this.selection.contains(index);
 		if (this.selection == null) flag = true;
 		if (this.material == null) flag = false;
+		int color = UtilsTex.color(255, 255, 255);
+		double size = 1;
 		if (flag) {
-			if (this.material.needsPos()) {
-				Vector pos = object.getVertPos(index);
-				if (pos != null) {
-					GlHelper.getInstance().setColorAndAlpha(this.material.getColor(pos));
-					GlHelper.getInstance().setPointSize(this.material.getSize(pos));
-				}
-			} else {
-				GlHelper.getInstance().setColorAndAlpha(this.material.getColor(Vector.UNIT0_D3));
-				GlHelper.getInstance().setPointSize(this.material.getSize(Vector.UNIT0_D3));
-			}
+			Vector pos = Vector.UNIT0_D3;
+			if (this.material.needsPos()) 
+				pos = object.getVertPos(index);
+			color = this.material.getColor(pos);
+			size = this.material.getSize(pos);
 		}
-		return null;
+		return new ApplyReturn(flag, color, size);
 	}
 
 	@Override

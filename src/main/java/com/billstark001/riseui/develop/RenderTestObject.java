@@ -140,7 +140,7 @@ public class RenderTestObject{
 		horse.setLocalState(new State3DIntegrated(new Vector(0, cur_time, 0)));
 		spider.setChildrenFrameTime(cur_time);
 		
-		glhelper.renderObject(horse, delta);
+		//glhelper.renderObject(horse, delta);
 		glhelper.renderObject(spider, delta);
 
 		/*

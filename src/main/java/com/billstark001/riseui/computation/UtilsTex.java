@@ -84,6 +84,15 @@ public class UtilsTex {
 		int[] ans = {r, g, b, a};
 		return ans;
 	}
+	public static byte[] colorToRGBAByte(int c) {
+		int a, r, g, b;
+		a = c >> 24 & 255;
+		r = c >> 16 & 255;
+		g = c >> 8 & 255;
+		b = c & 255;
+		byte[] ans = {(byte)r, (byte)g, (byte)b, (byte)a};
+		return ans;
+	}
 	
 	public static int[] colorToARGB(int c) {
 		int a, r, g, b;
