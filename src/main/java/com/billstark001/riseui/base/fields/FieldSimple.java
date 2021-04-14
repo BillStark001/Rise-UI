@@ -1,6 +1,6 @@
-package com.billstark001.riseui.base.states;
+package com.billstark001.riseui.base.fields;
 
-public abstract class StateSimpleBase<T> extends StateBase<T> {
+public class FieldSimple<T> extends Field<T> {
 
 	private T state = this.getDefault();
 	
@@ -9,11 +9,11 @@ public abstract class StateSimpleBase<T> extends StateBase<T> {
 		return true;
 	}
 	
-	public StateSimpleBase(T t) {
+	public FieldSimple(T t) {
 		this.set(t);
 	}
 	
-	public StateSimpleBase() {
+	public FieldSimple() {
 		this.set(this.getDefault());
 	}
 
@@ -49,6 +49,11 @@ public abstract class StateSimpleBase<T> extends StateBase<T> {
 	@Override
 	public double getEndTime() {
 		return 0;
+	}
+
+	@Override
+	public Class getDataType() {
+		return state.getClass();
 	}
 
 }

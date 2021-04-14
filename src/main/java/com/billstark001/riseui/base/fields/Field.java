@@ -1,6 +1,6 @@
-package com.billstark001.riseui.base.states;
+package com.billstark001.riseui.base.fields;
 
-public abstract class StateBase<T> {
+public abstract class Field<T> {
 	
 	/*
 	public static enum DataType {
@@ -28,6 +28,7 @@ public abstract class StateBase<T> {
 	//public abstract boolean checkType(DataType type);
 	*/
 	
+	public T get() {return this.get(this.getStartTime());}
 	public abstract T get(double time);
 	public abstract boolean containsFrames();
 	public abstract Class getDataType();
@@ -42,5 +43,5 @@ public abstract class StateBase<T> {
 	public abstract double getStartTime();
 	public abstract double getEndTime();
 	
-	public boolean isTracked() {return this instanceof StateTrackedBase;}
+	public boolean isTracked() {return !(this instanceof FieldSimple);}
 }

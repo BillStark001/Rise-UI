@@ -1,9 +1,9 @@
 package com.billstark001.riseui.base.shading.shader;
 
-import com.billstark001.riseui.base.BaseObject;
+import com.billstark001.riseui.base.BaseContainer;
 import com.billstark001.riseui.base.Layer;
 
-public class Shader extends BaseObject {
+public class Shader extends BaseContainer {
 	
 	@FunctionalInterface
 	public interface StateSetter {void operate();}

@@ -3,11 +3,11 @@ package com.billstark001.riseui.base.shading.mat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.billstark001.riseui.base.BaseObject;
+import com.billstark001.riseui.base.BaseContainer;
 import com.billstark001.riseui.base.Layer;
 import com.billstark001.riseui.base.shading.shader.Shader;
 
-public class MaterialFace extends BaseObject{
+public class MaterialFace extends BaseContainer{
 	
 	public static final MaterialFace DEFAULT = new MaterialFace("Default Material");
 	

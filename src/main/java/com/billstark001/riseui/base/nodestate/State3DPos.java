@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.states.simple3d;
+package com.billstark001.riseui.base.nodestate;
 
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Utils3D;
@@ -16,7 +16,7 @@ public class State3DPos extends State3DGenerative<Vector>{
 	}
 
 	@Override
-	public Matrix getMatFromRepr() {
+	public Matrix calcState() {
 		return Utils3D.posToHomoState(getStateRepr());
 	}
 

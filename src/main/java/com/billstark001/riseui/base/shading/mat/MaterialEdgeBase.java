@@ -1,10 +1,10 @@
 package com.billstark001.riseui.base.shading.mat;
 
-import com.billstark001.riseui.base.BaseObject;
+import com.billstark001.riseui.base.BaseContainer;
 import com.billstark001.riseui.base.Layer;
 import com.billstark001.riseui.computation.Vector;
 
-public abstract class MaterialEdgeBase extends BaseObject {
+public abstract class MaterialEdgeBase extends BaseContainer {
 
 	public MaterialEdgeBase(String name, Layer layer) {super(name, layer);}
 	public MaterialEdgeBase(String name) {this(name, null);}

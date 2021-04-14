@@ -1,6 +1,8 @@
 package com.billstark001.riseui.computation;
 
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+
+import scala.reflect.internal.Trees.This;
 
 public final class Utils3D {
 	
@@ -247,6 +249,7 @@ public final class Utils3D {
 		return m.mult(r);
 	}
 
+	public static Matrix rotToHomoState180(Vector rot) {return rotToHomoState(rot.mult(Math.PI / 180));}
 	public static Matrix rotToHomoState(Vector rot) {
 		//return Matrix.homoExtend(Quaternion.eulerToRotate(rot), 4);
 		return rotToHomoState(Quaternion.eulerToQuat(rot));

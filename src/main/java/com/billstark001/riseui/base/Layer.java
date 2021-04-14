@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import scala.actors.threadpool.Arrays;
 
-public class Layer extends BaseObject{
+public class Layer extends BaseContainer{
 
 	protected String name;
 	
@@ -24,12 +24,12 @@ public class Layer extends BaseObject{
 	STATE_GENERATOR = 6,
 	STATE_EFFECTOR = 7;
 	
-	private ArrayList<BaseObject> objs;
+	private ArrayList<BaseContainer> objs;
 	
 	public Layer() {this(DEFAULT_NAME);}
 	public Layer(String name) {
 		setName(name);
-		this.objs = new ArrayList<BaseObject>();
+		this.objs = new ArrayList<BaseContainer>();
 	}
 	
 	public String getName() {return this.name;}
@@ -63,7 +63,7 @@ public class Layer extends BaseObject{
 	@Override
 	public boolean getLayerState(int state) {return false;}
 	
-	public boolean addMember(BaseObject member) {
+	public boolean addMember(BaseContainer member) {
 		if (member == null || member instanceof Layer) return false;
 		if (member.layer == this) return true;
 		if (member.layer != null) member.layer.removeMember(member);
@@ -72,7 +72,7 @@ public class Layer extends BaseObject{
 		return true;
 	}
 	
-	public boolean removeMember(BaseObject member) {
+	public boolean removeMember(BaseContainer member) {
 		if (member == null || member instanceof Layer) return false;
 		if (member.layer == this) {
 			if (objs.contains(member)) objs.remove(member);
@@ -82,18 +82,18 @@ public class Layer extends BaseObject{
 	}
 	
 	public boolean removeAllMembers() {
-		for (BaseObject obj: objs) obj.layer = null;
-		objs = new ArrayList<BaseObject>();
+		for (BaseContainer obj: objs) obj.layer = null;
+		objs = new ArrayList<BaseContainer>();
 		return true;
 	}
 	
-	public BaseObject[] getMembers() {
-		return this.objs.toArray(new BaseObject[0]);
+	public BaseContainer[] getMembers() {
+		return this.objs.toArray(new BaseContainer[0]);
 	}
 	
 	public void setMembersFrameTime(double ftime) {
 		this.setFrameTime(ftime);
-		for (BaseObject t: this.objs) t.setFrameTime(ftime);
+		for (BaseContainer t: this.objs) t.setFrameTime(ftime);
 	}
 
 	// Display

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
@@ -21,17 +22,16 @@ import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.states.StateBase;
-import com.billstark001.riseui.base.states.StateTrackedDouble;
-import com.billstark001.riseui.base.states.StateTrackedVec3;
-import com.billstark001.riseui.base.states.simple3d.State3DBase;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DPos;
-import com.billstark001.riseui.base.states.simple3d.State3DRot;
-import com.billstark001.riseui.base.states.simple3d.State3DScl;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
-import com.billstark001.riseui.base.states.tracked3d.Track3DIntegrated;
+import com.billstark001.riseui.base.fields.Field;
+import com.billstark001.riseui.base.fields.FieldFramedDouble;
+import com.billstark001.riseui.base.fields.FieldGenVec3;
+import com.billstark001.riseui.base.nodestate.State3DBase;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DPos;
+import com.billstark001.riseui.base.nodestate.State3DRot;
+import com.billstark001.riseui.base.nodestate.State3DScl;
+import com.billstark001.riseui.base.nodestate.State3DSimple;
+import com.billstark001.riseui.base.fields.FieldGen3D;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Utils3D;
@@ -123,9 +123,39 @@ public class Test {
 		System.out.println(q3);
 		System.out.println(Quaternion.quatToEuler(q3));
 		
+		/*
+		System.out.println("--- PERF TEST ---");
+		
+		int state_count = 1000;
+		Field<Matrix> sm = s1;
+		Field<Matrix>[] sma = new Field[state_count];
+		ArrayList<Field<Matrix>> sml = new ArrayList<Field<Matrix>>();
+		HashMap<String, Field<Matrix>> smps = new HashMap<String, Field<Matrix>>();
+		HashMap<Integer, Field<Matrix>> smpi = new HashMap<Integer, Field<Matrix>>();
+		for (int i = 0; i < state_count; ++i) {
+			sma[i] = sm;
+			sml.add(sm);
+			smps.put(String.valueOf(i), sm);
+			smpi.put(i, sm);
+		}
 		
 		TickEvent.RenderTickEvent r;
 		RenderSpider s;
+		
+		int test_time = 100000000;
+		start();
+		for (int i = 0; i < test_time; ++i) s1.get(.833);
+		check();
+		for (int i = 0; i < test_time; ++i) sma[i % state_count].get(.833);
+		check();
+		for (int i = 0; i < test_time; ++i) sml.get(i % state_count).get(.833);
+		check();
+		for (int i = 0; i < test_time; ++i) smps.get(String.valueOf(i % state_count)).get(.833);
+		check();
+		for (int i = 0; i < test_time; ++i) smpi.get(i % state_count).get(.833);
+		check();
+		*/
+		
 		
 		/*
 		

@@ -14,17 +14,16 @@ import java.util.Stack;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.billstark001.riseui.base.TagBase.ApplyReturn;
+import com.billstark001.riseui.base.fields.Field;
+import com.billstark001.riseui.base.fields.FieldGen3D;
+import com.billstark001.riseui.base.nodestate.State3DBase;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DPos;
+import com.billstark001.riseui.base.nodestate.State3DRot;
+import com.billstark001.riseui.base.nodestate.State3DSimple;
 import com.billstark001.riseui.base.shading.shader.Shader;
-import com.billstark001.riseui.base.states.StateBase;
-import com.billstark001.riseui.base.states.simple3d.State3DBase;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DPos;
-import com.billstark001.riseui.base.states.simple3d.State3DRot;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.base.states.tracked3d.Track3DBase;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
-import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.Vector;
 import com.billstark001.riseui.core.empty.EmptyNode;
@@ -32,10 +31,10 @@ import com.billstark001.riseui.render.GlHelper;
 
 import scala.actors.threadpool.Arrays;
 
-public abstract class NodeBase extends BaseObject{
+public abstract class NodeBase extends BaseContainer{
 	
-	protected StateBase<Matrix> local_state;
-	protected State3DSimple global_state; 
+	protected Field<Matrix> local_state;
+	protected State3DBase global_state; 
 	// 4*4 homogeneous matrix
 	// V'=V*M
 	// computation order: M=S*R*P
@@ -360,9 +359,9 @@ public abstract class NodeBase extends BaseObject{
 
 	public State3DBase getLocalState() {
 		if (!this.isLocalStateTracked()) return ((State3DBase) this.local_state);
-		else return ((Track3DBase) this.local_state).getSimpleState(this.getFrameTime());
+		else return ((FieldGen3D) this.local_state).getSimpleState(this.getFrameTime());
 	}
-	public StateBase<Matrix> getLocalStateRaw() {
+	public Field<Matrix> getLocalStateRaw() {
 		return this.local_state;
 	}
 	public boolean isLocalStateStandardized() {return (this.local_state instanceof State3DIntegrated);}
@@ -372,7 +371,7 @@ public abstract class NodeBase extends BaseObject{
 		else return null;
 	}
 	
-	public void setLocalState(StateBase<Matrix> state) {
+	public void setLocalState(Field<Matrix> state) {
 		this.local_state = state;
 		markGlobalDirty();
 	}
@@ -386,7 +385,7 @@ public abstract class NodeBase extends BaseObject{
 
 	// Global Info. Getter & Setter
 
-	public State3DSimple getGlobalState() {this.updateGlobalStateCheckDirty(); return this.global_state;}
+	public State3DSimple getGlobalState() {this.updateGlobalStateCheckDirty(); return (State3DSimple) this.global_state;}
 	public State3DSimple getParentGlobalState() {
 		if (this.getParent() == null) return State3DSimple.DEFAULT_STATE;
 		else return this.getParent().getGlobalState();

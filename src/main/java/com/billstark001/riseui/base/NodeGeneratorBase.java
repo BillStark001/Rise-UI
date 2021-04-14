@@ -1,7 +1,7 @@
 package com.billstark001.riseui.base;
 
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DSimple;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;
 import com.billstark001.riseui.computation.Vector;

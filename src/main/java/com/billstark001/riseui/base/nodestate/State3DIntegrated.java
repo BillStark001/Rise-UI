@@ -1,4 +1,4 @@
-package com.billstark001.riseui.base.states.simple3d;
+package com.billstark001.riseui.base.nodestate;
 
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
@@ -10,10 +10,6 @@ public class State3DIntegrated extends State3DSimple{
 	private State3DPos p;
 	private State3DRot r2;
 	private State3DScl s;
-	
-	private Matrix state_cache;
-	
-	private boolean dirty = true;
 	
 	private static final Matrix CALC_BASE = Matrix.I4;
 	
@@ -52,30 +48,30 @@ public class State3DIntegrated extends State3DSimple{
 	
 	public void setPos(Vector pos) {
 		this.p.setStateRepr(pos);
-		dirty = true;
+		this.markDirty();
 	}
 	
 	public void setExtRot(Vector rot) {setExtRot(Quaternion.eulerToQuat(rot));}
 	public void setExtRot(Quaternion rot) {
 		this.r1.setStateRepr(rot);
-		dirty = true;
+		this.markDirty();
 	}
 	
 	public void setRot(Vector rot) {setRot(Quaternion.eulerToQuat(rot));}
 	public void setRot(Quaternion rot) {
 		this.r2.setStateRepr(rot);
-		dirty = true;
+		this.markDirty();
 	}
 	public void setScl(double scl) {setScl(new Vector(scl, scl, scl));}
 	public void setScl(Vector scl) {
 		this.s.setStateRepr(scl);
-		dirty = true;
+		this.markDirty();
 	}
 	public void setAll(Vector pos, Quaternion rot, Vector scl) {
 		this.p.setStateRepr(pos);
 		this.r2.setStateRepr(rot);
 		this.s.setStateRepr(scl);
-		dirty = true;
+		this.markDirty();
 	}
 	
 	public Matrix calcState() {
@@ -86,14 +82,6 @@ public class State3DIntegrated extends State3DSimple{
 			ans = State3DBase.stateCompose(ans, t.get());
 		}
 		return ans;
-	}
-	
-	public Matrix get() {
-		if (dirty) {
-			state_cache = calcState();
-			dirty = false;
-		}
-		return state_cache;
 	}
 	
 	public State3DSimple simplify() {

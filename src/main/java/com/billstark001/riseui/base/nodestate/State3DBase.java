@@ -1,13 +1,30 @@
-package com.billstark001.riseui.base.states.simple3d;
+package com.billstark001.riseui.base.nodestate;
 
-import com.billstark001.riseui.base.states.StateSimpleBase;
+import java.nio.FloatBuffer;
+
+import com.billstark001.riseui.base.fields.FieldSimple;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Pair;
 import com.billstark001.riseui.computation.ShapeMismatchException;
+import com.billstark001.riseui.computation.UtilsLinalg;
 
 import scala.actors.threadpool.Arrays;
 
-public abstract class State3DBase extends StateSimpleBase<Matrix> {
+public abstract class State3DBase extends FieldSimple<Matrix> {
+	
+	private boolean dirty = true;
+	protected void markClean() {this.dirty = false;}
+	public void markDirty() {
+		this.dirty = true;
+		this.state_cache = null;
+		this.buffer_cache = null;
+		this.det_cache = null;
+	}
+	public boolean isDirty() {return this.dirty;}
+	
+	private Matrix state_cache;
+	private FloatBuffer buffer_cache;
+	private Double det_cache = null;
 	
 	protected State3DBase(Matrix mat) {
 		this.set(mat);
@@ -23,7 +40,45 @@ public abstract class State3DBase extends StateSimpleBase<Matrix> {
 			e.printStackTrace();
 			return false;
 		}
+		markDirty();
 		return true;
+	}
+	
+	public abstract Matrix calcState();
+	
+	@Override
+	public Matrix get() {
+		if (this.isDirty() || state_cache == null) {
+			state_cache = calcState();
+			this.markClean();
+		}
+		return state_cache;
+	}
+	
+	public Matrix getRaw() {
+		return super.get();
+	}
+	
+	public FloatBuffer getBuffered() {
+		if (this.isDirty() || buffer_cache == null) {
+			buffer_cache = this.get().storeBufferF().asReadOnlyBuffer();
+		}
+		return buffer_cache;
+	}
+	
+	public double getDeterminant() {
+		if (this.isDirty() || this.det_cache == null) {
+			det_cache = UtilsLinalg.solveDeterminant(this.get());
+		}
+		return det_cache;
+	}
+	
+	public FloatBuffer getBufferedRaw() {
+		return this.get().storeBufferF().asReadOnlyBuffer();
+	}
+	
+	public double getDeterminantRaw() {
+		return UtilsLinalg.solveDeterminant(this.get());
 	}
 
 	protected static Matrix checkState(Matrix mat) throws ShapeMismatchException {
@@ -99,11 +154,6 @@ public abstract class State3DBase extends StateSimpleBase<Matrix> {
 		return String.format("%s<%s>: %s", this.getClass().getSimpleName(), this.getDataType().getSimpleName(), Arrays.deepToString(this.get().toVecArray()));
 		//String str_tmp = "ORIGIN: %s, X: %s, Y: %s, Z: %s";
 		//return String.format(str_tmp, state.getLine(3).get(0, 3).toString(), state.getLine(0).get(0, 3).toString(), state.getLine(1).get(0, 3).toString(), state.getLine(2).get(0, 3).toString());
-	}
-	
-	@Override
-	public Class getDataType() {
-		return Matrix.class;
 	}
 
 }

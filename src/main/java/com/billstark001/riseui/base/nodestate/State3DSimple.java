@@ -1,7 +1,6 @@
-package com.billstark001.riseui.base.states.simple3d;
+package com.billstark001.riseui.base.nodestate;
 
 import com.billstark001.riseui.computation.Matrix;
-import com.billstark001.riseui.computation.ShapeMismatchException;
 import com.billstark001.riseui.computation.Utils3D;
 
 public class State3DSimple extends State3DBase {
@@ -14,6 +13,10 @@ public class State3DSimple extends State3DBase {
 	
 	public State3DIntegrated decomp() {
 		return Utils3D.decompStateMat(get());
+	}
+	@Override
+	public Matrix calcState() {
+		return super.getRaw();
 	}
 
 }

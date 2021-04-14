@@ -1,24 +1,31 @@
 package com.billstark001.riseui.base;
 
-public class BaseObject {
+import java.util.Map;
+
+import com.billstark001.riseui.base.fields.Field;
+
+public class BaseContainer {
 
 	private String name;
 	protected Layer layer;
 	private double frame_time; 
-	private boolean frozen = false;
+	private boolean frozen = false; // for special purpose
+	
 	public boolean isFrozen() {return this.frozen;}
 	
 	public static final String DEFAULT_NAME = "Unnamed";
 	
-	public BaseObject() {this(DEFAULT_NAME, null);}
-	public BaseObject(String name) {this(name, null);}
-	public BaseObject(Layer layer) {this(DEFAULT_NAME, layer);}
-	public BaseObject(String name, Layer layer) {
+	private Map<Integer, Field> storage;
+	
+	public BaseContainer() {this(DEFAULT_NAME, null);}
+	public BaseContainer(String name) {this(name, null);}
+	public BaseContainer(Layer layer) {this(DEFAULT_NAME, layer);}
+	public BaseContainer(String name, Layer layer) {
 		setName(name);
 		setLayer(layer);
 	}
 	
-	protected BaseObject(String name, Layer layer, int mark) {
+	protected BaseContainer(String name, Layer layer, int mark) {
 		this(name, layer);
 		this.frozen = true;
 	}
@@ -29,6 +36,8 @@ public class BaseObject {
 		if (name == null) name = DEFAULT_NAME;
 		this.name = name;
 	}
+	
+	// Layer Operations
 	
 	public Layer getLayer() {return this.layer;}
 	public boolean setLayer(Layer l) {
@@ -45,10 +54,18 @@ public class BaseObject {
 		return this.layer.getState(state);
 	}
 	
+	// Animation Operations
+	
 	public double getFrameTime() {return this.frame_time;}
 	public boolean setFrameTime(double ftime) {
 		this.frame_time = ftime;
 		return true;
+	}
+	
+	// Storage Operations
+	
+	public Class getType(int id) {
+		return null;
 	}
 	
 	public String toString() {

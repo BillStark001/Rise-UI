@@ -8,7 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public abstract class TagBase extends BaseObject {
+public abstract class TagBase extends BaseContainer {
 	protected int hierarchy;
 	protected boolean activated;
 	

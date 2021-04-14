@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.nodestate.State3DBase;
 import com.billstark001.riseui.base.shading.mat.Texture2DBase;
 import com.billstark001.riseui.base.shading.mat.Texture2DFromRes;
 import com.billstark001.riseui.computation.Matrix;
@@ -256,16 +257,16 @@ public final class GlHelper {
 		endDrawing();
 	}
 	
-	public boolean needReverseNormal(Matrix state) {
-		return UtilsLinalg.solveDeterminant(state) <= 0;
+	public boolean needReverseNormal(State3DBase state) {
+		return state.getDeterminant() <= 0;
 	}
 
 	public void renderObjectLocal(NodeBase obj, double ptick, boolean reverse_normal) {
 		if (obj == null) return;
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		GlStateManager.multMatrix(obj.getLocalState().get().storeBufferF());
-		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState().get());
+		GlStateManager.multMatrix(obj.getLocalState().getBuffered());
+		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState());
 		for (NodeBase o: obj.getChildren()) renderObjectLocal(o, ptick, reverse_normal);
 		obj.render(ptick, reverse_normal);
 		GlStateManager.popMatrix();
@@ -275,8 +276,8 @@ public final class GlHelper {
 		if (obj == null) return;
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		GlStateManager.multMatrix(obj.getLocalState().get().storeBufferF());
-		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState().get());
+		GlStateManager.multMatrix(obj.getLocalState().getBuffered());
+		reverse_normal = reverse_normal ^ needReverseNormal(obj.getLocalState());
 		for (NodeBase o: obj.getChildren()) renderObjectDebugLocal(o, ptick, reverse_normal);
 		obj.renderDebug(ptick);
 		GlStateManager.popMatrix();
@@ -286,9 +287,9 @@ public final class GlHelper {
 		if (obj == null) return;
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		GlStateManager.multMatrix(obj.getParentGlobalState().get().storeBufferF());
-		renderObjectLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState().get()));
-		if (this.isDebugging()) renderObjectDebugLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState().get()));
+		GlStateManager.multMatrix(obj.getParentGlobalState().getBuffered());
+		renderObjectLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState()));
+		if (this.isDebugging()) renderObjectDebugLocal(obj, ptick, needReverseNormal(obj.getParentGlobalState()));
 		GlStateManager.popMatrix();
 	}
 
@@ -300,9 +301,9 @@ public final class GlHelper {
 		
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		Matrix render_matrix = obj.getGlobalState().get();
-		GlStateManager.multMatrix(render_matrix.storeBufferF());
-		obj.render(ptick, needReverseNormal(render_matrix));
+		FloatBuffer render_matrix = obj.getGlobalState().getBuffered();
+		GlStateManager.multMatrix(render_matrix);
+		obj.render(ptick, needReverseNormal(obj.getGlobalState()));
 		GlStateManager.popMatrix();
 		
 	}
@@ -314,8 +315,8 @@ public final class GlHelper {
 		
 		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		GlStateManager.pushMatrix();
-		Matrix render_matrix = obj.getGlobalState().get();
-		GlStateManager.multMatrix(render_matrix.storeBufferF());
+		FloatBuffer render_matrix = obj.getGlobalState().getBuffered();
+		GlStateManager.multMatrix(render_matrix);
 		obj.renderDebug(ptick);
 		GlStateManager.popMatrix();
 		

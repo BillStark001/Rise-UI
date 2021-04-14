@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.xml.sax.SAXException;
 
 import com.billstark001.riseui.base.NodeBase;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
 import com.billstark001.riseui.base.shading.mat.MaterialEdgeSimple;
 import com.billstark001.riseui.base.shading.mat.MaterialFace;
 import com.billstark001.riseui.base.shading.mat.MaterialVertSimple;
@@ -18,7 +19,6 @@ import com.billstark001.riseui.base.shading.mat.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shading.mat.TagApplyMaterialVert;
 import com.billstark001.riseui.base.shading.mat.Texture2DGrayGen;
 import com.billstark001.riseui.base.shading.shader.Shader;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
 import com.billstark001.riseui.computation.ColorGradient;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.UtilsInteract;
@@ -60,7 +60,7 @@ public class RenderTestObject{
 
 	public static void prepareRender() {
 
-		glhelper.setDebugState(true);
+		glhelper.setDebugState(false);
 
 		res.loadRes(lobj);
 		res.loadRes(lmtl);
@@ -135,13 +135,17 @@ public class RenderTestObject{
 		double cur_time = ((tend - tstart) / 1000.) % anim_cycle;
 		//System.out.println(cur_time);
 		
-		glhelper.setDebugState(true);
+		glhelper.setDebugState(false);
 
 		horse.setLocalState(new State3DIntegrated(new Vector(0, cur_time, 0)));
 		spider.setChildrenFrameTime(cur_time);
 		
-		glhelper.renderObject(horse, delta);
-		glhelper.renderObject(spider, delta);
+		
+		for (int i = 0; i < 100; ++i) {
+			glhelper.renderObject(horse, delta);
+			glhelper.renderObject(spider, delta);
+		}
+		
 
 		/*
 		if (DevelopProxy.mark1 == 1)

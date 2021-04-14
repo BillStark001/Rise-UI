@@ -1,30 +1,36 @@
-package com.billstark001.riseui.base.states.tracked3d;
+package com.billstark001.riseui.base.fields;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.billstark001.riseui.base.states.simple3d.State3DBase;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
-import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Utils3D;
+import com.billstark001.riseui.computation.Vector;
 
-public class Track3DSimple extends Track3DBase {
+public class FieldFramedDouble extends FieldFramed<Double> {
 
-	public static double DEFAULT_INTERVAL = 1 / 60;
-	
 	public static class KeyFrame implements Comparable<KeyFrame> {
 		public double time;
-		public Matrix val;
+		public double val;
+		public Interpolation interp;
+		public Vector tanIn;
+		public Vector tanOut;
 		
-		public KeyFrame(double time, Matrix val) {
+		public KeyFrame(double time, double val, Interpolation interp, Vector tanIn, Vector tanOut) {
 			this.time = time;
 			this.val = val;
+			this.interp = interp;
+			this.tanIn = tanIn;
+			this.tanOut = tanOut;
 		}
 		
 		public KeyFrame(KeyFrame f) {
 			this.time = f.time;
 			this.val = f.val;
+			this.interp = f.interp;
+			this.tanIn = f.tanIn;
+			this.tanOut = f.tanOut;
 		}
+		
+		public KeyFrame(double time, double val) {this(time, val, Interpolation.LINEAR, Vector.UNIT0_D2, Vector.UNIT0_D2);}
 		
 		@Override
 		public int compareTo(KeyFrame o) {
@@ -32,18 +38,25 @@ public class Track3DSimple extends Track3DBase {
 			else if (this.time < o.time) return -1;
 			else return 0;
 	    }
+		
+		@Override
+		public String toString() {
+			String template = "F(%s INTERP, T=%g, VAL=%g, TAN=%s, %s)";
+			return String.format(template, this.interp, this.time, this.val, this.tanIn, this.tanOut);
+		}
 	
 	}
 	
-	private boolean linear = false;
-	public void setLinearInterp(boolean val) {this.linear = val;}
-	public boolean isLinearInterp() {return this.linear;}
-	public void setLinearInterp() {this.linear = true;}
-	public void setStepInterp() {this.linear = false;}
+	public static enum Interpolation {
+		STEP,
+		LINEAR,
+		BEZIER3;
+	}
 	
 	private final KeyFrame[] frames;
 	
-	public Track3DSimple(KeyFrame[] framesIn) {
+	public FieldFramedDouble(KeyFrame[] framesIn) {
+		super(0.);
 		int fc = framesIn.length;
 		KeyFrame[] frames = new KeyFrame[fc];
 		for (int i = 0; i < fc; ++i) {
@@ -53,7 +66,24 @@ public class Track3DSimple extends Track3DBase {
 		this.frames = frames;
 	}
 	
-	public Track3DSimple(double[] times, Matrix[] vals) {
+	public FieldFramedDouble(double[] times, Double[] t_val, Interpolation[] interps, Vector[] tanIn, Vector[] tanOut) {
+		super(0.);
+		int fc = 2147483647;
+		fc = Math.min(fc, times.length);
+		fc = Math.min(fc, t_val.length);
+		fc = Math.min(fc, interps.length);
+		fc = Math.min(fc, tanIn.length);
+		fc = Math.min(fc, tanOut.length);
+		KeyFrame[] frames = new KeyFrame[fc];
+		for (int i = 0; i < fc; ++i) {
+			frames[i] = new KeyFrame(times[i], t_val[i], interps[i], tanIn[i], tanOut[i]);
+		}
+		Arrays.sort(frames);
+		this.frames = frames;
+	}
+	
+	public FieldFramedDouble(double[] times, double[] vals) {
+		super(0.);
 		int fc = 2147483647;
 		fc = Math.min(fc, times.length);
 		fc = Math.min(fc, vals.length);
@@ -65,29 +95,11 @@ public class Track3DSimple extends Track3DBase {
 		this.frames = frames;
 	}
 	
-	public Track3DSimple(ArrayList<KeyFrame> framesIn) {
-		int fc = framesIn.size();
-		KeyFrame[] frames = new KeyFrame[fc];
-		for (int i = 0; i < fc; ++i) {
-			frames[i] = new KeyFrame(framesIn.get(i));
-		}
-		Arrays.sort(frames);
+	public FieldFramedDouble(double vals) {
+		super(0.);
+		KeyFrame[] frames = new KeyFrame[1];
+		frames[0] = new KeyFrame(0, vals);
 		this.frames = frames;
-	}
-	
-	public static Track3DSimple render(Track3DBase track) {return render(track, track.getStartTime(), track.getEndTime(), DEFAULT_INTERVAL);}
-	public static Track3DSimple render(Track3DBase track, double tinterval) {return render(track, track.getStartTime(), track.getEndTime(), tinterval);}
-	public static Track3DSimple render(Track3DBase track, double tstart, double tend) {return render(track, tstart, tend, DEFAULT_INTERVAL);}
-	public static Track3DSimple render(Track3DBase track, double tstart, double tend, int fps) {return render(track, tstart, tend, 1 / fps);}
-	public static Track3DSimple render(Track3DBase track, double tstart, double tend, double tinterval) {
-		if (track == null) return null;
-		if (tstart > tend || tinterval <= 0) return null;
-		ArrayList<KeyFrame> frames = new ArrayList<KeyFrame>();
-		for (double time = tstart; time <= tend; time += tinterval) {
-			KeyFrame ft = new KeyFrame(time, track.get(time));
-			frames.add(ft);
-		}
-		return new Track3DSimple(frames);
 	}
 	
 	@Override
@@ -118,21 +130,27 @@ public class Track3DSimple extends Track3DBase {
 	}
 
 	@Override
-	public Matrix get(double time) {
+	public Double get(double time) {
 		int index = this.findIndexByTime(time);
 		if (index == -1) return this.frames[0].val;
 		if (index == -2 || index >= this.frames.length - 1) return this.frames[this.frames.length - 1].val;
 		else {
 			KeyFrame f0 = this.frames[index];
 			KeyFrame f1 = this.frames[index + 1];
-			double interp_t = (time = f0.time) / (f1.time - f0.time);
-			if (this.isLinearInterp())
-				return Utils3D.linear(interp_t, f0.val, f1.val);
+			double interp_t = (time - f0.time) / (f1.time - f0.time);
+			Vector p0 = new Vector(f0.time, f0.val);
+			Vector p1 = f0.tanOut;
+			Vector p2 = f1.tanIn;
+			Vector p3 = new Vector(f1.time, f1.val);
+			if (f0.interp.equals(Interpolation.BEZIER3))
+				return Utils3D.bezier3(interp_t, p0, p1, p2, p3).get(1);
+			else if (f0.interp.equals(Interpolation.LINEAR))
+				return Utils3D.linear(interp_t, p0, p3).get(1);
 			else
 				return f0.val;
 		}
 	}
-	
+
 	@Override
 	public double getStartTime() {
 		if (!this.containsFrames()) return 0;
@@ -144,10 +162,11 @@ public class Track3DSimple extends Track3DBase {
 		if (!this.containsFrames()) return 0;
 		else return this.frames[this.frames.length - 1].time;
 	}
-	
+
 	@Override
-	public State3DBase getSimpleState(double time) {
-		return new State3DSimple(this.get(time));
+	public Class getDataType() {
+		return Double.class;
 	}
+	
 
 }

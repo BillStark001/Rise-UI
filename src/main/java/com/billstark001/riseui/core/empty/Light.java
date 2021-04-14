@@ -3,8 +3,8 @@ package com.billstark001.riseui.core.empty;
 import java.util.Arrays;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DSimple;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Triad;

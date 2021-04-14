@@ -1,31 +1,25 @@
-package com.billstark001.riseui.base.states.tracked3d;
+package com.billstark001.riseui.base.fields;
 
-import com.billstark001.riseui.base.states.simple3d.State3DBase;
-import com.billstark001.riseui.base.states.simple3d.State3DIntegrated;
-import com.billstark001.riseui.base.states.simple3d.State3DPos;
-import com.billstark001.riseui.base.states.simple3d.State3DRot;
-import com.billstark001.riseui.base.states.simple3d.State3DScl;
-import com.billstark001.riseui.base.states.simple3d.State3DSimple;
+import com.billstark001.riseui.base.nodestate.State3DBase;
+import com.billstark001.riseui.base.nodestate.State3DIntegrated;
+import com.billstark001.riseui.base.nodestate.State3DSimple;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Vector;
 
-public class Track3DIntegrated extends Track3DBase {
+public class FieldGen3D extends Field<Matrix> {
 
 	public static final Matrix DEFAULT_MAT = Matrix.I4;
-	public final Track3DRot r1, r2;
-	public final Track3DPos p;
-	public final Track3DScl s;
+	public final FieldGenSimple<Matrix, ?> r1, s, r2, p;
 	
-	public Track3DIntegrated(Track3DRot r1, Track3DScl s, Track3DRot r2, Track3DPos p) {
+	public FieldGen3D(FieldGenSimple<Matrix, ?> r1, FieldGenSimple<Matrix, ?> s, FieldGenSimple<Matrix, ?> r2, FieldGenSimple<Matrix, ?> p) {
 		this.r1 = r1;
 		this.s = s;
 		this.r2 = r2;
 		this.p = p;
 	}
 	
-	public Track3DIntegrated(Track3DPos p, Track3DRot r, Track3DScl s) {this(null, s, r, p);}
-	public Track3DIntegrated(Track3DScl s, Track3DRot r, Track3DPos p) {this(null, s, r, p);}
+	public FieldGen3D(FieldGenSimple<Matrix, ?> p, FieldGenSimple<Matrix, ?> r, FieldGenSimple<Matrix, ?> s) {this(null, s, r, p);}
 	
 	@Override
 	public Matrix get(double time) {
@@ -69,20 +63,24 @@ public class Track3DIntegrated extends Track3DBase {
 		return ans;
 	}
 	
-	@Override
 	public State3DBase getSimpleState(double time) {
 		if (r1 != null) return new State3DSimple(this.get(time));
 		else {
 			Vector sp = Vector.UNIT0_D3;
 			Quaternion sr = Quaternion.UNIT;
 			Vector ss = Vector.UNIT1_D3;
-			if (s != null) ss = s.getStateRepr(time);
+			if (s != null && s.getSource().getDataType() == Vector.class) ss = (Vector) s.getSource(time);
 			if (r2 != null) {
-				if (r2 instanceof Track3DRotEuler) sr = Quaternion.eulerToQuat(((Track3DRotEuler) r2).getStateRepr(time));
+				if (r2.getGenerator() == FieldUtils.GEN_ROT) sr = Quaternion.eulerToQuat((Vector) r2.getSource(time));
 			}
-			if (p != null) sp = p.getStateRepr(time);
+			if (p != null && s.getSource().getDataType() == Vector.class) sp = (Vector) p.getSource(time);
 			return new State3DIntegrated(sp, sr, ss);
 		}
+	}
+
+	@Override
+	public Class getDataType() {
+		return Matrix.class;
 	}
 
 }

@@ -19,10 +19,12 @@ public final class Vector {
 	public static final Vector UNIT1_D3 = new Vector(1, 1, 1);
 	public static final Vector UNIT1_D4 = new Vector(1, 4, true);
 	
+	public static final Vector ORTHO_X2 = new Vector(1, 0);
 	public static final Vector ORTHO_X3 = new Vector(1, 0, 0);
 	public static final Vector ORTHO_X40 = new Vector(1, 0, 0, 0);
 	public static final Vector ORTHO_X41 = new Vector(1, 0, 0, 1);
 	
+	public static final Vector ORTHO_Y2 = new Vector(0, 1);
 	public static final Vector ORTHO_Y3 = new Vector(0, 1, 0);
 	public static final Vector ORTHO_Y40 = new Vector(0, 1, 0, 0);
 	public static final Vector ORTHO_Y41 = new Vector(0, 1, 0, 1);
