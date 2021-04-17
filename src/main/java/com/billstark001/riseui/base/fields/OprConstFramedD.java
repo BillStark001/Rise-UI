@@ -5,7 +5,7 @@ import java.util.Arrays;
 import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.Vector;
 
-public class FieldFramedDouble extends FieldFramed<Double> {
+public class OprConstFramedD extends OprConstFramed<Double> {
 
 	public static class KeyFrame implements Comparable<KeyFrame> {
 		public double time;
@@ -55,7 +55,7 @@ public class FieldFramedDouble extends FieldFramed<Double> {
 	
 	private final KeyFrame[] frames;
 	
-	public FieldFramedDouble(KeyFrame[] framesIn) {
+	public OprConstFramedD(KeyFrame[] framesIn) {
 		super(0.);
 		int fc = framesIn.length;
 		KeyFrame[] frames = new KeyFrame[fc];
@@ -66,7 +66,7 @@ public class FieldFramedDouble extends FieldFramed<Double> {
 		this.frames = frames;
 	}
 	
-	public FieldFramedDouble(double[] times, Double[] t_val, Interpolation[] interps, Vector[] tanIn, Vector[] tanOut) {
+	public OprConstFramedD(double[] times, Double[] t_val, Interpolation[] interps, Vector[] tanIn, Vector[] tanOut) {
 		super(0.);
 		int fc = 2147483647;
 		fc = Math.min(fc, times.length);
@@ -82,7 +82,7 @@ public class FieldFramedDouble extends FieldFramed<Double> {
 		this.frames = frames;
 	}
 	
-	public FieldFramedDouble(double[] times, double[] vals) {
+	public OprConstFramedD(double[] times, double[] vals) {
 		super(0.);
 		int fc = 2147483647;
 		fc = Math.min(fc, times.length);
@@ -95,7 +95,7 @@ public class FieldFramedDouble extends FieldFramed<Double> {
 		this.frames = frames;
 	}
 	
-	public FieldFramedDouble(double vals) {
+	public OprConstFramedD(double vals) {
 		super(0.);
 		KeyFrame[] frames = new KeyFrame[1];
 		frames[0] = new KeyFrame(0, vals);

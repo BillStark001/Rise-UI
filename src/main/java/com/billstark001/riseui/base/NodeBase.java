@@ -14,8 +14,8 @@ import java.util.Stack;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.billstark001.riseui.base.TagBase.ApplyReturn;
-import com.billstark001.riseui.base.fields.Field;
-import com.billstark001.riseui.base.fields.FieldGen3D;
+import com.billstark001.riseui.base.fields.Operator;
+import com.billstark001.riseui.base.fields.OprGen3D;
 import com.billstark001.riseui.base.nodestate.State3DBase;
 import com.billstark001.riseui.base.nodestate.State3DIntegrated;
 import com.billstark001.riseui.base.nodestate.State3DPos;
@@ -33,7 +33,7 @@ import scala.actors.threadpool.Arrays;
 
 public abstract class NodeBase extends BaseContainer{
 	
-	protected Field<Matrix> local_state;
+	protected Operator<Matrix> local_state;
 	protected State3DBase global_state; 
 	// 4*4 homogeneous matrix
 	// V'=V*M
@@ -332,7 +332,10 @@ public abstract class NodeBase extends BaseContainer{
 	 * Called while a new global state was assigned.
 	 * S_L = S_G * S_PG^-1
 	 */
-	protected void updateLocalState() {this.updateLocalStateWithoutTag(); this.applyTags(TagBase.TAG_PHRASE_LOCAL_UPDATE);}
+	protected void updateLocalState() {
+		this.updateLocalStateWithoutTag(); 
+		//this.applyTags(TagBase.TAG_PHRASE_LOCAL_UPDATE);
+	}
 	protected void updateLocalStateWithoutTag() {
 		State3DSimple A = this.getParentGlobalState();
 		State3DSimple C = this.getGlobalState();
@@ -342,7 +345,10 @@ public abstract class NodeBase extends BaseContainer{
 	
 	protected void updateGlobalStateCheckDirty() {if (isGlobalDirty()) updateGlobalState();}
 	protected void updateGlobalStateCheckDirtyWithoutTag() {if (isGlobalDirty()) updateGlobalStateWithoutTag();}
-	protected void updateGlobalState() {this.updateGlobalStateWithoutTag(); this.applyTags(TagBase.TAG_PHRASE_GLOBAL_UPDATE);}
+	protected void updateGlobalState() {
+		this.updateGlobalStateWithoutTag(); 
+		//this.applyTags(TagBase.TAG_PHRASE_GLOBAL_UPDATE);
+	}
 	protected void updateGlobalStateWithoutTag() {
 		NodeBase parent = new EmptyNode();
 		if (this.parent != null) {
@@ -359,9 +365,9 @@ public abstract class NodeBase extends BaseContainer{
 
 	public State3DBase getLocalState() {
 		if (!this.isLocalStateTracked()) return ((State3DBase) this.local_state);
-		else return ((FieldGen3D) this.local_state).getSimpleState(this.getFrameTime());
+		else return ((OprGen3D) this.local_state).getSimpleState(this.getFrameTime());
 	}
-	public Field<Matrix> getLocalStateRaw() {
+	public Operator<Matrix> getLocalStateRaw() {
 		return this.local_state;
 	}
 	public boolean isLocalStateStandardized() {return (this.local_state instanceof State3DIntegrated);}
@@ -371,7 +377,7 @@ public abstract class NodeBase extends BaseContainer{
 		else return null;
 	}
 	
-	public void setLocalState(Field<Matrix> state) {
+	public void setLocalState(Operator<Matrix> state) {
 		this.local_state = state;
 		markGlobalDirty();
 	}

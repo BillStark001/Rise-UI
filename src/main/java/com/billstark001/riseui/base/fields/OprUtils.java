@@ -1,6 +1,6 @@
 package com.billstark001.riseui.base.fields;
 
-import com.billstark001.riseui.base.fields.FieldGenSimple.Generator;
+import com.billstark001.riseui.base.fields.OprFuncSimple.Generator;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Utils3D;
 import com.billstark001.riseui.computation.Vector;
@@ -8,7 +8,7 @@ import com.sun.jna.platform.win32.WinBase.SYSTEM_INFO.PI;
 
 import scala.tools.nsc.doc.model.ModelFactory.PackageImpl;
 
-public class FieldUtils {
+public class OprUtils {
 
 	public static class KeyFrame<T> implements Comparable<KeyFrame<T>> {
 		public double time;
@@ -93,7 +93,7 @@ public class FieldUtils {
 	public static final Generator<Matrix, Vector> GEN_SCL = Utils3D::sclToHomoState;
 	
 	public static Vector rotZoom(Vector rot) {return rot.mult(Math.PI / 180);}
-	public static final Generator<Vector, Vector> GEN_ROTZOOM = FieldUtils::rotZoom;
+	public static final Generator<Vector, Vector> GEN_ROTZOOM = OprUtils::rotZoom;
 	
 	//public static FieldGenSingle<Vector, Vector> zoom(Field<Vector> f, double factor) {
 	//	Vector zm(Vector v) {return v.mult(factor);}

@@ -1,8 +1,8 @@
 package com.billstark001.riseui.base;
 
-import java.util.Map;
-
 import com.billstark001.riseui.base.fields.Field;
+
+import it.unimi.dsi.fastutil.Arrays;
 
 public class BaseContainer {
 
@@ -14,8 +14,6 @@ public class BaseContainer {
 	public boolean isFrozen() {return this.frozen;}
 	
 	public static final String DEFAULT_NAME = "Unnamed";
-	
-	private Map<Integer, Field> storage;
 	
 	public BaseContainer() {this(DEFAULT_NAME, null);}
 	public BaseContainer(String name) {this(name, null);}
@@ -55,6 +53,7 @@ public class BaseContainer {
 	}
 	
 	// Animation Operations
+	// TODO REMOVE IT!!! REFORM IT TO OPERATORS!!!
 	
 	public double getFrameTime() {return this.frame_time;}
 	public boolean setFrameTime(double ftime) {
@@ -62,11 +61,18 @@ public class BaseContainer {
 		return true;
 	}
 	
-	// Storage Operations
+	// Field Operations
 	
-	public Class getType(int id) {
-		return null;
+	public void reflect() {
+		System.out.println("REFLECT " + this.getClass().toString());
+		java.lang.reflect.Field[] fields = this.getClass().getFields();
+		// System.out.println(java.util.Arrays.deepToString(fields));
+		for (int i = 0; i < fields.length; ++i) {
+			System.out.println(fields[i]);
+		}
 	}
+	
+	// toString()
 	
 	public String toString() {
 		return String.format("%s %s(Layer %s, Frame %f)", this.getClass().getSimpleName(), this.getName(), this.getLayer(), this.getFrameTime());

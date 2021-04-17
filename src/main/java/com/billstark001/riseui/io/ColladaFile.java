@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.fields.Field;
-import com.billstark001.riseui.base.fields.FieldFramed;
-import com.billstark001.riseui.base.fields.FieldGenSimple;
-import com.billstark001.riseui.base.fields.FieldGenVec3;
-import com.billstark001.riseui.base.fields.FieldUtils;
+import com.billstark001.riseui.base.fields.Operator;
+import com.billstark001.riseui.base.fields.OprConstFramed;
+import com.billstark001.riseui.base.fields.OprFuncSimple;
+import com.billstark001.riseui.base.fields.OprGenVec3;
+import com.billstark001.riseui.base.fields.OprUtils;
 import com.billstark001.riseui.base.nodestate.State3DIntegrated;
-import com.billstark001.riseui.base.fields.FieldGen3D;
+import com.billstark001.riseui.base.fields.OprGen3D;
 import com.billstark001.riseui.base.shading.mat.MaterialFace;
 import com.billstark001.riseui.base.shading.mat.TagApplyMaterialFace;
 import com.billstark001.riseui.base.shading.mat.TagSelectionHardTable;
@@ -72,7 +72,7 @@ public class ColladaFile {
 	private Map<String, NodeBase> parsed = new HashMap<String, NodeBase>();
 	
 	private Map<Integer, HashMap<String, Integer>> target_channel_sampler = new HashMap<Integer, HashMap<String, Integer>>();
-	private Map<Integer, FieldFramed<Double>> sampler_tracks = new HashMap<Integer, FieldFramed<Double>>();
+	private Map<Integer, OprConstFramed<Double>> sampler_tracks = new HashMap<Integer, OprConstFramed<Double>>();
 	
 	public NodeBase getNodeByName(String name) {
 		if (name == null) return null;
@@ -142,7 +142,7 @@ public class ColladaFile {
 				int[] t_interp = null;
 				Vector[] t_tanin = null, t_tanout = null;
 				
-				FieldUtils.Interpolation<Double>[] t_ip = null;
+				OprUtils.Interpolation<Double>[] t_ip = null;
 				for (Source s: src_list) {
 					Accessor acc = s.getAccessor();
 					
@@ -199,14 +199,14 @@ public class ColladaFile {
 					}
 				}
 				
-				t_ip = new FieldUtils.Interpolation[t_interp.length];
+				t_ip = new OprUtils.Interpolation[t_interp.length];
 				for (int i = 0; i < t_interp.length; ++i) {
 					if (t_interp[i] == 2) {
-						t_ip[i] = new FieldUtils.Bezier3D(t_tanin[i], t_tanout[i]); 
+						t_ip[i] = new OprUtils.Bezier3D(t_tanin[i], t_tanout[i]); 
 					} else if (t_interp[i] == 1) {
-						t_ip[i] = new FieldUtils.LinearD();
+						t_ip[i] = new OprUtils.LinearD();
 					} else {
-						t_ip[i] = new FieldUtils.Step<Double>(); 
+						t_ip[i] = new OprUtils.Step<Double>(); 
 					}
 				}
 				/*
@@ -222,7 +222,7 @@ public class ColladaFile {
 				}
 				*/
 				//FieldFramedDouble std_tmp = new FieldFramedDouble(t_time, t_val, ti, t_tanin, t_tanout);
-				FieldFramed<Double> std_tmp = new FieldFramed<Double>(t_time, t_val, t_ip);
+				OprConstFramed<Double> std_tmp = new OprConstFramed<Double>(t_time, t_val, t_ip);
 				sampler_tracks.put(smpl.getId(), std_tmp);
 				
 			}
@@ -371,48 +371,48 @@ public class ColladaFile {
 		return ans;
 	}
 	
-	public FieldGen3D parseStateTrack(double[] static_state, int id) {
+	public OprGen3D parseStateTrack(double[] static_state, int id) {
 		HashMap<String, Integer> map_channel_sampler = target_channel_sampler.get(id);
 		if (map_channel_sampler == null) return null;
 		else {
-			FieldGenVec3 p = new FieldGenVec3();
-			FieldGenVec3 r = new FieldGenVec3();
-			FieldGenVec3 s = new FieldGenVec3();
-			FieldFramed<Double> std_tmp = null;
+			OprGenVec3 p = new OprGenVec3();
+			OprGenVec3 r = new OprGenVec3();
+			OprGenVec3 s = new OprGenVec3();
+			OprConstFramed<Double> std_tmp = null;
 			
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.X", 0));
-			if (std_tmp != null) p.setX(std_tmp); else p.setX(new FieldFramed<Double>(static_state[0]));
+			if (std_tmp != null) p.setX(std_tmp); else p.setX(new OprConstFramed<Double>(static_state[0]));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.Y", 0));
-			if (std_tmp != null) p.setY(std_tmp); else p.setY(new FieldFramed<Double>(static_state[1]));
+			if (std_tmp != null) p.setY(std_tmp); else p.setY(new OprConstFramed<Double>(static_state[1]));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("translate.Z", 0));
-			if (std_tmp != null) p.setZ(std_tmp); else p.setZ(new FieldFramed<Double>(static_state[2]));
+			if (std_tmp != null) p.setZ(std_tmp); else p.setZ(new OprConstFramed<Double>(static_state[2]));
 		
 			double mult_fac = 1;//Math.PI / 180;
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateX.ANGLE", 0));
-			if (std_tmp != null) r.setX(std_tmp); else r.setX(new FieldFramed<Double>(static_state[3] * mult_fac));
+			if (std_tmp != null) r.setX(std_tmp); else r.setX(new OprConstFramed<Double>(static_state[3] * mult_fac));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateY.ANGLE", 0));
-			if (std_tmp != null) r.setY(std_tmp); else r.setY(new FieldFramed<Double>(static_state[4] * mult_fac));
+			if (std_tmp != null) r.setY(std_tmp); else r.setY(new OprConstFramed<Double>(static_state[4] * mult_fac));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("rotateZ.ANGLE", 0));
-			if (std_tmp != null) r.setZ(std_tmp); else r.setZ(new FieldFramed<Double>(static_state[5] * mult_fac));
+			if (std_tmp != null) r.setZ(std_tmp); else r.setZ(new OprConstFramed<Double>(static_state[5] * mult_fac));
 			
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.X", 0));
-			if (std_tmp != null) s.setX(std_tmp); else s.setX(new FieldFramed<Double>(static_state[6]));
+			if (std_tmp != null) s.setX(std_tmp); else s.setX(new OprConstFramed<Double>(static_state[6]));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.Y", 0));
-			if (std_tmp != null) s.setY(std_tmp); else s.setY(new FieldFramed<Double>(static_state[7]));
+			if (std_tmp != null) s.setY(std_tmp); else s.setY(new OprConstFramed<Double>(static_state[7]));
 			std_tmp = sampler_tracks.get(map_channel_sampler.getOrDefault("scale.Z", 0));
-			if (std_tmp != null) s.setZ(std_tmp); else s.setZ(new FieldFramed<Double>(static_state[8]));
+			if (std_tmp != null) s.setZ(std_tmp); else s.setZ(new OprConstFramed<Double>(static_state[8]));
 			
 			//return new Track3DIntegrated(
 			//		new Track3DPos(p), 
 			//		new Track3DRotEuler(r), 
 			//		new Track3DScl(s)
 			//		);
-			Field<Vector> rr = new FieldGenSimple<Vector, Vector>(r, FieldUtils.GEN_ROTZOOM);
-			return new FieldGen3D(
-					new FieldGenSimple<Matrix, Vector>(p, FieldUtils.GEN_POS), 
+			Operator<Vector> rr = new OprFuncSimple<Vector, Vector>(r, OprUtils.GEN_ROTZOOM);
+			return new OprGen3D(
+					new OprFuncSimple<Matrix, Vector>(p, OprUtils.GEN_POS), 
 					//new Track3DRotEuler(r), 
-					new FieldGenSimple<Matrix, Vector>(rr, FieldUtils.GEN_ROT), 
-					new FieldGenSimple<Matrix, Vector>(s, FieldUtils.GEN_SCL)
+					new OprFuncSimple<Matrix, Vector>(rr, OprUtils.GEN_ROT), 
+					new OprFuncSimple<Matrix, Vector>(s, OprUtils.GEN_SCL)
 					);
 			 
 		}
@@ -421,7 +421,7 @@ public class ColladaFile {
 	public NodeBase parseNode(Node n) {
 		//System.out.println(n);
 		State3DIntegrated c = parseState(n.getXforms());
-		FieldGen3D t = parseStateTrack(parseStateToArray(n.getXforms()), n.getId());
+		OprGen3D t = parseStateTrack(parseStateToArray(n.getXforms()), n.getId());
 		NodeBase ans = null;
 		if (n.isJoint()) ans = new Joint(c, n.getName());
 		else if (n.getInstanceGeometry() != null && n.getInstanceGeometry().size() > 0) {

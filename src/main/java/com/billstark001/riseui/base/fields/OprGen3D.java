@@ -7,19 +7,19 @@ import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Vector;
 
-public class FieldGen3D extends Field<Matrix> {
+public class OprGen3D extends Operator<Matrix> {
 
 	public static final Matrix DEFAULT_MAT = Matrix.I4;
-	public final FieldGenSimple<Matrix, ?> r1, s, r2, p;
+	public final OprFuncSimple<Matrix, ?> r1, s, r2, p;
 	
-	public FieldGen3D(FieldGenSimple<Matrix, ?> r1, FieldGenSimple<Matrix, ?> s, FieldGenSimple<Matrix, ?> r2, FieldGenSimple<Matrix, ?> p) {
+	public OprGen3D(OprFuncSimple<Matrix, ?> r1, OprFuncSimple<Matrix, ?> s, OprFuncSimple<Matrix, ?> r2, OprFuncSimple<Matrix, ?> p) {
 		this.r1 = r1;
 		this.s = s;
 		this.r2 = r2;
 		this.p = p;
 	}
 	
-	public FieldGen3D(FieldGenSimple<Matrix, ?> p, FieldGenSimple<Matrix, ?> r, FieldGenSimple<Matrix, ?> s) {this(null, s, r, p);}
+	public OprGen3D(OprFuncSimple<Matrix, ?> p, OprFuncSimple<Matrix, ?> r, OprFuncSimple<Matrix, ?> s) {this(null, s, r, p);}
 	
 	@Override
 	public Matrix get(double time) {
@@ -69,17 +69,17 @@ public class FieldGen3D extends Field<Matrix> {
 			Vector sp = Vector.UNIT0_D3;
 			Quaternion sr = Quaternion.UNIT;
 			Vector ss = Vector.UNIT1_D3;
-			if (s != null && s.getSource().getDataType() == Vector.class) ss = (Vector) s.getSource(time);
+			if (s != null && s.getSource().getDataType() == Vector.class) ss = (Vector) s.getSource().get(time);
 			if (r2 != null) {
-				if (r2.getGenerator() == FieldUtils.GEN_ROT) sr = Quaternion.eulerToQuat((Vector) r2.getSource(time));
+				if (r2.getGenerator() == OprUtils.GEN_ROT) sr = Quaternion.eulerToQuat((Vector) r2.getSource().get(time));
 			}
-			if (p != null && s.getSource().getDataType() == Vector.class) sp = (Vector) p.getSource(time);
+			if (p != null && s.getSource().getDataType() == Vector.class) sp = (Vector) p.getSource().get(time);
 			return new State3DIntegrated(sp, sr, ss);
 		}
 	}
 
 	@Override
-	public Class getDataType() {
+	public Class<Matrix> getDataType() {
 		return Matrix.class;
 	}
 

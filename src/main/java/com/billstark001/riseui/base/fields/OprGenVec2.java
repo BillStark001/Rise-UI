@@ -2,22 +2,22 @@ package com.billstark001.riseui.base.fields;
 
 import com.billstark001.riseui.computation.Vector;
 
-public class FieldGenVec2 extends Field<Vector> {
+public class OprGenVec2 extends Operator<Vector> {
 
-	private FieldFramed<Double> x;
-	private FieldFramed<Double> y;
+	private OprConstFramed<Double> x;
+	private OprConstFramed<Double> y;
 	
-	public FieldFramed<Double> getX() {return x;}
-	public void setX(FieldFramed<Double> x) {this.x = x;}
-	public FieldFramed<Double> getY() {return y;}
-	public void setY(FieldFramed<Double> y) {this.y = y;}
+	public OprConstFramed<Double> getX() {return x;}
+	public void setX(OprConstFramed<Double> x) {this.x = x;}
+	public OprConstFramed<Double> getY() {return y;}
+	public void setY(OprConstFramed<Double> y) {this.y = y;}
 	
-	public FieldGenVec2(FieldFramed<Double> x, FieldFramed<Double> y) {
+	public OprGenVec2(OprConstFramed<Double> x, OprConstFramed<Double> y) {
 		this.setX(x);
 		this.setY(y);
 	}
 
-	public FieldGenVec2() {this(null, null);}
+	public OprGenVec2() {this(null, null);}
 	
 	@Override
 	public Vector get(double time) {

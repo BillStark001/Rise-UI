@@ -2,10 +2,22 @@ package com.billstark001.riseui.base.shading.mat;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
+import com.billstark001.riseui.base.fields.Operator;
 
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public abstract class TagSelectionBase extends TagBase {
+	
+	@Override
+	public boolean onMat() {return false;}
+	@Override
+	public boolean onShader() {return false;}
+	@Override
+	public boolean onData() {return false;}
+	@Override
+	public Operator getShaderOpr() {return null;}
+	@Override
+	public Operator getDataOpr() {return null;}
 	
 	static enum Type {
 		VERTEX,
@@ -72,18 +84,6 @@ public abstract class TagSelectionBase extends TagBase {
 	
 	
 	// All functions below are useless, just to materialize abstract functions.
-	
-	@Override
-	public ApplyReturn onGlobalUpdate(NodeBase state) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
-
-	@Override
-	public ApplyReturn onLocalUpdate(NodeBase state) {
-		// TODO �Զ����ɵķ������
-		return null;
-	}
 
 	@Override
 	public ApplyReturn onRenderPre(NodeBase object, double ptick) {
@@ -132,5 +132,21 @@ public abstract class TagSelectionBase extends TagBase {
 		// TODO �Զ����ɵķ������
 		return null;
 	}
+	@Override
+	public ApplyReturn onRenderVertsPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderEdgesPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
+	}
+	@Override
+	public ApplyReturn onRenderFacesPost(NodeBase object) {
+		// TODO 自动生成的方法存根
+		return null;
+	}
+
 
 }

@@ -2,15 +2,15 @@ package com.billstark001.riseui.base.fields;
 
 import java.util.Arrays;
 
-import com.billstark001.riseui.base.fields.FieldUtils.Interpolation;
-import com.billstark001.riseui.base.fields.FieldUtils.KeyFrame;
+import com.billstark001.riseui.base.fields.OprUtils.Interpolation;
+import com.billstark001.riseui.base.fields.OprUtils.KeyFrame;
 
-public class FieldFramed<T> extends Field<T> {
+public class OprConstFramed<T> extends Operator<T> {
 	
 
 	private final KeyFrame<T>[] frames;
 	
-	public FieldFramed(KeyFrame<T>[] framesIn) {
+	public OprConstFramed(KeyFrame<T>[] framesIn) {
 		int fc = framesIn.length;
 		KeyFrame<T>[] frames = new KeyFrame[fc];
 		for (int i = 0; i < fc; ++i) {
@@ -20,7 +20,7 @@ public class FieldFramed<T> extends Field<T> {
 		this.frames = frames;
 	}
 	
-	public FieldFramed(double[] times, T[] vals, Interpolation<T>[] interps) {
+	public OprConstFramed(double[] times, T[] vals, Interpolation<T>[] interps) {
 		int fc = 2147483647;
 		fc = Math.min(fc, times.length);
 		fc = Math.min(fc, vals.length);
@@ -33,7 +33,7 @@ public class FieldFramed<T> extends Field<T> {
 		this.frames = frames;
 	}
 	
-	public FieldFramed(double[] times, T[] vals) {
+	public OprConstFramed(double[] times, T[] vals) {
 		int fc = 2147483647;
 		fc = Math.min(fc, times.length);
 		fc = Math.min(fc, vals.length);
@@ -45,7 +45,7 @@ public class FieldFramed<T> extends Field<T> {
 		this.frames = frames;
 	}
 	
-	public FieldFramed(T vals) {
+	public OprConstFramed(T vals) {
 		KeyFrame<T>[] frames = new KeyFrame[1];
 		frames[0] = new KeyFrame<T>(0, vals);
 		this.frames = frames;

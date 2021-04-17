@@ -2,7 +2,7 @@ package com.billstark001.riseui.base.nodestate;
 
 import java.nio.FloatBuffer;
 
-import com.billstark001.riseui.base.fields.FieldSimple;
+import com.billstark001.riseui.base.fields.OprConstSimple;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Pair;
 import com.billstark001.riseui.computation.ShapeMismatchException;
@@ -10,7 +10,7 @@ import com.billstark001.riseui.computation.UtilsLinalg;
 
 import scala.actors.threadpool.Arrays;
 
-public abstract class State3DBase extends FieldSimple<Matrix> {
+public abstract class State3DBase extends OprConstSimple<Matrix> {
 	
 	private boolean dirty = true;
 	protected void markClean() {this.dirty = false;}

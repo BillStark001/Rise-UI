@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.billstark001.riseui.base.TagBase.ApplyReturn;
-import com.billstark001.riseui.base.fields.Field;
+import com.billstark001.riseui.base.fields.Operator;
 import com.billstark001.riseui.base.nodestate.State3DSimple;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Pair;
@@ -59,7 +59,7 @@ public abstract class NodeCompilableBase extends NodeBase {
 	}
 	
 	@Override
-	public void setLocalState(Field<Matrix> state) {
+	public void setLocalState(Operator<Matrix> state) {
 		//this.markRecompile();
 		super.setLocalState(state);
 	}

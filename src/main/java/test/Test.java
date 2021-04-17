@@ -22,16 +22,16 @@ import net.minecraft.client.renderer.entity.RenderSpider;
 import net.minecraft.nbt.*;
 
 import com.billstark001.riseui.base.NodeBase;
-import com.billstark001.riseui.base.fields.Field;
-import com.billstark001.riseui.base.fields.FieldFramedDouble;
-import com.billstark001.riseui.base.fields.FieldGenVec3;
+import com.billstark001.riseui.base.fields.Operator;
+import com.billstark001.riseui.base.fields.OprConstFramedD;
+import com.billstark001.riseui.base.fields.OprGenVec3;
 import com.billstark001.riseui.base.nodestate.State3DBase;
 import com.billstark001.riseui.base.nodestate.State3DIntegrated;
 import com.billstark001.riseui.base.nodestate.State3DPos;
 import com.billstark001.riseui.base.nodestate.State3DRot;
 import com.billstark001.riseui.base.nodestate.State3DScl;
 import com.billstark001.riseui.base.nodestate.State3DSimple;
-import com.billstark001.riseui.base.fields.FieldGen3D;
+import com.billstark001.riseui.base.fields.OprGen3D;
 import com.billstark001.riseui.computation.Matrix;
 import com.billstark001.riseui.computation.Quaternion;
 import com.billstark001.riseui.computation.Utils3D;
@@ -100,7 +100,8 @@ public class Test {
 		f.parse();
 		NodeBase j0 = f.getNodeByName("spider");
 		j0.setChildrenFrameTime(5);
-		j0.dump();
+		//j0.dump();
+		j0.reflect();
 		
 		Quaternion q1 = Quaternion.getQuatByAA(Vector.UNIT1_D3, 30);
 		Quaternion q2 = Quaternion.rotMatToQuat(Quaternion.quatToRotMat(q1));

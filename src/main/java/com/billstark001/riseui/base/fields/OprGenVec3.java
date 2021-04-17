@@ -2,26 +2,26 @@ package com.billstark001.riseui.base.fields;
 
 import com.billstark001.riseui.computation.Vector;
 
-public class FieldGenVec3 extends Field<Vector> {
+public class OprGenVec3 extends Operator<Vector> {
 
-	private FieldFramed<Double> x;
-	private FieldFramed<Double> y;
-	private FieldFramed<Double> z;
+	private OprConstFramed<Double> x;
+	private OprConstFramed<Double> y;
+	private OprConstFramed<Double> z;
 	
-	public FieldFramed<Double> getX() {return x;}
-	public void setX(FieldFramed<Double> x) {this.x = x;}
-	public FieldFramed<Double> getY() {return y;}
-	public void setY(FieldFramed<Double> y) {this.y = y;}
-	public FieldFramed<Double> getZ() {return z;}
-	public void setZ(FieldFramed<Double> z) {this.z = z;}
+	public OprConstFramed<Double> getX() {return x;}
+	public void setX(OprConstFramed<Double> x) {this.x = x;}
+	public OprConstFramed<Double> getY() {return y;}
+	public void setY(OprConstFramed<Double> y) {this.y = y;}
+	public OprConstFramed<Double> getZ() {return z;}
+	public void setZ(OprConstFramed<Double> z) {this.z = z;}
 	
-	public FieldGenVec3(FieldFramed<Double> x, FieldFramed<Double> y, FieldFramed<Double> z) {
+	public OprGenVec3(OprConstFramed<Double> x, OprConstFramed<Double> y, OprConstFramed<Double> z) {
 		this.setX(x);
 		this.setY(y);
 		this.setZ(z);
 	}
 
-	public FieldGenVec3() {this(null, null, null);}
+	public OprGenVec3() {this(null, null, null);}
 	
 	@Override
 	public Vector get(double time) {

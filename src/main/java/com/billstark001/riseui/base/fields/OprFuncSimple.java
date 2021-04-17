@@ -3,14 +3,13 @@ package com.billstark001.riseui.base.fields;
 import com.billstark001.riseui.computation.Matrix;
 import com.dddviewr.collada.states.newparam;
 
-public class FieldGenSimple<T, S> extends Field<T> {
+public class OprFuncSimple<T, S> extends Operator<T> {
 
-	private Field<S> source;
+	private Operator<S> source;
 	
-	public Field<S> getSource() {return this.source;}
-	public S getSource(double time) {return this.source.get(time);}
-	public void setSource(Field<S> source) {this.source = source;} 
-	public void setSource(S source) {this.source = new FieldSimple<S>(source);} 
+	public Operator<S> getSource() {return this.source;}
+	public void setSource(Operator<S> source) {this.source = source;} 
+	public void setSource(S source) {this.setSource(new OprConstSimple<S>(source));} 
 	
 	@FunctionalInterface
 	public interface Generator<T, S> {T gen(S source);}
@@ -20,19 +19,19 @@ public class FieldGenSimple<T, S> extends Field<T> {
 	public Generator<T, S> getGenerator() {return this.generator;}
 	public void setGenerator(Generator<T, S> gen) {this.generator = gen;} 
 
-	public FieldGenSimple(Field<S> source, Generator<T, S> gen) {
+	public OprFuncSimple(Operator<S> source, Generator<T, S> gen) {
 		this.setSource(source);
 		this.setGenerator(gen);
 	}
 	
-	public FieldGenSimple<T, S> rasterize(double time) {
-		return new FieldGenSimple<T, S>(new FieldSimple<S>(this.getSource(time)), this.getGenerator());
+	public OprFuncSimple<T, S> rasterize(double time) {
+		return new OprFuncSimple<T, S>(new OprConstSimple<S>(this.getSource().get(time)), this.getGenerator());
 	}
 	
 	@Override
 	public T get(double time) {
 		S src = source.get(time);
-		return generator.gen(src);
+		return this.getGenerator().gen(src);
 	}
 
 	@Override

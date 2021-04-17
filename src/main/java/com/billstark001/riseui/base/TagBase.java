@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import com.billstark001.riseui.base.fields.Operator;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -12,6 +14,12 @@ public abstract class TagBase extends BaseContainer {
 	protected int hierarchy;
 	protected boolean activated;
 	
+	public abstract boolean onMat();
+	public abstract boolean onShader();
+	public abstract boolean onData();
+	
+	public abstract Operator getShaderOpr();
+	public abstract Operator getDataOpr();
 	
 	public TagBase() {this(0, true);}
 	public TagBase(boolean activated) {this(0, activated);}
@@ -19,7 +27,7 @@ public abstract class TagBase extends BaseContainer {
 	public TagBase(int hierarchy, boolean activated) {
 		this.hierarchy = hierarchy;
 		this.activated = activated;
-		MinecraftForge.EVENT_BUS.register(this);
+		//MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public int getHierarchy() {return hierarchy;}
@@ -48,10 +56,10 @@ public abstract class TagBase extends BaseContainer {
 	public static final int TAG_PHRASE_RENDER_PARTICULAR_EDGE = 10;
 	public static final int TAG_PHRASE_RENDER_PARTICULAR_FACE = 11;
 	
-	public static final int TAG_PHRASE_GLOBAL_UPDATE = 5;
-	public static final int TAG_PHRASE_LOCAL_UPDATE = 6;
-	public static final int TAG_PHRASE_EFFECTOR_ACTIVATED = 7;
-	public static final int TAG_PHRASE_GENERATOR_ACTIVATED = 8;
+	// public static final int TAG_PHRASE_GLOBAL_UPDATE = 5;
+	// public static final int TAG_PHRASE_LOCAL_UPDATE = 6;
+	// public static final int TAG_PHRASE_EFFECTOR_ACTIVATED = 7;
+	// public static final int TAG_PHRASE_GENERATOR_ACTIVATED = 8;
 	
 	public abstract boolean appliesOn(int phrase);
 	
@@ -101,10 +109,10 @@ public abstract class TagBase extends BaseContainer {
 			inform_ = (Boolean) args[2];
 			return this.onRenderFace(object, index, ptick, inform_);
 			
-		case TagBase.TAG_PHRASE_GLOBAL_UPDATE:
-			return this.onGlobalUpdate(object);
-		case TagBase.TAG_PHRASE_LOCAL_UPDATE:
-			return this.onGlobalUpdate(object);
+		//case TagBase.TAG_PHRASE_GLOBAL_UPDATE:
+		//	return this.onGlobalUpdate(object);
+		//case TagBase.TAG_PHRASE_LOCAL_UPDATE:
+		//	return this.onLocalUpdate(object);
 		case TagBase.TAG_PHRASE_ADDED:
 			return this.onAdded(object);
 		case TagBase.TAG_PHRASE_REMOVED:
@@ -141,13 +149,13 @@ public abstract class TagBase extends BaseContainer {
 	 * @param state
 	 * @return
 	 */
-	public abstract ApplyReturn onGlobalUpdate(NodeBase state);
+	//public abstract ApplyReturn onGlobalUpdate(NodeBase state);
 	/**
 	 * 
 	 * @param state
 	 * @return
 	 */
-	public abstract ApplyReturn onLocalUpdate(NodeBase state);
+	//public abstract ApplyReturn onLocalUpdate(NodeBase state);
 	/**
 	 * 
 	 * @param object

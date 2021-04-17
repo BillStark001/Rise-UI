@@ -1,31 +1,31 @@
 package com.billstark001.riseui.base.fields;
 
-public class FieldSimple<T> extends Field<T> {
+public class OprConstSimple<T> extends Operator<T> {
 
-	private T state = this.getDefault();
+	private T data = this.getDefault();
 	
-	protected boolean set(T state) {
-		this.state = state;
+	protected boolean set(T data) {
+		this.data = data;
 		return true;
 	}
 	
-	public FieldSimple(T t) {
+	public OprConstSimple(T t) {
 		this.set(t);
 	}
 	
-	public FieldSimple() {
+	public OprConstSimple() {
 		this.set(this.getDefault());
 	}
 
 	public T getDefault() {return null;}
-	public T get() {if (state == null) return this.getDefault(); else return state;}
+	public T get() {if (data == null) return this.getDefault(); else return data;}
 	
 	@Override
 	public T get(double time) {return this.get();}
 	
 	@Override
 	public boolean containsFrames() {
-		if (this.state != null && this.getDefault() != null) {
+		if (this.data != null && this.getDefault() != null) {
 			return true;
 		}
 		else return false;
@@ -53,7 +53,7 @@ public class FieldSimple<T> extends Field<T> {
 
 	@Override
 	public Class getDataType() {
-		return state.getClass();
+		return data.getClass();
 	}
 
 }

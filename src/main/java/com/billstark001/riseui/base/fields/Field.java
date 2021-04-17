@@ -1,47 +1,36 @@
 package com.billstark001.riseui.base.fields;
 
-public abstract class Field<T> {
+public class Field<T> {
+
+	private Operator<T> oprraw;
+	private Operator<T> oprcalc;
 	
-	/*
-	public static enum DataType {
-		
-		INT,
-		PAIR,
-		TRIAD,
-		
-		FLOAT,
-		VEC,
-		VEC3,
-		VEC4,
-		QUAT,
-		
-		MAT,
-		MAT_ORTH,
-		MAT_ORTH3,
-		MAT_ORTH4,
-		MAT_HOMO3,
-		MAT_HOMO4,
-		
-		STR;
-		
+	public Operator<T> getRawOpr() {
+		return oprraw;
 	}
-	//public abstract boolean checkType(DataType type);
-	*/
+
+	public void setRawOpr(Operator<T> raw) {
+		this.oprraw = raw;
+	}
+
+	public Field() {
+		// TODO 自动生成的构造函数存根
+	}
 	
-	public T get() {return this.get(this.getStartTime());}
-	public abstract T get(double time);
-	public abstract boolean containsFrames();
-	public abstract Class getDataType();
+	public T getRaw(double time) {
+		return this.oprraw.get(time);
+	}
 	
-	/*
-	private String name = this.getClass().getSimpleName();
-	public void setName(String name) {this.name = name;}
-	public String getName() {return name;}
-	public void resetName() {setName(this.getClass().getSimpleName());}
-	*/
+	public T get(double time) {
+		return this.oprcalc.get(time);
+	}
 	
-	public abstract double getStartTime();
-	public abstract double getEndTime();
+	public Operator<T> getCalcOpr() {
+		return this.oprcalc;
+	}
 	
-	public boolean isTracked() {return !(this instanceof FieldSimple);}
+	public Operator<T> getOutputOpr() {
+		return new OprFromField<T>(this);
+	}
+
 }

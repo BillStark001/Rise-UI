@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.billstark001.riseui.base.NodeBase;
 import com.billstark001.riseui.base.TagBase;
+import com.billstark001.riseui.base.fields.Operator;
 import com.billstark001.riseui.base.shading.mat.TagSelectionBase.Type;
 import com.billstark001.riseui.base.shading.shader.Shader;
 import com.billstark001.riseui.render.GlHelper;
@@ -11,6 +12,17 @@ import com.billstark001.riseui.render.GlHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class TagApplyMaterialFace extends TagBase {
+	
+	@Override
+	public boolean onMat() {return false;}
+	@Override
+	public boolean onShader() {return false;}
+	@Override
+	public boolean onData() {return false;}
+	@Override
+	public Operator getShaderOpr() {return null;}
+	@Override
+	public Operator getDataOpr() {return null;}
 	
 	//private static GlRenderHelper renderer = GlRenderHelper.getInstance();
 	
@@ -62,10 +74,6 @@ public class TagApplyMaterialFace extends TagBase {
 	public ApplyReturn onAdded(NodeBase node) {return null;}
 	@Override
 	public ApplyReturn onRemoved(NodeBase node) {return null;}
-	@Override
-	public ApplyReturn onGlobalUpdate(NodeBase state) {return null;}
-	@Override
-	public ApplyReturn onLocalUpdate(NodeBase state) {return null;}
 	
 	@Override
 	public ApplyReturn onRenderPre(NodeBase object, double ptick) {
